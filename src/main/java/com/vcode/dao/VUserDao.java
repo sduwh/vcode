@@ -1,12 +1,14 @@
 package com.vcode.dao;
 
-import com.vcode.entitiy.VUserEntity;
+
+import com.vcode.entitiy.VUser;
 
 public interface VUserDao {
-  void saveVUser(VUserEntity vuserEntity);
-  void removeVUser(Long Id);
-  void updateVUser(VUserEntity vUserEntity);
-  boolean isExitVUser(String account);
-  VUserEntity findById(Long Id);
-  VUserEntity findByAccount(String account);
+  public void saveUser(VUser user);
+  
+  public VUser findUserByUserAccount(String account);
+  
+  public long updateUser(VUser user);
+  
+  public void deleteUserById(Long id);
 }

@@ -4,12 +4,12 @@ import com.vcode.common.ResponseCodeConstants;
 
 import java.io.Serializable;
 
-public class ResponseEntity implements Serializable {
+public class Response implements Serializable {
   private int code;
   private String msg;
   private Object data;
   
-  public ResponseEntity() {
+  public Response() {
     this.code = ResponseCodeConstants.SUCCESS;
     this.msg = "success";
     this.data = null;

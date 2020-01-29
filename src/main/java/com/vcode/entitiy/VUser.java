@@ -2,10 +2,8 @@ package com.vcode.entitiy;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.xml.bind.DatatypeConverter;
 import java.io.Serializable;
 import java.security.MessageDigest;
@@ -13,24 +11,27 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
 
-@Document(collection = "v_user")
-public class VUserEntity implements Serializable {
+@Document("v_user")
+public class VUser implements Serializable {
   @Id
   private Long id;
   
-  @NotEmpty(message = "account must be not null")
-  @NotBlank(message = "account can't be blank")
+  @Field("account")
   private String account;
   
+  @Field("nickname")
   private String nickname;
   
+  @Field("email")
   private String email;
   
+  @Field("password")
   private String password;
   
+  @Field("createTime")
   private Date createTime;
   
-  public VUserEntity(){
+  public VUser() {
     this.setCreateTime();
     this.setEmail(null);
   }
