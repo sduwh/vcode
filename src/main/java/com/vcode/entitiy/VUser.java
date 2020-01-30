@@ -1,5 +1,6 @@
 package com.vcode.entitiy;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -14,7 +15,7 @@ import java.util.Date;
 @Document("v_user")
 public class VUser implements Serializable {
   @Id
-  private Long id;
+  private ObjectId id;
   
   @Field("account")
   private String account;
@@ -34,13 +35,22 @@ public class VUser implements Serializable {
   public VUser() {
     this.setCreateTime();
     this.setEmail(null);
+    this.setNickname("");
   }
   
-  public void setId(Long id) {
+  public VUser(String account, String password) throws NoSuchAlgorithmException {
+    this.setCreateTime();;
+    this.setEmail(null);
+    this.setAccount(account);
+    this.setPassword(password);
+    this.setNickname(account);
+  }
+  
+  public void setId(ObjectId id) {
     this.id = id;
   }
   
-  public Long getId() {
+  public ObjectId getId() {
     return this.id;
   }
   

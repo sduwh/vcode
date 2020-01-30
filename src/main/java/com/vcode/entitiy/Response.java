@@ -6,13 +6,15 @@ import java.io.Serializable;
 
 public class Response implements Serializable {
   private int code;
-  private String msg;
+  private String message;
   private Object data;
+  private String error;
   
   public Response() {
     this.code = ResponseCodeConstants.SUCCESS;
-    this.msg = "success";
+    this.message = "success";
     this.data = null;
+    this.error = null;
   }
   
   public Object getData() {
@@ -23,12 +25,12 @@ public class Response implements Serializable {
     this.data = data;
   }
   
-  public String getMsg() {
-    return msg;
+  public String getMessage() {
+    return message;
   }
   
-  public void setMsg(String msg) {
-    this.msg = msg;
+  public void setMessage(String message) {
+    this.message = message;
   }
   
   public int getCode() {
@@ -37,5 +39,13 @@ public class Response implements Serializable {
   
   public void setCode(int code) {
     this.code = code;
+  }
+  
+  public void setError(String error) {
+    this.error = error;
+  }
+  
+  public String getError() {
+    return error;
   }
 }
