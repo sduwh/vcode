@@ -2,14 +2,10 @@ package com.vcode.controller;
 
 import com.vcode.Impl.VUserDaoImpl;
 import com.vcode.common.ResponseCodeConstants;
-import com.vcode.dao.VUserDao;
 import com.vcode.entitiy.Response;
 import com.vcode.entitiy.VUser;
 import com.vcode.util.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.NoSuchAlgorithmException;
@@ -166,16 +162,16 @@ public class VUserController {
       return res;
     }
 
-    String account = map.get("account").toString();
+    String account = map.get("account");
     String email = "";
     String nickname = "";
 
     if (map.get("nickname") != null) {
-      nickname = map.get("nickname").toString();
+      nickname = map.get("nickname");
     }
 
     if (map.get("email") != null) {
-      email = map.get("email").toString();
+      email = map.get("email");
     }
 
     VUser vuser = userDao.findUserByUserAccount(account);
@@ -186,10 +182,10 @@ public class VUserController {
       return res;
     }
 
-    if (nickname != "") {
+    if (!nickname.equals("")) {
       vuser.setNickname(nickname);
     }
-    if (email != "") {
+    if (!email.equals("")) {
       vuser.setEmail(email);
     }
     userDao.updateUser(vuser);
