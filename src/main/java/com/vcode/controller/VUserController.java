@@ -17,12 +17,12 @@ import java.util.logging.Logger;
 @RestController
 @RequestMapping("/user")
 public class VUserController {
-  
+
   @Autowired
   private VUserDaoImpl userDao;
-  
+
   private Logger log = Logger.getLogger("UserController");
-  
+
   /*
  注册逻辑
  1. 检查输入参数的合法性
@@ -31,14 +31,14 @@ public class VUserController {
   */
   @PostMapping("/sign_in")
   public Response signIn(@RequestBody Map<String, Object> map) throws NoSuchAlgorithmException {
-   /**
-    * @Description 用户注册api
-    * @Date 2020/1/31 01:40
-    * @param account 用户账号
-    * @param password 密码
-    * @param rePassword 重复密码
-    * @return 注册结果（包含token）
-    */
+    /**
+     * @Description 用户注册api
+     * @Date 2020/1/31 01:40
+     * @param account 用户账号
+     * @param password 密码
+     * @param rePassword 重复密码
+     * @return 注册结果（包含token）
+     */
     Response res = new Response();
     if (map.get("account") == null || map.get("password") == null || map.get("rePassword") == null) {
       res.setCode(ResponseCodeConstants.ERROR);
@@ -49,13 +49,13 @@ public class VUserController {
     String account = map.get("account").toString();
     String password = map.get("password").toString();
     String rePassword = map.get("rePassword").toString();
-    
+
     if (!password.equals(rePassword)) {
       res.setCode(ResponseCodeConstants.FAIL);
       res.setMessage("两次密码不一致");
       return res;
     }
-    
+
     VUser user = userDao.findUserByUserAccount(account);
     if (user != null) {
       res.setCode(ResponseCodeConstants.FAIL);
@@ -65,7 +65,7 @@ public class VUserController {
     // 创建用户
     user = new VUser(account, password);
     userDao.saveUser(user);
-    
+
     HashMap<String, String> resData = new HashMap<>();
     resData.put("token", JWTUtil.sign(user.getAccount(), user.getPassword()));
     resData.put("nickname", user.getNickname());
@@ -75,7 +75,7 @@ public class VUserController {
     log.info(String.format("user %s is sign.", user.getAccount()));
     return res;
   }
-  
+
   /*
   登陆逻辑
   1. 检查输入参数的合法性
@@ -118,5 +118,32 @@ public class VUserController {
     log.info(String.format("user %s is login:", user.getNickname()));
     return res;
   }
-  
+
+  @GetMapping("/user-info")
+  public Response userInfo(@RequestParam("account") String account) {
+    /**
+     * @Description 获取用户数据
+     * @param account 用户账号
+     * @return 用户的全部资料
+     */
+    Response res = new Response();
+//    if(account.length()<10){
+//      res.setCode(ResponseCodeConstants.FAIL);
+//      res.setMessage("账号长度小于10");
+//      return res;
+//    }
+    VUser vUser = userDao.findUserByUserAccount(account);
+    if (vUser == null) {
+      res.setCode(ResponseCodeConstants.FAIL);
+      res.setMessage("该用户不存在");
+      return res;
+    }
+    HashMap<String, String> resData = new HashMap<>();
+    resData.put("account", vUser.getAccount());
+    resData.put("nickname", vUser.getNickname());
+    resData.put("email", vUser.getEmail());
+    res.setData(resData);
+    return res;
+  }
+
 }
