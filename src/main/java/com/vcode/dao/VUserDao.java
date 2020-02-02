@@ -8,7 +8,7 @@ public interface VUserDao {
   
   public VUser findUserByUserAccount(String account);
   
-  public long updateUser(VUser user);
+  public void updateUser(VUser user);
   
   public void deleteUserById(Long id);
 }

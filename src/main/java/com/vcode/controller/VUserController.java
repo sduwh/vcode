@@ -2,10 +2,14 @@ package com.vcode.controller;
 
 import com.vcode.Impl.VUserDaoImpl;
 import com.vcode.common.ResponseCodeConstants;
+import com.vcode.dao.VUserDao;
 import com.vcode.entitiy.Response;
 import com.vcode.entitiy.VUser;
 import com.vcode.util.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.NoSuchAlgorithmException;
@@ -146,4 +150,49 @@ public class VUserController {
     return res;
   }
 
+  @PostMapping("/edit-user-info")
+  public Response editUser(@RequestBody Map<String, String> map) {
+    /**
+     * @Description 修改用户数据
+     * @param account 用户账号
+     * @return 更新用户的全部资料
+     */
+
+
+    Response res = new Response();
+    if (map.get("account") == null) {
+      res.setCode(ResponseCodeConstants.FAIL);
+      res.setMessage("account is required");
+      return res;
+    }
+
+    String account = map.get("account").toString();
+    String email = "";
+    String nickname = "";
+
+    if (map.get("nickname") != null) {
+      nickname = map.get("nickname").toString();
+    }
+
+    if (map.get("email") != null) {
+      email = map.get("email").toString();
+    }
+
+    VUser vuser = userDao.findUserByUserAccount(account);
+
+    if (vuser == null) {
+      res.setCode(ResponseCodeConstants.FAIL);
+      res.setMessage("该用户不存在");
+      return res;
+    }
+
+    if (nickname != "") {
+      vuser.setNickname(nickname);
+    }
+    if (email != "") {
+      vuser.setEmail(email);
+    }
+    userDao.updateUser(vuser);
+    return res;
+  }
 }

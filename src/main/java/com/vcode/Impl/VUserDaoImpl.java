@@ -27,11 +27,10 @@ public class VUserDaoImpl implements VUserDao {
   }
   
   @Override
-  public long updateUser(VUser user) {
+  public void updateUser(VUser user) {
     Query query = new Query(Criteria.where("id").is(user.getId()));
     Update update = new Update().set("nickname", user.getNickname()).set("email", user.getEmail());
-    UpdateResult result =mongoTemplate.updateFirst(query,update,VUser.class);
-    return result.getMatchedCount();
+    mongoTemplate.updateFirst(query,update,VUser.class);
   }
   
   @Override
