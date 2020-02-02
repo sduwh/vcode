@@ -67,9 +67,9 @@ public class VUserController {
     userDao.saveUser(user);
     
     HashMap<String, String> resData = new HashMap<>();
-    
     resData.put("token", JWTUtil.sign(user.getAccount(), user.getPassword()));
     resData.put("nickname", user.getNickname());
+    resData.put("account", user.getAccount());
     res.setData(resData);
     res.setMessage("注册成功");
     log.info(String.format("user %s is sign.", user.getAccount()));
@@ -113,6 +113,7 @@ public class VUserController {
     HashMap<String, String> resData = new HashMap<>();
     resData.put("token", JWTUtil.sign(user.getAccount(), user.getPassword()));
     resData.put("nickname", user.getNickname());
+    resData.put("account", user.getAccount());
     res.setData(resData);
     log.info(String.format("user %s is login:", user.getNickname()));
     return res;
