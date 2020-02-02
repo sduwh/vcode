@@ -52,14 +52,14 @@ public class VUserController {
     
     if (!password.equals(rePassword)) {
       res.setCode(ResponseCodeConstants.FAIL);
-      res.setMessage("两次密码不一致。");
+      res.setMessage("两次密码不一致");
       return res;
     }
     
     VUser user = userDao.findUserByUserAccount(account);
     if (user != null) {
       res.setCode(ResponseCodeConstants.FAIL);
-      res.setMessage("该账户已存在。");
+      res.setMessage("该账号已存在");
       return res;
     }
     // 创建用户
@@ -67,9 +67,9 @@ public class VUserController {
     userDao.saveUser(user);
     
     HashMap<String, String> resData = new HashMap<>();
-    
     resData.put("token", JWTUtil.sign(user.getAccount(), user.getPassword()));
     resData.put("nickname", user.getNickname());
+    resData.put("account", user.getAccount());
     res.setData(resData);
     res.setMessage("注册成功");
     log.info(String.format("user %s is sign.", user.getAccount()));
@@ -101,7 +101,7 @@ public class VUserController {
     String password = map.get("password").toString();
     VUser user = userDao.findUserByUserAccount(account);
     if (user == null) {
-      res.setMessage("账号已存在");
+      res.setMessage("账号不存在");
       res.setCode(ResponseCodeConstants.FAIL);
       return res;
     }
@@ -113,6 +113,7 @@ public class VUserController {
     HashMap<String, String> resData = new HashMap<>();
     resData.put("token", JWTUtil.sign(user.getAccount(), user.getPassword()));
     resData.put("nickname", user.getNickname());
+    resData.put("account", user.getAccount());
     res.setData(resData);
     log.info(String.format("user %s is login:", user.getNickname()));
     return res;
