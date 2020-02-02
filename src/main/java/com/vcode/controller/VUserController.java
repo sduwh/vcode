@@ -52,14 +52,14 @@ public class VUserController {
     
     if (!password.equals(rePassword)) {
       res.setCode(ResponseCodeConstants.FAIL);
-      res.setMessage("两次密码不一致。");
+      res.setMessage("两次密码不一致");
       return res;
     }
     
     VUser user = userDao.findUserByUserAccount(account);
     if (user != null) {
       res.setCode(ResponseCodeConstants.FAIL);
-      res.setMessage("该账户已存在。");
+      res.setMessage("该账号已存在");
       return res;
     }
     // 创建用户
@@ -101,7 +101,7 @@ public class VUserController {
     String password = map.get("password").toString();
     VUser user = userDao.findUserByUserAccount(account);
     if (user == null) {
-      res.setMessage("账号已存在");
+      res.setMessage("账号不存在");
       res.setCode(ResponseCodeConstants.FAIL);
       return res;
     }
@@ -117,5 +117,32 @@ public class VUserController {
     log.info(String.format("user %s is login:", user.getNickname()));
     return res;
   }
-  
+
+  @GetMapping("/user-info")
+  public Response userInfo(@RequestParam("account") String account){
+    /**
+     * @Description 获取用户数据
+     * @param account 用户账号
+     * @return 用户的全部资料
+     */
+    Response res=new Response();
+//    if(account.length()<10){
+//      res.setCode(ResponseCodeConstants.FAIL);
+//      res.setMessage("账号长度小于10");
+//      return res;
+//    }
+    VUser vUser=userDao.findUserByUserAccount(account);
+    if(vUser==null){
+      res.setCode(ResponseCodeConstants.FAIL);
+      res.setMessage("该用户不存在");
+      return res;
+    }
+    HashMap<String,String> resData=new HashMap<>();
+    resData.put("account", vUser.getAccount());
+    resData.put("nickname",vUser.getNickname());
+    resData.put("email",vUser.getEmail());
+    res.setData(resData);
+    return res;
+  }
+
 }

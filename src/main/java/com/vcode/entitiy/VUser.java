@@ -85,7 +85,7 @@ public class VUser implements Serializable {
   public void setPassword(String newPassword) throws NoSuchAlgorithmException {
     MessageDigest md = MessageDigest.getInstance("MD5");
     md.update(newPassword.getBytes());
-    this.password = DatatypeConverter.printHexBinary(md.digest());
+    this.password = DatatypeConverter.printHexBinary(md.digest());//解码
   }
   
   public Date getCreateTime() {
