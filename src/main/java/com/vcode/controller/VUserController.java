@@ -164,16 +164,16 @@ public class VUserController {
       return res;
     }
 
-    String account = map.get("account").toString();
+    String account = map.get("account");
     String email = "";
     String nickname = "";
 
     if (map.get("nickname") != null) {
-      nickname = map.get("nickname").toString();
+      nickname = map.get("nickname");
     }
 
     if (map.get("email") != null) {
-      email = map.get("email").toString();
+      email = map.get("email");
     }
 
     VUser vuser = userDao.findUserByUserAccount(account);
@@ -184,10 +184,10 @@ public class VUserController {
       return res;
     }
 
-    if (nickname != "") {
+    if (!nickname.equals("")) {
       vuser.setNickname(nickname);
     }
-    if (email != "") {
+    if (!email.equals("")) {
       vuser.setEmail(email);
     }
     userDao.updateUser(vuser);
