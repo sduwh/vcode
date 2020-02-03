@@ -2,16 +2,14 @@ package com.vcode.controller;
 
 import com.vcode.Impl.VUserDaoImpl;
 import com.vcode.common.ResponseCodeConstants;
-import com.vcode.dao.VUserDao;
 import com.vcode.entitiy.Response;
 import com.vcode.entitiy.VUser;
 import com.vcode.util.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.web.bind.annotation.*;
 
+import javax.xml.bind.DatatypeConverter;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
@@ -131,11 +129,11 @@ public class VUserController {
      * @return 用户的全部资料
      */
     Response res = new Response();
-//    if(account.length()<10){
-//      res.setCode(ResponseCodeConstants.FAIL);
-//      res.setMessage("账号长度小于10");
-//      return res;
-//    }
+    if(account.length()<10){
+      res.setCode(ResponseCodeConstants.FAIL);
+      res.setMessage("账号长度小于10");
+      return res;
+    }
     VUser vUser = userDao.findUserByUserAccount(account);
     if (vUser == null) {
       res.setCode(ResponseCodeConstants.FAIL);
@@ -194,5 +192,66 @@ public class VUserController {
     }
     userDao.updateUser(vuser);
     return res;
+  }
+
+  @PostMapping("/change-password")
+  public Response rePassword(@RequestBody Map<String,String> map) throws NoSuchAlgorithmException {
+    /**
+     * @Description 修改用户密码
+     * @return 用户成功修改密码
+     */
+    Response res=new Response();
+    if (map.get("account") == null) {
+      res.setCode(ResponseCodeConstants.FAIL);
+      res.setMessage("account is required");
+      return res;
+    }
+
+    VUser vuser=new VUser();
+
+    String oldPassword=map.get("oldPassword").toString();
+    String account=map.get("account").toString();
+    String newPassword=map.get("newPassword").toString();
+    String reNewPassword=map.get("reNewPassword".toString());
+
+    MessageDigest md = MessageDigest.getInstance("MD5");
+    md.update(oldPassword.getBytes());
+    oldPassword = DatatypeConverter.printHexBinary(md.digest());
+
+    vuser=userDao.findUserByUserAccount(account);
+    if (vuser == null) {
+      res.setCode(ResponseCodeConstants.FAIL);
+      res.setMessage("该用户不存在");
+      return res;
+    }
+    if(!oldPassword.equals(vuser.getPassword())){
+      res.setCode(ResponseCodeConstants.FAIL);
+      res.setMessage("请输入正确密码");
+      return res;
+    }
+
+    if(!newPassword.equals(reNewPassword)){
+      res.setData(ResponseCodeConstants.FAIL);
+      res.setMessage("请确保两次新密码输入一致");
+      return res;
+    }
+
+    if(newPassword.length()<6){
+      res.setData(ResponseCodeConstants.FAIL);
+      res.setMessage("请确保新密码长度大于或等于6");
+      return res;
+    }
+
+    vuser.setPassword(reNewPassword);
+    userDao.saveUser(vuser);
+
+    if(vuser.getPassword()==null){
+      res.setCode(ResponseCodeConstants.FAIL);
+      res.setMessage("修改密码失败");
+    }
+
+    res.setMessage("修改密码成功");
+    return res;
+
   }
 }
