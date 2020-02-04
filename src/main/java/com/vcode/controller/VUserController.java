@@ -198,9 +198,11 @@ public class VUserController {
   public Response rePassword(@RequestBody Map<String,String> map) throws NoSuchAlgorithmException {
     /**
      * @Description 修改用户密码
-     * @return 用户成功修改密码
+     * @return 用户成功修改密码(包含token)
      */
+
     Response res=new Response();
+
     if (map.get("account") == null) {
       res.setCode(ResponseCodeConstants.FAIL);
       res.setMessage("account is required");
@@ -219,25 +221,27 @@ public class VUserController {
     oldPassword = DatatypeConverter.printHexBinary(md.digest());
 
     vuser=userDao.findUserByUserAccount(account);
+
     if (vuser == null) {
       res.setCode(ResponseCodeConstants.FAIL);
       res.setMessage("该用户不存在");
       return res;
     }
+
     if(!oldPassword.equals(vuser.getPassword())){
-      res.setCode(ResponseCodeConstants.FAIL);
+      res.setCode(ResponseCodeConstants.ERROR);
       res.setMessage("请输入正确密码");
       return res;
     }
 
     if(!newPassword.equals(reNewPassword)){
-      res.setData(ResponseCodeConstants.FAIL);
+      res.setData(ResponseCodeConstants.ERROR);
       res.setMessage("请确保两次新密码输入一致");
       return res;
     }
 
     if(newPassword.length()<6){
-      res.setData(ResponseCodeConstants.FAIL);
+      res.setData(ResponseCodeConstants.ERROR);
       res.setMessage("请确保新密码长度大于或等于6");
       return res;
     }
@@ -249,7 +253,9 @@ public class VUserController {
       res.setCode(ResponseCodeConstants.FAIL);
       res.setMessage("修改密码失败");
     }
-
+    HashMap<String, String> resData = new HashMap<>();
+    resData.put("token", JWTUtil.sign(vuser.getAccount(), vuser.getPassword()));
+    res.setData(resData);
     res.setMessage("修改密码成功");
     return res;
 
