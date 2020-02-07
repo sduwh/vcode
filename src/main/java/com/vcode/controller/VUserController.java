@@ -8,8 +8,6 @@ import com.vcode.util.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.xml.bind.DatatypeConverter;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
@@ -121,7 +119,7 @@ public class VUserController {
     return res;
   }
 
-  @GetMapping("/user-info")
+  @GetMapping("/info")
   public Response userInfo(@RequestParam("account") String account) {
     /**
      * @Description 获取用户数据
@@ -129,7 +127,7 @@ public class VUserController {
      * @return 用户的全部资料
      */
     Response res = new Response();
-    if(account.length()<10){
+    if (account.length() < 10) {
       res.setCode(ResponseCodeConstants.FAIL);
       res.setMessage("账号长度小于10");
       return res;
@@ -148,7 +146,7 @@ public class VUserController {
     return res;
   }
 
-  @PostMapping("/edit-user-info")
+  @PostMapping("/info")
   public Response editUser(@RequestBody Map<String, String> map) {
     /**
      * @Description 修改用户数据
@@ -194,14 +192,14 @@ public class VUserController {
     return res;
   }
 
-  @PostMapping("/change-password")
-  public Response rePassword(@RequestBody Map<String,String> map) throws NoSuchAlgorithmException {
+  @PostMapping("/password")
+  public Response rePassword(@RequestBody Map<String, String> map) throws NoSuchAlgorithmException {
     /**
      * @Description 修改用户密码
      * @return 用户成功修改密码(包含token)
      */
 
-    Response res=new Response();
+    Response res = new Response();
 
     if (map.get("account") == null) {
       res.setCode(ResponseCodeConstants.FAIL);
@@ -209,18 +207,12 @@ public class VUserController {
       return res;
     }
 
-    VUser vuser=new VUser();
+    String oldPassword = map.get("oldPassword");
+    String account = map.get("account");
+    String newPassword = map.get("newPassword");
+    String reNewPassword = map.get("reNewPassword");
 
-    String oldPassword=map.get("oldPassword").toString();
-    String account=map.get("account").toString();
-    String newPassword=map.get("newPassword").toString();
-    String reNewPassword=map.get("reNewPassword".toString());
-
-    MessageDigest md = MessageDigest.getInstance("MD5");
-    md.update(oldPassword.getBytes());
-    oldPassword = DatatypeConverter.printHexBinary(md.digest());
-
-    vuser=userDao.findUserByUserAccount(account);
+    VUser vuser = userDao.findUserByUserAccount(account);
 
     if (vuser == null) {
       res.setCode(ResponseCodeConstants.FAIL);
@@ -228,36 +220,31 @@ public class VUserController {
       return res;
     }
 
-    if(!oldPassword.equals(vuser.getPassword())){
+    if (newPassword.length() < 6) {
+      res.setData(ResponseCodeConstants.ERROR);
+      res.setMessage("请确保新密码长度大于或等于6");
+      return res;
+    }
+
+    if (!vuser.checkPassword(oldPassword)) {
       res.setCode(ResponseCodeConstants.ERROR);
       res.setMessage("请输入正确密码");
       return res;
     }
 
-    if(!newPassword.equals(reNewPassword)){
+    if (!newPassword.equals(reNewPassword)) {
       res.setData(ResponseCodeConstants.ERROR);
       res.setMessage("请确保两次新密码输入一致");
-      return res;
-    }
-
-    if(newPassword.length()<6){
-      res.setData(ResponseCodeConstants.ERROR);
-      res.setMessage("请确保新密码长度大于或等于6");
       return res;
     }
 
     vuser.setPassword(reNewPassword);
     userDao.saveUser(vuser);
 
-    if(vuser.getPassword()==null){
-      res.setCode(ResponseCodeConstants.FAIL);
-      res.setMessage("修改密码失败");
-    }
     HashMap<String, String> resData = new HashMap<>();
     resData.put("token", JWTUtil.sign(vuser.getAccount(), vuser.getPassword()));
     res.setData(resData);
     res.setMessage("修改密码成功");
     return res;
-
   }
 }
