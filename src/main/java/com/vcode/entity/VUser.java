@@ -1,4 +1,4 @@
-package com.vcode.entitiy;
+package com.vcode.entity;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -45,11 +45,7 @@ public class VUser implements Serializable {
     this.setPassword(password);
     this.setNickname(account);
   }
-  
-  public void setId(ObjectId id) {
-    this.id = id;
-  }
-  
+
   public ObjectId getId() {
     return this.id;
   }

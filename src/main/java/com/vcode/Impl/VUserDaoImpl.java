@@ -1,8 +1,7 @@
 package com.vcode.Impl;
 
-import com.mongodb.client.result.UpdateResult;
 import com.vcode.dao.VUserDao;
-import com.vcode.entitiy.VUser;
+import com.vcode.entity.VUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -30,12 +29,12 @@ public class VUserDaoImpl implements VUserDao {
   public void updateUser(VUser user) {
     Query query = new Query(Criteria.where("id").is(user.getId()));
     Update update = new Update().set("nickname", user.getNickname()).set("email", user.getEmail());
-    mongoTemplate.updateFirst(query,update,VUser.class);
+    mongoTemplate.updateFirst(query, update, VUser.class);
   }
   
   @Override
-  public void deleteUserById(Long id) {
-    Query query = new Query(Criteria.where("id").is(id));
+  public void deleteUserByAccount(String account) {
+    Query query = new Query(Criteria.where("account").is(account));
     mongoTemplate.remove(query, VUser.class);
   }
 }

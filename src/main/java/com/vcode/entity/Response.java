@@ -1,6 +1,6 @@
-package com.vcode.entitiy;
+package com.vcode.entity;
 
-import com.vcode.common.ResponseCodeConstants;
+import com.vcode.common.ResponseCode;
 
 import java.io.Serializable;
 
@@ -11,7 +11,7 @@ public class Response implements Serializable {
   private String error;
   
   public Response() {
-    this.code = ResponseCodeConstants.SUCCESS;
+    this.code = ResponseCode.SUCCESS;
     this.message = "success";
     this.data = null;
     this.error = null;
