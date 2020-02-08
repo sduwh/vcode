@@ -1,14 +1,17 @@
 package com.vcode.dao;
 
 
-import com.vcode.entitiy.VUser;
+import com.vcode.entity.VUser;
 
 public interface VUserDao {
-  public void saveUser(VUser user);
-  
-  public VUser findUserByUserAccount(String account);
-  
-  public void updateUser(VUser user);
-  
-  public void deleteUserById(Long id);
+
+  void saveUser(VUser user);
+
+  VUser findUserByUserAccount(String account);
+
+  // 传入最新数据的实体即可
+  void updateUser(VUser user);
+
+  void deleteUserByAccount(String account);
+
 }

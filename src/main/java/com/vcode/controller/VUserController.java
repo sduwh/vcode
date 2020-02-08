@@ -1,9 +1,9 @@
 package com.vcode.controller;
 
 import com.vcode.Impl.VUserDaoImpl;
-import com.vcode.common.ResponseCodeConstants;
-import com.vcode.entitiy.Response;
-import com.vcode.entitiy.VUser;
+import com.vcode.common.ResponseCode;
+import com.vcode.entity.Response;
+import com.vcode.entity.VUser;
 import com.vcode.util.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +41,7 @@ public class VUserController {
      */
     Response res = new Response();
     if (map.get("account") == null || map.get("password") == null || map.get("rePassword") == null) {
-      res.setCode(ResponseCodeConstants.ERROR);
+      res.setCode(ResponseCode.ERROR);
       res.setMessage("请输入完整参数");
       return res;
     }
@@ -51,14 +51,14 @@ public class VUserController {
     String rePassword = map.get("rePassword").toString();
 
     if (!password.equals(rePassword)) {
-      res.setCode(ResponseCodeConstants.FAIL);
+      res.setCode(ResponseCode.FAIL);
       res.setMessage("两次密码不一致");
       return res;
     }
 
     VUser user = userDao.findUserByUserAccount(account);
     if (user != null) {
-      res.setCode(ResponseCodeConstants.FAIL);
+      res.setCode(ResponseCode.FAIL);
       res.setMessage("该账号已存在");
       return res;
     }
@@ -93,7 +93,7 @@ public class VUserController {
      */
     Response res = new Response();
     if (map.get("account") == null || map.get("password") == null) {
-      res.setCode(ResponseCodeConstants.ERROR);
+      res.setCode(ResponseCode.ERROR);
       res.setMessage("请输入完整参数");
       return res;
     }
@@ -102,11 +102,11 @@ public class VUserController {
     VUser user = userDao.findUserByUserAccount(account);
     if (user == null) {
       res.setMessage("账号不存在");
-      res.setCode(ResponseCodeConstants.FAIL);
+      res.setCode(ResponseCode.FAIL);
       return res;
     }
     if (!user.checkPassword(password)) {
-      res.setCode(ResponseCodeConstants.FAIL);
+      res.setCode(ResponseCode.FAIL);
       res.setMessage("密码错误");
       return res;
     }
@@ -128,13 +128,13 @@ public class VUserController {
      */
     Response res = new Response();
     if (account.length() < 10) {
-      res.setCode(ResponseCodeConstants.FAIL);
+      res.setCode(ResponseCode.FAIL);
       res.setMessage("账号长度小于10");
       return res;
     }
     VUser vUser = userDao.findUserByUserAccount(account);
     if (vUser == null) {
-      res.setCode(ResponseCodeConstants.FAIL);
+      res.setCode(ResponseCode.FAIL);
       res.setMessage("该用户不存在");
       return res;
     }
@@ -157,7 +157,7 @@ public class VUserController {
 
     Response res = new Response();
     if (map.get("account") == null) {
-      res.setCode(ResponseCodeConstants.FAIL);
+      res.setCode(ResponseCode.FAIL);
       res.setMessage("account is required");
       return res;
     }
@@ -177,7 +177,7 @@ public class VUserController {
     VUser vuser = userDao.findUserByUserAccount(account);
 
     if (vuser == null) {
-      res.setCode(ResponseCodeConstants.FAIL);
+      res.setCode(ResponseCode.FAIL);
       res.setMessage("该用户不存在");
       return res;
     }
@@ -202,7 +202,7 @@ public class VUserController {
     Response res = new Response();
 
     if (map.get("account") == null) {
-      res.setCode(ResponseCodeConstants.FAIL);
+      res.setCode(ResponseCode.FAIL);
       res.setMessage("account is required");
       return res;
     }
@@ -215,25 +215,25 @@ public class VUserController {
     VUser vuser = userDao.findUserByUserAccount(account);
 
     if (vuser == null) {
-      res.setCode(ResponseCodeConstants.FAIL);
+      res.setCode(ResponseCode.FAIL);
       res.setMessage("该用户不存在");
       return res;
     }
 
     if (newPassword.length() < 6) {
-      res.setData(ResponseCodeConstants.ERROR);
+      res.setData(ResponseCode.ERROR);
       res.setMessage("请确保新密码长度大于或等于6");
       return res;
     }
 
     if (!vuser.checkPassword(oldPassword)) {
-      res.setCode(ResponseCodeConstants.ERROR);
+      res.setCode(ResponseCode.ERROR);
       res.setMessage("请输入正确密码");
       return res;
     }
 
     if (!newPassword.equals(reNewPassword)) {
-      res.setData(ResponseCodeConstants.ERROR);
+      res.setData(ResponseCode.ERROR);
       res.setMessage("请确保两次新密码输入一致");
       return res;
     }
