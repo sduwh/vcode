@@ -53,6 +53,9 @@ public class Problem implements Serializable {
   @Field("memory_limit")
   private String memoryLimit;
 
+  @Field("difficulty")
+  private int difficulty;  // 0 => low; 1 => mid; 2 => height;
+
   public ObjectId getId() {
     return id;
   }
@@ -146,6 +149,18 @@ public class Problem implements Serializable {
 
   public void setMemoryLimit(String memoryLimit) {
     this.memoryLimit = memoryLimit;
+  }
+
+  public int getDifficulty() {
+    return difficulty;
+  }
+
+  public void setDifficulty(int difficulty) {
+    if (difficulty == 0 || difficulty == 1 || difficulty == 2) {
+      this.difficulty = difficulty;
+    } else {
+      this.difficulty = 1;
+    }
   }
 
   public Update getUpdateData() {
