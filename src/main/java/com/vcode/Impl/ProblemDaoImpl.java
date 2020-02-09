@@ -31,7 +31,7 @@ public class ProblemDaoImpl implements ProblemDao {
     // 只能编辑非爬虫获取的的题目
     if (problem.getOrigin().equals("vcode")) {
       Query query = new Query(Criteria.where("id").is(problem.getId()));
-      Update update = new Update().set("nickname", problem.getUpdateData());
+      Update update = new Update().push("$set", problem.getUpdateData());
       mongoTemplate.updateFirst(query, update, Problem.class);
     }
   }

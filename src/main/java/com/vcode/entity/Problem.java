@@ -20,6 +20,9 @@ public class Problem implements Serializable {
   @Id
   private ObjectId id;
 
+  @Field("create_time")
+  private long create_time;
+
   @Field("origin")
   private String origin;
 
@@ -30,7 +33,7 @@ public class Problem implements Serializable {
   private String title;
 
   @Field("description")
-  private String Description;
+  private String description;
 
   @Field("input")
   private String input; // 输入描述
@@ -55,6 +58,23 @@ public class Problem implements Serializable {
 
   @Field("difficulty")
   private int difficulty;  // 0 => low; 1 => mid; 2 => height;
+
+  public Problem(String origin, String originId, String title, String description, String input, String output, String sampleInput, String sampleOutput, String author, String timeLimit, String memoryLimit, int difficulty) {
+    this.origin = origin;
+    this.originId = originId;
+    this.title = title;
+    this.description = description;
+    this.input = input;
+    this.output = output;
+    this.sampleInput = sampleInput;
+    this.sampleOutput = sampleOutput;
+    this.author = author;
+    this.timeLimit = timeLimit;
+    this.memoryLimit = memoryLimit;
+    this.difficulty = difficulty;
+
+    this.create_time = System.currentTimeMillis();
+  }
 
   public ObjectId getId() {
     return id;
@@ -85,11 +105,11 @@ public class Problem implements Serializable {
   }
 
   public String getDescription() {
-    return Description;
+    return description;
   }
 
   public void setDescription(String description) {
-    Description = description;
+    this.description = description;
   }
 
   public String getInput() {
@@ -161,6 +181,10 @@ public class Problem implements Serializable {
     } else {
       this.difficulty = 1;
     }
+  }
+
+  public long getCreate_time() {
+    return create_time;
   }
 
   public Update getUpdateData() {

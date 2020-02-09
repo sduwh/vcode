@@ -1,9 +1,11 @@
 package com.vcode.entity;
 
+import com.vcode.common.SubmissionResultCode;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.query.Update;
 
 import java.util.Date;
 
@@ -20,7 +22,7 @@ public class Submission {
   private ObjectId id;
 
   @Field("create_time")
-  private Date createTime;
+  private long createTime; // 提交时间戳
 
   @Field("user_account")
   private String user_account;
@@ -35,7 +37,7 @@ public class Submission {
   private String problemOriginId;
 
   @Field("time")
-  private String time;
+  private String time; // 代码耗时
 
   @Field("memory")
   private String memory;
@@ -45,4 +47,121 @@ public class Submission {
 
   @Field("code")
   private String code;
+
+  @Field("result")
+  private int result; // 0 => wrong; 1 => success; 2 => time_out; 3 => memory_out; 4 => unknown_error; 5 => padding
+
+  public Submission() {
+    this.createTime = System.currentTimeMillis();
+    this.result = SubmissionResultCode.PADDING;
+    this.time = null;
+    this.memory = null;
+  }
+
+  public Submission(String user_account,
+                    String nickname,
+                    String problemTitle,
+                    String problemOriginId,
+                    String language,
+                    String code) {
+    this.user_account = user_account;
+    this.nickname = nickname;
+    this.problemTitle = problemTitle;
+    this.problemOriginId = problemOriginId;
+    this.language = language;
+    this.code = code;
+
+    this.createTime = System.currentTimeMillis();
+    this.result = SubmissionResultCode.PADDING;
+    this.time = null;
+    this.memory = null;
+  }
+
+  public ObjectId getId() {
+    return id;
+  }
+
+  public long getCreateTime() {
+    return createTime;
+  }
+
+  public String getUser_account() {
+    return user_account;
+  }
+
+  public void setUser_account(String user_account) {
+    this.user_account = user_account;
+  }
+
+  public String getNickname() {
+    return nickname;
+  }
+
+  public void setNickname(String nickname) {
+    this.nickname = nickname;
+  }
+
+  public String getProblemTitle() {
+    return problemTitle;
+  }
+
+  public void setProblemTitle(String problemTitle) {
+    this.problemTitle = problemTitle;
+  }
+
+  public String getProblemOriginId() {
+    return problemOriginId;
+  }
+
+  public void setProblemOriginId(String problemOriginId) {
+    this.problemOriginId = problemOriginId;
+  }
+
+  public String getTime() {
+    return time;
+  }
+
+  public void setTime(String time) {
+    this.time = time;
+  }
+
+  public String getMemory() {
+    return memory;
+  }
+
+  public void setMemory(String memory) {
+    this.memory = memory;
+  }
+
+  public String getLanguage() {
+    return language;
+  }
+
+  public void setLanguage(String language) {
+    this.language = language;
+  }
+
+  public String getCode() {
+    return code;
+  }
+
+  public void setCode(String code) {
+    this.code = code;
+  }
+
+  public int getResult() {
+    return result;
+  }
+
+  public void setResult(String result) {
+    this.result = SubmissionResultCode.ResultStrToInt(result);
+  }
+
+  public Update getUpdateData() {
+    Update update = new Update();
+    update.set("time", this.getTime())
+            .set("memory", this.getMemory())
+            .set("result", this.getResult());
+    return update;
+  }
 }
