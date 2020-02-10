@@ -1,5 +1,6 @@
 package com.vcode.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -17,6 +18,8 @@ import java.util.Date;
  */
 @Document("contest")
 public class Contest {
+
+  @JsonIgnore
   @Id
   private ObjectId id;
 

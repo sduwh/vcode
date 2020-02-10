@@ -1,5 +1,6 @@
 package com.vcode.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vcode.common.SubmissionResultCode;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -18,6 +19,7 @@ import java.util.Date;
  */
 @Document("submission")
 public class Submission {
+  @JsonIgnore
   @Id
   private ObjectId id;
 
@@ -157,6 +159,7 @@ public class Submission {
     this.result = SubmissionResultCode.ResultStrToInt(result);
   }
 
+  @JsonIgnore
   public Update getUpdateData() {
     Update update = new Update();
     update.set("time", this.getTime())
