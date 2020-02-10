@@ -1,11 +1,15 @@
 package com.vcode.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.query.Update;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -17,42 +21,76 @@ import java.io.Serializable;
  */
 @Document("problem")
 public class Problem implements Serializable {
+  @JsonIgnore
   @Id
   private ObjectId id;
 
   @Field("create_time")
   private long create_time;
 
+  @NotEmpty(message = "origin不能为空")
+  @NotBlank(message = "origin不能为空格字符串")
+  @NotNull(message = "origin不能为null")
   @Field("origin")
   private String origin;
 
+  @NotEmpty(message = "origin_id不能为空")
+  @NotBlank(message = "origin_id不能为空格字符串")
+  @NotNull(message = "origin_id不能为null")
   @Field("origin_id")
   private String originId;
 
+  @NotEmpty(message = "title不能为空")
+  @NotBlank(message = "title不能为空格字符串")
+  @NotNull(message = "title不能为null")
   @Field("title")
   private String title;
 
+  @NotEmpty(message = "description不能为空")
+  @NotBlank(message = "description不能为空格字符串")
+  @NotNull(message = "description不能为null")
   @Field("description")
   private String description;
 
+  @NotEmpty(message = "input不能为空")
+  @NotBlank(message = "input不能为空格字符串")
+  @NotNull(message = "input不能为null")
   @Field("input")
   private String input; // 输入描述
 
+  @NotEmpty(message = "output不能为空")
+  @NotBlank(message = "output不能为空格字符串")
+  @NotNull(message = "output不能为null")
   @Field("output")
   private String output; // 输出描述
 
+  @NotEmpty(message = "sample_input不能为空")
+  @NotBlank(message = "sample_input不能为空格字符串")
+  @NotNull(message = "sample_input不能为null")
   @Field("sample_input")
   private String sampleInput;
 
+  @NotEmpty(message = "sample_output不能为空")
+  @NotBlank(message = "sample_output不能为空格字符串")
+  @NotNull(message = "sample_output不能为null")
   @Field("sample_output")
   private String sampleOutput;
 
+  @NotEmpty(message = "author不能为空")
+  @NotBlank(message = "author不能为空格字符串")
+  @NotNull(message = "author不能为null")
   @Field("author")
   private String author;
 
+  @NotEmpty(message = "time_limit不能为空")
+  @NotBlank(message = "time_limit不能为空格字符串")
+  @NotNull(message = "time_limit不能为null")
   @Field("time_limit")
   private String timeLimit;
 
+  @NotEmpty(message = "memory_limit不能为空")
+  @NotBlank(message = "memory_limit不能为空格字符串")
+  @NotNull(message = "memory_limit不能为null")
   @Field("memory_limit")
   private String memoryLimit;
 
@@ -93,7 +131,7 @@ public class Problem implements Serializable {
   }
 
   public void setOriginId(String originId) {
-    this.originId = this.origin + originId;
+    this.originId = this.origin + '-' +  originId;
   }
 
   public String getTitle() {
@@ -187,6 +225,7 @@ public class Problem implements Serializable {
     return create_time;
   }
 
+  @JsonIgnore
   public Update getUpdateData() {
     Update update = new Update();
     update.set("title", this.getTitle())

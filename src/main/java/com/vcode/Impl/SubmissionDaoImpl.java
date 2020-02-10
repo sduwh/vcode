@@ -28,7 +28,7 @@ public class SubmissionDaoImpl implements SubmissionDao {
   @Override
   public void updateSubmission(Submission submission) {
     Query query = new Query(Criteria.where("id").is(submission.getId()));
-    Update update = new Update().push("$set", submission.getUpdateData());
+    Update update = submission.getUpdateData();
     mongoTemplate.updateFirst(query, update, Submission.class);
   }
 }

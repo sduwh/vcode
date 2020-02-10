@@ -27,12 +27,12 @@ public class ContestDapImpl implements ContestDao {
   @Override
   public void updateContest(Contest contest) {
     Query query = new Query(Criteria.where("id").is(contest.getId()));
-    Update update = new Update().push("$set", contest.getUpdateData());
+    Update update = contest.getUpdateData();
     mongoTemplate.updateFirst(query, update, Contest.class);
   }
 
   @Override
-  public void DeleteContestByName(String Name) {
+  public void deleteContestByName(String Name) {
     Query query = new Query(Criteria.where("name").is(Name));
     mongoTemplate.remove(query, Contest.class);
   }

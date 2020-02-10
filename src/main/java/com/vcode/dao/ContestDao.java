@@ -14,6 +14,6 @@ public interface ContestDao {
   // 传入最新数据的实体即可
   void updateContest(Contest contest);
 
-  void DeleteContestByName(String Name);
+  void deleteContestByName(String Name);
 
 }
