@@ -27,14 +27,22 @@ public class ProblemController {
   @GetMapping("/list")
   public Response getProblemList(@RequestParam(value = "page") int page,
                                  @RequestParam(value = "size") int size) {
+
+    /**
+     * @Description 获取problems列表
+     * @Date 2020/2/11 15:33
+     * @param page 页码
+     * @param size 一页的容量
+     * @return com.vcode.entity.Response
+     */
     Response response = new Response();
-    System.out.println(page);
     if (page < 1 || size < 1) {
       response.setCode(ResponseCode.ERROR);
       response.setMessage("page or size must be greater than zero");
       return response;
     }
-
+    // 数据库中的分页从0开始
+    page--;
     List<Problem> problemList = problemDao.findProblemsByPageAndSize(page, size);
     response.setData(problemList);
     return response;
@@ -42,6 +50,12 @@ public class ProblemController {
 
   @GetMapping("/detail")
   public Response getProblemDetail(@RequestParam(value = "originId") String originId) {
+    /**
+     * @Description 获取problems的详情
+     * @Date 2020/2/11 15:34
+     * @param originId problem的唯一标示
+     * @return com.vcode.entity.Response
+     */
     Response response = new Response();
     if (originId == null || originId.length() == 0) {
       response.setCode(ResponseCode.ERROR);
@@ -60,6 +74,12 @@ public class ProblemController {
 
   @PostMapping("/edit")
   public Response editProblem(@RequestBody @Valid Problem problem) {
+    /**
+     * @Description 编辑problem的信息
+     * @Date 2020/2/11 15:35
+     * @param problem problem的字段
+     * @return com.vcode.entity.Response
+     */
     Response res = new Response();
     if (problemDao.isExist(problem)) {
       problemDao.updateProblem(problem);
@@ -72,6 +92,12 @@ public class ProblemController {
 
   @PostMapping("/create")
   public Response createProblem(@RequestBody @Valid Problem problem) {
+    /**
+     * @Description 创建problem的信息
+     * @Date 2020/2/11 15:36
+     * @param problem problem的字段
+     * @return com.vcode.entity.Response
+     */
     Response res = new Response();
     if (problemDao.isExist(problem)) {
       res.setCode(ResponseCode.FAIL);
@@ -85,8 +111,14 @@ public class ProblemController {
     return res;
   }
 
-  @PostMapping("/delete")
+  @DeleteMapping("/delete")
   public Response deleteProblemByOriginId(@RequestBody Map<String, String> map) {
+    /**
+     * @Description 根据OriginId删除problem
+     * @Date 2020/2/11 15:36
+     * @param map 用于获取 originId
+     * @return com.vcode.entity.Response
+     */
     Response res = new Response();
     String originId = map.get("originId");
     if (originId == null) {

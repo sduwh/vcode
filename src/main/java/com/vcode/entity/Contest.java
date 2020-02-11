@@ -7,6 +7,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.query.Update;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
@@ -23,18 +26,31 @@ public class Contest {
   @Id
   private ObjectId id;
 
+  @NotEmpty(message = "name不能为空")
+  @NotBlank(message = "name不能为空格字符串")
+  @NotNull(message = "name不能为null")
   @Field("name")
   private String name;
 
+  @NotEmpty(message = "always不能为空")
+  @NotBlank(message = "always不能为空格字符串")
+  @NotNull(message = "always不能为null")
   @Field("always")
   private boolean always; // true => 永久开放；false => 限时开放；
 
+  @NotEmpty(message = "start_time不能为空")
+  @NotBlank(message = "start_time不能为空格字符串")
   @Field("start_time")
   private Date startTime;
 
+  @NotEmpty(message = "end_time不能为空")
+  @NotBlank(message = "end_time不能为空格字符串")
   @Field("end_time")
   private Date endTime;
 
+  @NotEmpty(message = "owner_account不能为空")
+  @NotBlank(message = "owner_account不能为空格字符串")
+  @NotNull(message = "owner_account不能为null")
   @Field("owner_account")
   private String owner_account;
 
