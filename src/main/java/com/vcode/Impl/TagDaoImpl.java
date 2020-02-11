@@ -9,6 +9,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class TagDaoImpl implements TagDao {
 
@@ -21,7 +23,7 @@ public class TagDaoImpl implements TagDao {
   }
 
   @Override
-  public Tag findUserByUserName(String name) {
+  public Tag findTagByName(String name) {
     Query query = new Query(Criteria.where("name").is(name));
     return mongoTemplate.findOne(query, Tag.class);
   }
@@ -38,4 +40,17 @@ public class TagDaoImpl implements TagDao {
     Query query = new Query(Criteria.where("name").is(name));
     mongoTemplate.remove(query, Tag.class);
   }
+
+  @Override
+  public boolean isExist(Tag tag){
+    Tag t = findTagByName(tag.getName());
+    return t !=null;
+  }
+
+  @Override
+  public List<Tag> findAll() {
+    return mongoTemplate.findAll(Tag.class);
+  }
+
+
 }
