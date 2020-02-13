@@ -22,4 +22,6 @@ public interface ProblemDao {
 
   List<Problem> findProblemsByPageAndSize(int page, int size);
 
+  Long count();
+
 }

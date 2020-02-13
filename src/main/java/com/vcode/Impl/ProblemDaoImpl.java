@@ -59,4 +59,9 @@ public class ProblemDaoImpl implements ProblemDao {
     query.with(pageableRequest);
     return mongoTemplate.find(query, Problem.class);
   }
+
+  @Override
+  public Long count() {
+    return mongoTemplate.count(new Query(), Problem.class);
+  }
 }

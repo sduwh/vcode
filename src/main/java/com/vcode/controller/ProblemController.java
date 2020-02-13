@@ -11,6 +11,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -44,7 +45,10 @@ public class ProblemController {
     // 数据库中的分页从0开始
     page--;
     List<Problem> problemList = problemDao.findProblemsByPageAndSize(page, size);
-    response.setData(problemList);
+    HashMap<String, Object> resMap = new HashMap<>();
+    resMap.put("problem_list", problemList);
+    resMap.put("total", problemDao.count());
+    response.setData(resMap);
     return response;
   }
 

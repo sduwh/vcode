@@ -7,6 +7,7 @@ public class SubmissionResultCode {
   static final public int MEMORY_OUT = 3;
   static final public int UNKNOWN_ERROR = 4;
   static final public int PADDING = 5;
+  static final public int COMPILE_ERROR = 5;
 
   static public int ResultStrToInt(String result) {
     int res;
@@ -25,6 +26,9 @@ public class SubmissionResultCode {
         break;
       case "padding":
         res = PADDING;
+        break;
+      case "compile_error":
+        res = COMPILE_ERROR;
         break;
       default:
         res = UNKNOWN_ERROR;

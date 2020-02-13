@@ -97,6 +97,12 @@ public class Problem implements Serializable {
   @Field("difficulty")
   private int difficulty;  // 0 => low; 1 => mid; 2 => height;
 
+  @Field("submission_number")
+  private long submissionNumber;
+
+  @Field("accepted_number")
+  private long acceptedNumber;
+
   public Problem(String origin, String originId, String title, String description, String input, String output, String sampleInput, String sampleOutput, String author, String timeLimit, String memoryLimit, int difficulty) {
     this.origin = origin;
     this.originId = originId;
@@ -223,6 +229,22 @@ public class Problem implements Serializable {
 
   public long getCreate_time() {
     return create_time;
+  }
+
+  public long getSubmissionNumber() {
+    return submissionNumber;
+  }
+
+  public void setSubmissionNumber(long submissionNumber) {
+    this.submissionNumber = submissionNumber;
+  }
+
+  public long getAcceptedNumber() {
+    return acceptedNumber;
+  }
+
+  public void setAcceptedNumber(long acceptedNumber) {
+    this.acceptedNumber = acceptedNumber;
   }
 
   @JsonIgnore

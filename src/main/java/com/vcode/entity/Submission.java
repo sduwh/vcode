@@ -50,8 +50,9 @@ public class Submission {
   @Field("code")
   private String code;
 
+  // 0 => wrong; 1 => success; 2 => time_out; 3 => memory_out; 4 => unknown_error; 5 => padding; 6 => compile error
   @Field("result")
-  private int result; // 0 => wrong; 1 => success; 2 => time_out; 3 => memory_out; 4 => unknown_error; 5 => padding
+  private int result;
 
   public Submission() {
     this.createTime = System.currentTimeMillis();
