@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -40,8 +41,11 @@ public class ContestController {
       return response;
     }
     page--;
-    List<Contest> problemList = contestDao.findContestsByPageAndSize(page, size);
-    response.setData(problemList);
+    HashMap<String, Object> resMap = new HashMap<>();
+    List<Contest> contestList = contestDao.findContestsByPageAndSize(page, size);
+    resMap.put("contestList", contestList);
+    resMap.put("total", contestDao.count());
+    response.setData(resMap);
     return response;
   }
 
@@ -78,11 +82,11 @@ public class ContestController {
      * @return com.vcode.entity.Response
      */
     Response response = new Response();
-    if (contestDao.isExist(contest.getName())) {
-      response.setCode(ResponseCode.FAIL);
-      response.setMessage("contest已存在");
-      return response;
-    }
+//    if (contestDao.isExist(contest.getName())) {
+//      response.setCode(ResponseCode.FAIL);
+//      response.setMessage("contest已存在");
+//      return response;
+//    }
     contestDao.saveContest(contest);
     return response;
   }

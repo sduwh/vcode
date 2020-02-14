@@ -11,6 +11,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.LinkedList;
 
 /**
  * @author moyee
@@ -32,19 +33,15 @@ public class Contest {
   @Field("name")
   private String name;
 
-  @NotEmpty(message = "always不能为空")
-  @NotBlank(message = "always不能为空格字符串")
   @NotNull(message = "always不能为null")
   @Field("always")
   private boolean always; // true => 永久开放；false => 限时开放；
 
-  @NotEmpty(message = "start_time不能为空")
-  @NotBlank(message = "start_time不能为空格字符串")
+  @NotNull(message = "start_time不能为null")
   @Field("start_time")
   private Date startTime;
 
-  @NotEmpty(message = "end_time不能为空")
-  @NotBlank(message = "end_time不能为空格字符串")
+  @NotNull(message = "end_time不能为null")
   @Field("end_time")
   private Date endTime;
 
@@ -52,14 +49,36 @@ public class Contest {
   @NotBlank(message = "owner_account不能为空格字符串")
   @NotNull(message = "owner_account不能为null")
   @Field("owner_account")
-  private String owner_account;
+  private String ownerAccount;
 
-  public Contest(String name, boolean always, Date startTime, Date endTime, String owner_account) {
+  @NotEmpty(message = "contestType不能为空")
+  @NotBlank(message = "contestType不能为空格字符串")
+  @NotNull(message = "contestType不能为null")
+  @Field("contest_type")
+  private String contestType; // nomal, password
+
+
+  @Field("password")
+  private String password;
+
+  @Field("problems")
+  private LinkedList<ObjectId> problems;  // 存放所有此tag下的问题ObjectId
+
+  public Contest(String name,
+                 boolean always,
+                 Date startTime,
+                 Date endTime,
+                 String ownerAccount,
+                 String contestType,
+                 String password) {
     this.name = name;
     this.always = always;
     this.startTime = startTime;
     this.endTime = endTime;
-    this.owner_account = owner_account;
+    this.ownerAccount = ownerAccount;
+    this.problems = new LinkedList<>();
+    this.contestType = contestType;
+    this.password = password;
   }
 
   public ObjectId getId() {
@@ -98,16 +117,36 @@ public class Contest {
     this.endTime = endTime;
   }
 
-  public String getOwner_account() {
-    return owner_account;
+  public String getOwnerAccount() {
+    return ownerAccount;
   }
 
-  public void setOwner_account(String owner_account) {
-    this.owner_account = owner_account;
+  public void setOwnerAccount(String ownerAccount) {
+    this.ownerAccount = ownerAccount;
   }
 
   public boolean checkOwner(String owner_account) {
-    return this.owner_account.equals(owner_account);
+    return this.ownerAccount.equals(owner_account);
+  }
+
+  public LinkedList<ObjectId> getProblems() {
+    return problems;
+  }
+
+  public String getContestType() {
+    return contestType;
+  }
+
+  public void setContestType(String contestType) {
+    this.contestType = contestType;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
   }
 
   public Update getUpdateData() {
@@ -115,7 +154,9 @@ public class Contest {
     update.set("name", this.getName())
             .set("always", this.isAlways())
             .set("startTime", this.getStartTime())
-            .set("endTime", this.getEndTime());
+            .set("endTime", this.getEndTime())
+            .set("contest_type", this.getContestType())
+            .set("password", this.getPassword());
     return update;
   }
 }

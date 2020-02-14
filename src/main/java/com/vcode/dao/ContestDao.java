@@ -21,4 +21,6 @@ public interface ContestDao {
   List<Contest> findContestsByPageAndSize(int page, int size);
 
   boolean isExist(String contestName);
+
+  Long count();
 }

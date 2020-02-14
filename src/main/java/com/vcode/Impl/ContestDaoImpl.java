@@ -57,4 +57,9 @@ public class ContestDaoImpl implements ContestDao {
     Contest contest = mongoTemplate.findOne(query, Contest.class);
     return contest != null;
   }
+
+  @Override
+  public Long count() {
+    return mongoTemplate.count(new Query(), Contest.class);
+  }
 }
