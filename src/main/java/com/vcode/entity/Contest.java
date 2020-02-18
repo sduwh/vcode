@@ -51,11 +51,9 @@ public class Contest {
   @Field("owner_account")
   private String ownerAccount;
 
-  @NotEmpty(message = "contestType不能为空")
-  @NotBlank(message = "contestType不能为空格字符串")
   @NotNull(message = "contestType不能为null")
-  @Field("contest_type")
-  private String contestType; // nomal, password
+  @Field("is_lock")
+  private Boolean isLock; // true => lock
 
 
   @Field("password")
@@ -69,7 +67,7 @@ public class Contest {
                  Date startTime,
                  Date endTime,
                  String ownerAccount,
-                 String contestType,
+                 boolean isLock,
                  String password) {
     this.name = name;
     this.always = always;
@@ -77,7 +75,7 @@ public class Contest {
     this.endTime = endTime;
     this.ownerAccount = ownerAccount;
     this.problems = new LinkedList<>();
-    this.contestType = contestType;
+    this.isLock = isLock;
     this.password = password;
   }
 
@@ -133,12 +131,12 @@ public class Contest {
     return problems;
   }
 
-  public String getContestType() {
-    return contestType;
+  public Boolean getLock() {
+    return isLock;
   }
 
-  public void setContestType(String contestType) {
-    this.contestType = contestType;
+  public void setLock(Boolean lock) {
+    isLock = lock;
   }
 
   public String getPassword() {
@@ -153,9 +151,9 @@ public class Contest {
     Update update = new Update();
     update.set("name", this.getName())
             .set("always", this.isAlways())
-            .set("startTime", this.getStartTime())
-            .set("endTime", this.getEndTime())
-            .set("contest_type", this.getContestType())
+            .set("start_time", this.getStartTime())
+            .set("end_time", this.getEndTime())
+            .set("is_lock", this.getLock())
             .set("password", this.getPassword());
     return update;
   }
