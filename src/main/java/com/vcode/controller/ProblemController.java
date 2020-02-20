@@ -27,13 +27,15 @@ public class ProblemController {
 
   @GetMapping("/list")
   public Response getProblemList(@RequestParam(value = "page") int page,
-                                 @RequestParam(value = "size") int size) {
+                                 @RequestParam(value = "size") int size,
+                                 @RequestParam(value = "search") String search) {
 
     /**
      * @Description 获取problems列表
      * @Date 2020/2/11 15:33
      * @param page 页码
      * @param size 一页的容量
+     * @param search 查询条件
      * @return com.vcode.entity.Response
      */
     Response response = new Response();
@@ -44,10 +46,10 @@ public class ProblemController {
     }
     // 数据库中的分页从0开始
     page--;
-    List<Problem> problemList = problemDao.findProblemsByPageAndSize(page, size);
+    List<Problem> problemList = problemDao.findProblems(page, size, search);
     HashMap<String, Object> resMap = new HashMap<>();
     resMap.put("problem_list", problemList);
-    resMap.put("total", problemDao.count());
+    resMap.put("total", problemDao.count(search));
     response.setData(resMap);
     return response;
   }

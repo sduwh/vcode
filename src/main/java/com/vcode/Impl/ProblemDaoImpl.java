@@ -2,10 +2,12 @@ package com.vcode.Impl;
 
 import com.vcode.dao.ProblemDao;
 import com.vcode.entity.Problem;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -53,15 +55,28 @@ public class ProblemDaoImpl implements ProblemDao {
   }
 
   @Override
-  public List<Problem> findProblemsByPageAndSize(int page, int size) {
+  public List<Problem> findProblems(int page, int size, String search) {
     Pageable pageableRequest = PageRequest.of(page, size);
     Query query = new Query();
+    if (search.length() > 0) {
+      query.addCriteria(Criteria.where("title").regex(".*" + search + ".*"));
+    }
     query.with(pageableRequest);
     return mongoTemplate.find(query, Problem.class);
   }
 
   @Override
-  public Long count() {
-    return mongoTemplate.count(new Query(), Problem.class);
+  public Long count(String search) {
+    Query query = new Query();
+    if (search.length() > 0) {
+      query.addCriteria(Criteria.where("title").regex(".*" + search + ".*"));
+    }
+    return mongoTemplate.count(query, Problem.class);
+  }
+
+  @Override
+  public List<Problem> getAllProblems(List<ObjectId> problemIds) {
+    Query query = new Query(Criteria.where("id").in(problemIds));
+    return mongoTemplate.find(query, Problem.class);
   }
 }

@@ -1,6 +1,7 @@
 package com.vcode.dao;
 
 import com.vcode.entity.Problem;
+import org.bson.types.ObjectId;
 
 import java.util.List;
 
@@ -20,8 +21,10 @@ public interface ProblemDao {
 
   boolean isExist(Problem problem);
 
-  List<Problem> findProblemsByPageAndSize(int page, int size);
+  List<Problem> findProblems(int page, int size, String search);
 
-  Long count();
+  Long count(String search);
+
+  List<Problem> getAllProblems(List<ObjectId> problemIds);
 
 }

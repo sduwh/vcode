@@ -1,6 +1,7 @@
 package com.vcode.dao;
 
 import com.vcode.entity.Contest;
+import com.vcode.entity.Problem;
 
 import java.util.List;
 
@@ -18,9 +19,13 @@ public interface ContestDao {
 
   void deleteContestByName(String Name);
 
-  List<Contest> findContestsByPageAndSize(int page, int size);
+  List<Contest> findContests(int page, int size, String search);
 
-  boolean isExist(String contestName);
+  boolean isExist(Contest contest);
 
-  Long count();
+  Long count(String search);
+
+  void addProblem(Contest contest, Problem problem);
+
+  void removeProblem(Contest contest, Problem problem);
 }

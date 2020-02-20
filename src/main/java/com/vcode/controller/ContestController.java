@@ -1,15 +1,19 @@
 package com.vcode.controller;
 
 import com.vcode.Impl.ContestDaoImpl;
+import com.vcode.Impl.ProblemDaoImpl;
 import com.vcode.common.ResponseCode;
 import com.vcode.entity.Contest;
+import com.vcode.entity.Problem;
 import com.vcode.entity.Response;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -21,17 +25,22 @@ public class ContestController {
   @Autowired
   private ContestDaoImpl contestDao;
 
+  @Autowired
+  private ProblemDaoImpl problemDao;
+
   private Logger log = Logger.getLogger("ContestController");
 
   @GetMapping("/list")
   public Response getContestsList(@RequestParam(value = "page") int page,
-                                  @RequestParam(value = "size") int size) {
+                                  @RequestParam(value = "size") int size,
+                                  @RequestParam(value = "search") String search) {
 
     /**
      * @Description 获取contest列表
      * @Date 2020/2/11 15:33
      * @param page 页码
      * @param size 一页的容量
+     * @param search 查询条件
      * @return com.vcode.entity.Response
      */
     Response response = new Response();
@@ -42,9 +51,9 @@ public class ContestController {
     }
     page--;
     HashMap<String, Object> resMap = new HashMap<>();
-    List<Contest> contestList = contestDao.findContestsByPageAndSize(page, size);
+    List<Contest> contestList = contestDao.findContests(page, size, search);
     resMap.put("contestList", contestList);
-    resMap.put("total", contestDao.count());
+    resMap.put("total", contestDao.count(search));
     response.setData(resMap);
     return response;
   }
@@ -82,11 +91,11 @@ public class ContestController {
      * @return com.vcode.entity.Response
      */
     Response response = new Response();
-//    if (contestDao.isExist(contest.getName())) {
-//      response.setCode(ResponseCode.FAIL);
-//      response.setMessage("contest已存在");
-//      return response;
-//    }
+    if (contestDao.isExist(contest)) {
+      response.setCode(ResponseCode.FAIL);
+      response.setMessage("contest已存在");
+      return response;
+    }
     contestDao.saveContest(contest);
     return response;
   }
@@ -100,7 +109,7 @@ public class ContestController {
      * @return com.vcode.entity.Response
      */
     Response response = new Response();
-    if (contestDao.isExist(contest.getName())) {
+    if (contestDao.isExist(contest)) {
       contestDao.updateContest(contest);
       return response;
     }
@@ -109,7 +118,7 @@ public class ContestController {
     return response;
   }
 
-  @DeleteMapping("/delete")
+  @PostMapping("/delete")
   public Response delContest(@RequestBody Map<String, String> map) {
     /**
      * @Description 删除contest
@@ -125,6 +134,86 @@ public class ContestController {
       return response;
     }
     contestDao.deleteContestByName(contestName);
+    return response;
+  }
+
+  @GetMapping("/problems")
+  public Response problems(@RequestParam(value = "contestTitle") String name) {
+    Response response = new Response();
+
+    Contest contest = contestDao.findByName(name);
+    if (contest == null) {
+      response.setCode(ResponseCode.FAIL);
+      response.setMessage("此Contest不存在");
+      return response;
+    }
+
+    LinkedList<ObjectId> problemIds = contest.getProblems();
+    List<Problem> problems = problemDao.getAllProblems(problemIds);
+    HashMap<String, Object> map = new HashMap<>();
+    map.put("problems", problems);
+    response.setData(map);
+
+    return response;
+  }
+
+  @PostMapping("/problem")
+  public Response addProblem(@RequestBody Map<String, String> map) {
+    Response response = new Response();
+    // get params
+    String problemOriginId = map.get("problemOriginId");
+    String contestTitle = map.get("contestTitle");
+    if (contestTitle == null) {
+      response.setCode(ResponseCode.FAIL);
+      response.setMessage("contestTitle is required");
+      return response;
+    }
+    if (problemOriginId == null) {
+      response.setCode(ResponseCode.FAIL);
+      response.setMessage("problemOriginId is required");
+      return response;
+    }
+
+    // find Object
+    Contest contest = contestDao.findByName(contestTitle);
+    if (contest == null) {
+      response.setCode(ResponseCode.FAIL);
+      response.setMessage("contest不存在");
+      return response;
+    }
+
+    Problem problem = problemDao.findByOriginId(problemOriginId);
+    if (problem == null) {
+      response.setCode(ResponseCode.FAIL);
+      response.setMessage("problem不存在");
+      return response;
+    }
+
+    contestDao.addProblem(contest, problem);
+    return response;
+  }
+
+  @DeleteMapping("/problem")
+  public Response RemoveProblem(@RequestParam(value = "problemOriginId") String problemOriginId,
+                                @RequestParam(value = "contestTitle") String contestTitle) {
+
+    Response response = new Response();
+    // find Object
+    Contest contest = contestDao.findByName(contestTitle);
+    if (contest == null) {
+      response.setCode(ResponseCode.FAIL);
+      response.setMessage("contest不存在");
+      return response;
+    }
+
+    Problem problem = problemDao.findByOriginId(problemOriginId);
+    if (problem == null) {
+      response.setCode(ResponseCode.FAIL);
+      response.setMessage("problem不存在");
+      return response;
+    }
+
+    contestDao.removeProblem(contest, problem);
     return response;
   }
 }

@@ -37,11 +37,9 @@ public class Contest {
   @Field("always")
   private boolean always; // true => 永久开放；false => 限时开放；
 
-  @NotNull(message = "start_time不能为null")
   @Field("start_time")
   private Date startTime;
 
-  @NotNull(message = "end_time不能为null")
   @Field("end_time")
   private Date endTime;
 
@@ -59,6 +57,7 @@ public class Contest {
   @Field("password")
   private String password;
 
+  @JsonIgnore
   @Field("problems")
   private LinkedList<ObjectId> problems;  // 存放所有此tag下的问题ObjectId
 
@@ -131,16 +130,16 @@ public class Contest {
     return problems;
   }
 
+  public void setProblems(LinkedList<ObjectId> problems) {
+    this.problems = problems;
+  }
+
   public Boolean getLock() {
     return isLock;
   }
 
   public void setLock(Boolean lock) {
     isLock = lock;
-  }
-
-  public String getPassword() {
-    return password;
   }
 
   public void setPassword(String password) {
@@ -154,7 +153,7 @@ public class Contest {
             .set("start_time", this.getStartTime())
             .set("end_time", this.getEndTime())
             .set("is_lock", this.getLock())
-            .set("password", this.getPassword());
+            .set("password", this.password);
     return update;
   }
 }
