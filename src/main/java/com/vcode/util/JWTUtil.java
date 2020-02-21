@@ -11,10 +11,10 @@ import java.util.logging.Logger;
 
 public class JWTUtil {
   private static final Logger log = Logger.getLogger("jwt");
-  
+
   // 有效时间120分钟
   private static final long EXPIRE_TIME = 120 * 60 * 1000;
-  
+
   /**
    * @param account 用户账号
    * @param secret  用户密码
@@ -30,7 +30,7 @@ public class JWTUtil {
             .withExpiresAt(date)
             .sign(algorithm);
   }
-  
+
   /**
    * @param token   加密token
    * @param account 用户账号
@@ -46,7 +46,7 @@ public class JWTUtil {
             .build();
     try {
       DecodedJWT jwt = jwtVerifier.verify(token);
-      if(jwt.getExpiresAt().before(new Date(System.currentTimeMillis()))){
+      if (jwt.getExpiresAt().before(new Date(System.currentTimeMillis()))) {
         // 时效已过期
         return false;
       }

@@ -42,9 +42,9 @@ public class TagDaoImpl implements TagDao {
   }
 
   @Override
-  public boolean isExist(Tag tag){
+  public boolean isExist(Tag tag) {
     Tag t = findTagByName(tag.getName());
-    return t !=null;
+    return t != null;
   }
 
   @Override

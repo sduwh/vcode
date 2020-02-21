@@ -22,9 +22,6 @@ public class ContestDaoImpl implements ContestDao {
   @Autowired
   private MongoTemplate mongoTemplate;
 
-  @Autowired
-  private ProblemDaoImpl problemDao;
-
   @Override
   public void saveContest(Contest contest) {
     mongoTemplate.save(contest);
@@ -89,6 +86,7 @@ public class ContestDaoImpl implements ContestDao {
       mongoTemplate.updateFirst(query, update, Contest.class);
     }
   }
+
   @Override
   public void removeProblem(Contest contest, Problem problem) {
     LinkedList<ObjectId> problemIds = contest.getProblems();

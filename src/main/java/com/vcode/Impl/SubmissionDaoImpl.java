@@ -1,9 +1,7 @@
 package com.vcode.Impl;
 
 import com.vcode.dao.SubmissionDao;
-import com.vcode.entity.Problem;
 import com.vcode.entity.Submission;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
