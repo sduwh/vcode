@@ -18,7 +18,7 @@ public class AboutDaoImpl implements AboutDao {
 
     @Override
     public void updateAbout(About about) {
-        ObjectId id=getAbout().getId();
+        ObjectId id = getAbout().getId();
         Query query = new Query(Criteria.where("id").is(id));
         Update update = new Update().set("doc", about.getDoc());
         mongoTemplate.updateFirst(query, update, About.class);

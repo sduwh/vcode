@@ -14,26 +14,27 @@ public class AboutController {
     private AboutDao aboutDao;
 
     @PostMapping("/doc")
-    public Response editDoc(@RequestParam(value = "doc")String doc){
+    public Response editDoc(@RequestParam(value = "doc") String doc) {
 
-        Response response=new Response();
+        Response response = new Response();
 
-        About about=new About(doc);
+        About about = new About(doc);
 
         aboutDao.updateAbout(about);
 
         return response;
     }
+
     @GetMapping("/doc")
-    public Response getDoc(){
+    public Response getDoc() {
 
-        Response response =new Response();
+        Response response = new Response();
 
-        if (!aboutDao.isExist()){
+        if (!aboutDao.isExist()) {
             response.setCode(ResponseCode.FAIL);
             response.setMessage("doc is not exist");
             response.setData(new String(""));
-        }else {
+        } else {
             response.setData(aboutDao.getAbout().getDoc());
         }
         return response;
