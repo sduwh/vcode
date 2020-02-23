@@ -4,13 +4,11 @@ import com.vcode.Impl.ProblemDaoImpl;
 import com.vcode.common.ResponseCode;
 import com.vcode.entity.Problem;
 import com.vcode.entity.Response;
+import com.vcode.util.TestCaseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Size;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,14 +103,27 @@ public class ProblemController {
      * @return com.vcode.entity.Response
      */
     Response res = new Response();
-    if (problemDao.isExist(problem)) {
-      res.setCode(ResponseCode.FAIL);
-      res.setMessage("此problem已存在");
-      return res;
-    }
     // 添加origin前缀
     problem.setOriginId(problem.getOriginId());
+
+    // check is this problem exist
+    if (problemDao.isExist(problem)) {
+      res.setCode(ResponseCode.FAIL);
+      res.setMessage("ID or Title is repeat");
+      return res;
+    }
+    // check testCaseId
+    if (!TestCaseHandler.isZipExist("/tmp/" + problem.getTestCaseId() + ".zip")) {
+      res.setCode(ResponseCode.FAIL);
+      res.setMessage("Test Case is need to upload");
+      return res;
+    }
+    // process testCaseFile
+
+
+
     problemDao.saveProblem(problem);
+    log.info(String.format("create problem: origin_id: %s, title: %s", problem.getOrigin(), problem.getTitle()));
     res.setData(problem);
     return res;
   }

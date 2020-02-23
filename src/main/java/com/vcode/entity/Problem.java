@@ -64,17 +64,14 @@ public class Problem implements Serializable {
   @Field("output")
   private String output; // 输出描述
 
-  @NotEmpty(message = "sample_input不能为空")
-  @NotBlank(message = "sample_input不能为空格字符串")
   @NotNull(message = "sample_input不能为null")
   @Field("sample_input")
-  private String sampleInput;
+  private String[] sampleInput;
 
-  @NotEmpty(message = "sample_output不能为空")
-  @NotBlank(message = "sample_output不能为空格字符串")
+
   @NotNull(message = "sample_output不能为null")
   @Field("sample_output")
-  private String sampleOutput;
+  private String[] sampleOutput;
 
   @NotEmpty(message = "author不能为空")
   @NotBlank(message = "author不能为空格字符串")
@@ -86,13 +83,24 @@ public class Problem implements Serializable {
   @NotBlank(message = "time_limit不能为空格字符串")
   @NotNull(message = "time_limit不能为null")
   @Field("time_limit")
-  private String timeLimit;
+  private String timeLimit; // ms
 
   @NotEmpty(message = "memory_limit不能为空")
   @NotBlank(message = "memory_limit不能为空格字符串")
   @NotNull(message = "memory_limit不能为null")
   @Field("memory_limit")
-  private String memoryLimit;
+  private String memoryLimit; // MB
+
+  @NotNull(message = "visible is required")
+  @Field("visible")
+  private boolean visible;
+
+  @NotNull(message = "languages is required")
+  @Field("languages")
+  private String[] languages;
+
+  @Field("hint")
+  private String hint;
 
   @Field("difficulty")
   private int difficulty;  // 0 => low; 1 => mid; 2 => height;
@@ -103,7 +111,33 @@ public class Problem implements Serializable {
   @Field("accepted_number")
   private long acceptedNumber;
 
-  public Problem(String origin, String originId, String title, String description, String input, String output, String sampleInput, String sampleOutput, String author, String timeLimit, String memoryLimit, int difficulty) {
+  @NotNull(message = "source is required")
+  @Field("source")
+  private String source;
+
+  @NotNull(message = "testCaseId is required")
+  @Field("test_case_id")
+  private String testCaseId;
+
+  public Problem(String origin,
+                 String originId,
+                 String title,
+                 String description,
+                 String input,
+                 String output,
+                 String[] sampleInput,
+                 String[] sampleOutput,
+                 String author,
+                 String timeLimit,
+                 String memoryLimit,
+                 boolean visible,
+                 String[] languages,
+                 String hint,
+                 int difficulty,
+                 long submissionNumber,
+                 long acceptedNumber,
+                 String source,
+                 String testCaseId) {
     this.origin = origin;
     this.originId = originId;
     this.title = title;
@@ -115,8 +149,14 @@ public class Problem implements Serializable {
     this.author = author;
     this.timeLimit = timeLimit;
     this.memoryLimit = memoryLimit;
+    this.visible = visible;
+    this.languages = languages;
+    this.hint = hint;
     this.difficulty = difficulty;
-
+    this.submissionNumber = submissionNumber;
+    this.acceptedNumber = acceptedNumber;
+    this.source = source;
+    this.testCaseId = testCaseId;
     this.create_time = System.currentTimeMillis();
   }
 
@@ -137,7 +177,7 @@ public class Problem implements Serializable {
   }
 
   public void setOriginId(String originId) {
-    this.originId = this.origin + '-' +  originId;
+    this.originId = this.origin + '-' + originId;
   }
 
   public String getTitle() {
@@ -172,19 +212,19 @@ public class Problem implements Serializable {
     this.output = output;
   }
 
-  public String getSampleInput() {
+  public String[] getSampleInput() {
     return sampleInput;
   }
 
-  public void setSampleInput(String sampleInput) {
+  public void setSampleInput(String[] sampleInput) {
     this.sampleInput = sampleInput;
   }
 
-  public String getSampleOutput() {
+  public String[] getSampleOutput() {
     return sampleOutput;
   }
 
-  public void setSampleOutput(String sampleOutput) {
+  public void setSampleOutput(String[] sampleOutput) {
     this.sampleOutput = sampleOutput;
   }
 
@@ -247,6 +287,46 @@ public class Problem implements Serializable {
     this.acceptedNumber = acceptedNumber;
   }
 
+  public boolean isVisible() {
+    return visible;
+  }
+
+  public void setVisible(boolean visible) {
+    this.visible = visible;
+  }
+
+  public String[] getLanguages() {
+    return languages;
+  }
+
+  public void setLanguages(String[] languages) {
+    this.languages = languages;
+  }
+
+  public String getHint() {
+    return hint;
+  }
+
+  public void setHint(String hint) {
+    this.hint = hint;
+  }
+
+  public String getSource() {
+    return source;
+  }
+
+  public void setSource(String source) {
+    this.source = source;
+  }
+
+  public String getTestCaseId() {
+    return testCaseId;
+  }
+
+  public void setTestCaseId(String testCaseId) {
+    this.testCaseId = testCaseId;
+  }
+
   @JsonIgnore
   public Update getUpdateData() {
     Update update = new Update();
@@ -258,7 +338,12 @@ public class Problem implements Serializable {
             .set("sample_output", this.getSampleOutput())
             .set("author", this.getOrigin())
             .set("time_limit", this.getTimeLimit())
-            .set("memory_limit", this.getMemoryLimit());
+            .set("memory_limit", this.getMemoryLimit())
+            .set("hint", this.hint)
+            .set("languages", this.languages)
+            .set("visible", this.visible)
+            .set("source", this.source)
+            .set("test_case_id", this.testCaseId);
     return update;
   }
 }
