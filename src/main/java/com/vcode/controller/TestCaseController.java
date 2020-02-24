@@ -1,8 +1,9 @@
 package com.vcode.controller;
 
+import com.vcode.Handler.TestCaseHandler;
 import com.vcode.common.ResponseCode;
 import com.vcode.entity.Response;
-import com.vcode.util.StringHandler;
+import com.vcode.util.StringUtil;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,6 +23,12 @@ public class TestCaseController {
 
   private Logger log = Logger.getLogger("TestCaseController");
 
+  /**
+   * @param file 1
+   * @return testCaseId(filename)
+   * @Description upload test-case file (zip)
+   * @Date 2020/2/24 12:37
+   */
   @PostMapping("/upload")
   public Response uploadTestCase(@RequestParam("file") MultipartFile file) {
     Response response = new Response();
@@ -32,20 +39,29 @@ public class TestCaseController {
       return response;
     }
     // get test_case_id
-    String testCaseId = StringHandler.generateRandomStr(16);
+    String testCaseId = StringUtil.generateRandomStr();
+    String zipFileFullPath = "/tmp/" + testCaseId + ".zip";
     // write file data
     try {
       byte[] bytes = file.getBytes();
-      Path path = Paths.get("/tmp/" + testCaseId + ".zip");
+      Path path = Paths.get(zipFileFullPath);
       Files.write(path, bytes);
     } catch (IOException e) {
       e.printStackTrace();
       log.warning("write test case data error");
+      response.setCode(ResponseCode.ERROR);
+      response.setError(e.toString());
+      return response;
     }
-    // return response
-    HashMap<String, Object> resData = new HashMap<>();
-    resData.put("testCaseId", testCaseId);
-    response.setData(resData);
+    String unzipResult = TestCaseHandler.processZipFile(zipFileFullPath, testCaseId, "/tmp");
+    if (unzipResult == null) {
+      HashMap<String, Object> resData = new HashMap<>();
+      resData.put("testCaseId", testCaseId);
+      response.setData(resData);
+    } else {
+      response.setCode(ResponseCode.FAIL);
+      response.setMessage(unzipResult);
+    }
     return response;
   }
 }
