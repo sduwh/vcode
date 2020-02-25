@@ -1,5 +1,7 @@
 package com.vcode.Impl;
 
+import com.vcode.Handler.TestCaseHandler;
+import com.vcode.config.TestCaseConfig;
 import com.vcode.dao.ProblemDao;
 import com.vcode.entity.Problem;
 import org.bson.types.ObjectId;
@@ -12,6 +14,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.List;
 
 @Component
@@ -19,6 +22,9 @@ public class ProblemDaoImpl implements ProblemDao {
 
   @Autowired
   private MongoTemplate mongoTemplate;
+
+  @Autowired
+  private TestCaseConfig testCaseConfig;
 
   @Override
   public void saveProblem(Problem problem) {
@@ -32,13 +38,28 @@ public class ProblemDaoImpl implements ProblemDao {
   }
 
   @Override
-  public void updateProblem(Problem problem) {
+  public String updateProblem(Problem problem) {
     // 只能编辑非爬虫获取的的题目
     if (problem.getOrigin().equals("vcode")) {
-      Query query = new Query(Criteria.where("id").is(problem.getId()));
-      Update update =problem.getUpdateData();
+      Problem p = findByOriginId(problem.getOriginId());
+      if (p == null) {
+        return "problem is not exit";
+      }
+      if (!p.getTestCaseId().equals(problem.getTestCaseId())) {
+        // move new file
+        TestCaseHandler.moveTestCaseFiles(testCaseConfig.getPath(), problem.getTestCaseId());
+        // remove old files
+        try {
+          TestCaseHandler.removeTestCaseFiles(testCaseConfig.getPath(), p.getTestCaseId());
+        } catch (IOException e) {
+          return e.toString();
+        }
+      }
+      Query query = new Query(Criteria.where("id").is(p.getId()));
+      Update update = problem.getUpdateData();
       mongoTemplate.updateFirst(query, update, Problem.class);
     }
+    return null;
   }
 
   @Override
@@ -54,9 +75,18 @@ public class ProblemDaoImpl implements ProblemDao {
   }
 
   @Override
-  public List<Problem> findProblems(int page, int size, String search) {
+  public boolean isExist(String originId) {
+    Problem p = findByOriginId(originId);
+    return p != null;
+  }
+
+  @Override
+  public List<Problem> findProblems(int page, int size, String search, boolean visible) {
     Pageable pageableRequest = PageRequest.of(page, size);
     Query query = new Query();
+    if (visible) {
+      query.addCriteria(Criteria.where("visible").is(true));
+    }
     if (search.length() > 0) {
       query.addCriteria(Criteria.where("title").regex(".*" + search + ".*"));
     }
@@ -79,5 +109,11 @@ public class ProblemDaoImpl implements ProblemDao {
     return mongoTemplate.find(query, Problem.class);
   }
 
+  @Override
+  public void updateProblemVisible(String originId, boolean visible) {
+    Query query = new Query(Criteria.where("origin_id").is(originId));
+    Update update = new Update().set("visible", visible);
+    mongoTemplate.updateFirst(query, update, Problem.class);
+  }
 
 }

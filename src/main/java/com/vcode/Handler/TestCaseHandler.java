@@ -1,6 +1,7 @@
 package com.vcode.Handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -128,5 +129,12 @@ public class TestCaseHandler {
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  public static void removeTestCaseFiles(String testCasePath, String dirName) throws IOException {
+    if (!testCasePath.endsWith(File.separator))
+      testCasePath += File.separator;
+    File dir = new File(testCasePath + dirName);
+    FileUtils.deleteDirectory(dir);
   }
 }

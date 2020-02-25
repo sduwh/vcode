@@ -26,7 +26,7 @@ public class Problem implements Serializable {
   private ObjectId id;
 
   @Field("create_time")
-  private long create_time;
+  private long createTime;
 
   @NotEmpty(message = "origin不能为空")
   @NotBlank(message = "origin不能为空格字符串")
@@ -157,7 +157,7 @@ public class Problem implements Serializable {
     this.acceptedNumber = acceptedNumber;
     this.source = source;
     this.testCaseId = testCaseId;
-    this.create_time = System.currentTimeMillis();
+    this.createTime = System.currentTimeMillis();
   }
 
   public ObjectId getId() {
@@ -267,8 +267,8 @@ public class Problem implements Serializable {
     }
   }
 
-  public long getCreate_time() {
-    return create_time;
+  public long getCreateTime() {
+    return createTime;
   }
 
   public long getSubmissionNumber() {

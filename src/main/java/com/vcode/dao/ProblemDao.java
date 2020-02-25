@@ -10,21 +10,25 @@ import java.util.List;
  */
 public interface ProblemDao {
 
+  Long count(String search);
+
   void saveProblem(Problem problem);
 
   Problem findByOriginId(String originId);
 
   // 传入最新数据的实体即可
-  void updateProblem(Problem problem);
+  String updateProblem(Problem problem);
 
   void deleteProblemByOriginId(String originId);
 
   boolean isExist(Problem problem);
 
-  List<Problem> findProblems(int page, int size, String search);
+  boolean isExist(String originId);
 
-  Long count(String search);
+  List<Problem> findProblems(int page, int size, String search, boolean visible);
 
   List<Problem> getAllProblems(List<ObjectId> problemIds);
+
+  void updateProblemVisible(String originId, boolean visible);
 
 }
