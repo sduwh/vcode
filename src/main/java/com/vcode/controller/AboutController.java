@@ -7,6 +7,9 @@ import com.vcode.entity.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/about")
 public class AboutController {
@@ -14,11 +17,9 @@ public class AboutController {
     private AboutDao aboutDao;
 
     @PostMapping("/doc")
-    public Response editDoc(@RequestParam(value = "doc") String doc) {
+    public Response editDoc(@RequestBody @Valid About about) {
 
         Response response = new Response();
-
-        About about = new About(doc);
 
         aboutDao.updateAbout(about);
 
@@ -33,7 +34,7 @@ public class AboutController {
         if (!aboutDao.isExist()) {
             response.setCode(ResponseCode.FAIL);
             response.setMessage("doc is not exist");
-            response.setData(new String(""));
+            response.setData("");
         } else {
             response.setData(aboutDao.getAbout().getDoc());
         }
