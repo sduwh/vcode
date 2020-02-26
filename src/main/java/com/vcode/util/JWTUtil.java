@@ -47,13 +47,16 @@ public class JWTUtil {
             .build();
     try {
       DecodedJWT jwt = jwtVerifier.verify(token);
+      if (!account.equals(getAccount(token))){
+        return false;
+      }
       if (jwt.getExpiresAt().before(new Date(System.currentTimeMillis()))) {
         // 时效已过期
         return false;
       }
     } catch (JWTVerificationException e) {
       // token 非法
-      e.printStackTrace();
+      log.warning(e.toString());
       return false;
     }
     return true;

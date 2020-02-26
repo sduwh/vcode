@@ -6,6 +6,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.DatatypeConverter;
 import java.io.Serializable;
 import java.security.MessageDigest;
@@ -20,24 +24,38 @@ public class VUser implements Serializable {
   @Id
   private ObjectId id;
 
+  @NotNull(message = "account is required")
+  @NotEmpty(message = "account can't be empty")
+  @NotBlank(message = "account can't be blank")
+  @Size(min = 8)
   @Field("account")
   private String account;
 
+  @NotNull(message = "nickname is required")
+  @NotEmpty(message = "nickname can't be empty")
+  @NotBlank(message = "nickname can't be blank")
   @Field("nickname")
   private String nickname;
 
   @Field("email")
   private String email;
 
+  @JsonIgnore
   @Field("password")
   private String password;
 
   @Field("createTime")
   private Date createTime;
 
+  @NotNull(message = "role is required")
+  @NotEmpty(message = "role can't be empty")
+  @NotBlank(message = "role can't be blank")
   @Field("role")
   private String role;
 
+  @NotNull(message = "permission is required")
+  @NotEmpty(message = "permission can't be empty")
+  @NotBlank(message = "permission can't be blank")
   @Field("permission")
   private String permission;
 
@@ -49,11 +67,12 @@ public class VUser implements Serializable {
 
   public VUser(String account, String password) throws NoSuchAlgorithmException {
     this.setCreateTime();
-    ;
-    this.setEmail(null);
+    this.setEmail("");
     this.setAccount(account);
     this.setPassword(password);
     this.setNickname(account);
+    this.setRole("user");
+    this.setPermission("");
   }
 
   public ObjectId getId() {

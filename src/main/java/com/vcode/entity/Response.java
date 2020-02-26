@@ -17,6 +17,13 @@ public class Response implements Serializable {
     this.error = null;
   }
 
+  public Response(int code, String message, Object data, String error) {
+    this.code = code;
+    this.message = message;
+    this.data = data;
+    this.error = error;
+  }
+
   public Object getData() {
     return data;
   }

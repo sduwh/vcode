@@ -86,5 +86,4 @@ public class Realm extends AuthorizingRealm {
 
     return new SimpleAuthenticationInfo(token, token, "realm");
   }
-
 }

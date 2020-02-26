@@ -10,6 +10,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * @author moyee
@@ -37,6 +38,18 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
   }
 
   @Override
+  protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
+    if (isLoginAttempt(request, response)) {
+      try {
+        executeLogin(request, response);
+      } catch (Exception e) {
+        response401(request, response);
+      }
+    }
+    return true;
+  }
+
+  @Override
   protected boolean preHandle(ServletRequest request, ServletResponse response) throws Exception {
     HttpServletRequest httpServletRequest = (HttpServletRequest) request;
     HttpServletResponse httpServletResponse = (HttpServletResponse) response;
@@ -53,4 +66,12 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
     return super.preHandle(request, response);
   }
 
+  private void response401(ServletRequest req, ServletResponse resp) {
+    try {
+      HttpServletResponse httpServletResponse = (HttpServletResponse) resp;
+      httpServletResponse.sendRedirect("/api/401");
+    } catch (IOException e) {
+      LOGGER.error(e.getMessage());
+    }
+  }
 }
