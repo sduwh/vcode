@@ -5,6 +5,9 @@ import com.vcode.common.ResponseCode;
 import com.vcode.entity.Response;
 import com.vcode.entity.VUser;
 import com.vcode.util.JWTUtil;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,6 +52,18 @@ public class VUserController {
     String account = map.get("account").toString();
     String password = map.get("password").toString();
     String rePassword = map.get("rePassword").toString();
+
+    if (account.length() < 8){
+      res.setCode(ResponseCode.FAIL);
+      res.setMessage("account's length must be more than 8");
+      return res;
+    }
+
+    if (password.length() < 6){
+      res.setCode(ResponseCode.FAIL);
+      res.setMessage("password's length must be more than 6");
+      return res;
+    }
 
     if (!password.equals(rePassword)) {
       res.setCode(ResponseCode.FAIL);
@@ -120,6 +135,7 @@ public class VUserController {
   }
 
   @GetMapping("/info")
+  @RequiresPermissions(logical = Logical.AND, value = {"view", "edit"})
   public Response userInfo(@RequestParam("account") String account) {
     /**
      * @Description 获取用户数据
@@ -127,9 +143,9 @@ public class VUserController {
      * @return 用户的全部资料
      */
     Response res = new Response();
-    if (account.length() < 10) {
+    if (account.length() < 8) {
       res.setCode(ResponseCode.FAIL);
-      res.setMessage("账号长度小于10");
+      res.setMessage("账号长度小于8");
       return res;
     }
     VUser vUser = userDao.findUserByUserAccount(account);

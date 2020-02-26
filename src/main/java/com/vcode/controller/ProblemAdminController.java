@@ -6,6 +6,9 @@ import com.vcode.common.ResponseCode;
 import com.vcode.config.TestCaseConfig;
 import com.vcode.entity.Problem;
 import com.vcode.entity.Response;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,7 +39,6 @@ public class ProblemAdminController {
     Response res = new Response();
     // 添加origin前缀
     problem.setOriginId(problem.getOriginId());
-    System.out.println("admin");
     // check is this problem exist
     if (problemDao.isExist(problem)) {
       res.setCode(ResponseCode.FAIL);

@@ -124,7 +124,6 @@ public class TestCaseHandler {
     }
     Path targetPath = Paths.get(testCasePath + dirName);
     try {
-      System.out.println(testCasePath);
       Files.move(sourcePath, targetPath);
     } catch (IOException e) {
       e.printStackTrace();

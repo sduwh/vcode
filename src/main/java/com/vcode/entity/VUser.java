@@ -35,6 +35,12 @@ public class VUser implements Serializable {
   @Field("createTime")
   private Date createTime;
 
+  @Field("role")
+  private String role;
+
+  @Field("permission")
+  private String permission;
+
   public VUser() {
     this.setCreateTime();
     this.setEmail(null);
@@ -94,6 +100,22 @@ public class VUser implements Serializable {
 
   public void setCreateTime() {
     this.createTime = new Date();
+  }
+
+  public String getRole() {
+    return role;
+  }
+
+  public void setRole(String role) {
+    this.role = role;
+  }
+
+  public String getPermission() {
+    return permission;
+  }
+
+  public void setPermission(String permission) {
+    this.permission = permission;
   }
 
   public boolean checkPassword(String inputPassword) throws NoSuchAlgorithmException {

@@ -3,6 +3,7 @@ package com.vcode.util;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
@@ -56,5 +57,20 @@ public class JWTUtil {
       return false;
     }
     return true;
+  }
+
+  /**
+   * @Description get user's account in token
+   * @Date 2020/2/26 16:15
+   * @param token 1
+   * @return java.lang.String
+   */
+  public static String getAccount(String token) {
+    try {
+      DecodedJWT jwt = JWT.decode(token);
+      return jwt.getClaim("account").asString();
+    } catch (JWTDecodeException e) {
+      return null;
+    }
   }
 }
