@@ -6,6 +6,7 @@ import com.vcode.common.ResponseCode;
 import com.vcode.config.TestCaseConfig;
 import com.vcode.entity.Problem;
 import com.vcode.entity.Response;
+import com.vcode.entity.Submission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

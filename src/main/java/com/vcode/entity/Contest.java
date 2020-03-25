@@ -146,6 +146,11 @@ public class Contest {
     this.password = password;
   }
 
+  public boolean checkPassword(String password) {
+    return this.password.equals(password);
+  }
+
+  @JsonIgnore
   public Update getUpdateData() {
     Update update = new Update();
     update.set("name", this.getName())

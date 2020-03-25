@@ -97,4 +97,12 @@ public class ContestDaoImpl implements ContestDao {
       mongoTemplate.updateFirst(query, update, Contest.class);
     }
   }
+
+  @Override
+  public boolean checkPassword(String contestName, String password) {
+    Query query = new Query(Criteria.where("name").is(contestName));
+    Contest contest = mongoTemplate.findOne(query, Contest.class);
+    if (contest == null) return false;
+    return contest.checkPassword(password);
+  }
 }

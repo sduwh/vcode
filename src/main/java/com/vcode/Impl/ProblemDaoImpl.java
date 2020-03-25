@@ -116,4 +116,17 @@ public class ProblemDaoImpl implements ProblemDao {
     mongoTemplate.updateFirst(query, update, Problem.class);
   }
 
+  @Override
+  public void incSubmissionNum(String originId) {
+    Query query = new Query(Criteria.where("origin_id").is(originId));
+    Update update = new Update().inc("submission_number", 1);
+    mongoTemplate.findAndModify(query, update, Problem.class);
+  }
+
+  @Override
+  public void incAcceptNum(String originId) {
+    Query query = new Query(Criteria.where("origin_id").is(originId));
+    Update update = new Update().inc("accepted_number", 1);
+    mongoTemplate.findAndModify(query, update, Problem.class);
+  }
 }

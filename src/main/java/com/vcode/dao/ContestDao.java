@@ -28,4 +28,6 @@ public interface ContestDao {
   void addProblem(Contest contest, Problem problem);
 
   void removeProblem(Contest contest, Problem problem);
+
+  boolean checkPassword(String contestName, String password);
 }

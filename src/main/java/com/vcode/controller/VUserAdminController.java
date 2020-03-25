@@ -43,7 +43,7 @@ public class VUserAdminController {
     page--;
     List<VUser> userList = userDao.findUsers(page, size, search);
     Map<String, Object> data = new HashMap<>();
-    data.put("user_List", userList);
+    data.put("userList", userList);
     data.put("total", userDao.count(search));
     response.setData(data);
     return response;
@@ -61,11 +61,20 @@ public class VUserAdminController {
       return response;
     }
     page--;
-    List<VUser> userList = userDao.finAdmins(page, size, search);
+    List<VUser> userList = userDao.findAdmins(page, size, search);
     Map<String, Object> data = new HashMap<>();
-    data.put("admin_List", userList);
-    data.put("total", userDao.count(search));
+    data.put("adminList", userList);
+    data.put("total", userDao.countAdmins(search));
     response.setData(data);
+    return response;
+  }
+
+
+  @DeleteMapping("/")
+  @RequiresRoles("admin")
+  public Response deleteUser(@RequestParam(value = "account") String account) {
+    Response response = new Response();
+    userDao.deleteUserByAccount(account);
     return response;
   }
 
@@ -85,7 +94,6 @@ public class VUserAdminController {
       return response;
     }
 
-    System.out.println(user.getNickname());
     String err = userDao.updateUser(user);
     if (err != null) {
       response.setCode(ResponseCode.ERROR);

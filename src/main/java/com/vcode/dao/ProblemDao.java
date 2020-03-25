@@ -31,4 +31,8 @@ public interface ProblemDao {
 
   void updateProblemVisible(String originId, boolean visible);
 
+  void incSubmissionNum(String originId);
+
+  void incAcceptNum(String originId);
+
 }

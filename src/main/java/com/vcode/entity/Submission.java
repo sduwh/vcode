@@ -7,9 +7,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author moyee
@@ -28,7 +29,7 @@ public class Submission {
   private long createTime; // 提交时间戳
 
   @Field("user_account")
-  private String user_account;
+  private String userAccount;
 
   @Field("user_nickname")
   private String nickname;
@@ -37,6 +38,9 @@ public class Submission {
   private String problemTitle;
 
   @Field("problem_origin_id")
+  @NotNull(message = "problemOriginId is required")
+  @NotBlank(message = "problemOriginId is required")
+  @NotEmpty(message = "problemOriginId is required")
   private String problemOriginId;
 
   @Field("time")
@@ -46,9 +50,15 @@ public class Submission {
   private String memory;
 
   @Field("language")
+  @NotNull(message = "language is required")
+  @NotBlank(message = "language is required")
+  @NotEmpty(message = "language is required")
   private String language;
 
   @Field("code")
+  @NotNull(message = "code is required")
+  @NotBlank(message = "code is required")
+  @NotEmpty(message = "code is required")
   private String code;
 
   // 0 => wrong; 1 => success; 2 => time_out; 3 => memory_out; 4 => unknown_error; 5 => padding; 6 => compile error
@@ -62,13 +72,13 @@ public class Submission {
     this.memory = null;
   }
 
-  public Submission(String user_account,
+  public Submission(String userAccount,
                     String nickname,
                     String problemTitle,
                     String problemOriginId,
                     String language,
                     String code) {
-    this.user_account = user_account;
+    this.userAccount = userAccount;
     this.nickname = nickname;
     this.problemTitle = problemTitle;
     this.problemOriginId = problemOriginId;
@@ -89,12 +99,12 @@ public class Submission {
     return createTime;
   }
 
-  public String getUser_account() {
-    return user_account;
+  public String getUserAccount() {
+    return userAccount;
   }
 
-  public void setUser_account(String user_account) {
-    this.user_account = user_account;
+  public void setUserAccount(String userAccount) {
+    this.userAccount = userAccount;
   }
 
   public String getNickname() {

@@ -32,7 +32,10 @@ public class VUserDaoImpl implements VUserDao {
   @Override
   public String updateUser(VUser user) {
     Query query = new Query(Criteria.where("account").is(user.getAccount()));
-    Update update = new Update().set("nickname", user.getNickname()).set("email", user.getEmail());
+    Update update = new Update()
+            .set("nickname", user.getNickname())
+            .set("email", user.getEmail())
+            .set("role", user.getRole());
     mongoTemplate.updateFirst(query, update, VUser.class);
     return null;
   }
@@ -44,7 +47,7 @@ public class VUserDaoImpl implements VUserDao {
   }
 
   @Override
-  public List<VUser> findUsers(int page, int size, String search) {
+  public List<VUser> findAdmins(int page, int size, String search) {
     Pageable pageableRequest = PageRequest.of(page, size);
     Query query = new Query(Criteria.where("role").is("admin"));
     if (search.length() > 0) {
@@ -55,7 +58,7 @@ public class VUserDaoImpl implements VUserDao {
   }
 
   @Override
-  public List<VUser> finAdmins(int page, int size, String search) {
+  public List<VUser> findUsers(int page, int size, String search) {
     Pageable pageableRequest = PageRequest.of(page, size);
     Query query = new Query();
     if (search.length() > 0) {
@@ -68,6 +71,15 @@ public class VUserDaoImpl implements VUserDao {
   @Override
   public long count(String search) {
     Query query = new Query();
+    if (search.length() > 0) {
+      query.addCriteria(Criteria.where("nickname").regex(".*" + search + ".*"));
+    }
+    return mongoTemplate.count(query, VUser.class);
+  }
+
+  @Override
+  public long countAdmins(String search) {
+    Query query = new Query(Criteria.where("role").is("admin"));
     if (search.length() > 0) {
       query.addCriteria(Criteria.where("nickname").regex(".*" + search + ".*"));
     }

@@ -6,6 +6,7 @@ import com.vcode.common.ResponseCode;
 import com.vcode.entity.Contest;
 import com.vcode.entity.Problem;
 import com.vcode.entity.Response;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -214,6 +215,17 @@ public class ContestController {
     }
 
     contestDao.removeProblem(contest, problem);
+    return response;
+  }
+
+  @GetMapping("/password")
+  @RequiresAuthentication
+  public Response checkPassword(@RequestParam(value = "contestName") String contestName,
+                                @RequestParam(value = "password") String password) {
+    Response response = new Response();
+    Map<String, Object> data = new HashMap<>();
+    data.put("result", contestDao.checkPassword(contestName, password));
+    response.setData(data);
     return response;
   }
 }

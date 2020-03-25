@@ -17,10 +17,11 @@ public interface VUserDao {
 
   List<VUser> findUsers(int page, int size, String search);
 
-  List<VUser> finAdmins(int page, int size, String search);
+  List<VUser> findAdmins(int page, int size, String search);
 
   long count(String search);
 
+  long countAdmins(String search);
   boolean isNicknameExist(VUser user);
 
   boolean isEmailExist(VUser user);
