@@ -21,13 +21,17 @@ public interface SubmissionDao {
 
   List<Submission> findSubmissions(int page, int size, String search);
 
+  List<Submission> findSubmissions(String originId, String account);
+
   List<Submission> findProblemSubmissions(int page, int size, String originId);
 
-  List<Submission> findSubmissions(String originId, String account);
+  List<Submission> findContestSubmission(String contestName, int page, int size, String search);
 
   long count(String search);
 
   long countSubmission(String problemOriginId);
+
+  long countContestSubmission(String contestName, String search);
 
   Submission fillInfo(Submission submission);
 

@@ -61,6 +61,9 @@ public class Submission {
   @NotEmpty(message = "code is required")
   private String code;
 
+  @Field("contest_name")
+  private String contestName;
+
   // 0 => wrong; 1 => success; 2 => time_out; 3 => memory_out; 4 => unknown_error; 5 => padding; 6 => compile error
   @Field("result")
   private int result;
@@ -89,6 +92,7 @@ public class Submission {
     this.result = SubmissionResultCode.PADDING;
     this.time = null;
     this.memory = null;
+    this.contestName = null;
   }
 
   public ObjectId getId() {
@@ -170,6 +174,16 @@ public class Submission {
   public void setResult(String result) {
     this.result = SubmissionResultCode.ResultStrToInt(result);
   }
+
+  public String getContestName() {
+    return contestName;
+  }
+
+  public void setContestName(String contestName) {
+    this.contestName = contestName;
+  }
+
+
 
   @JsonIgnore
   public Update getUpdateData() {

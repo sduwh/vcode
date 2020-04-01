@@ -19,14 +19,18 @@ import java.util.List;
 @Component
 public class SubmissionDaoImpl implements SubmissionDao {
 
-  @Autowired
   private MongoTemplate mongoTemplate;
 
-  @Autowired
   private VUserDaoImpl vUserDao;
 
-  @Autowired
   private ProblemDaoImpl problemDao;
+
+  @Autowired
+  public SubmissionDaoImpl(MongoTemplate mongoTemplate, VUserDaoImpl vUserDao, ProblemDaoImpl problemDao) {
+    this.mongoTemplate = mongoTemplate;
+    this.vUserDao = vUserDao;
+    this.problemDao = problemDao;
+  }
 
   @Override
   public void saveSubmission(Submission submission) {
@@ -58,21 +62,16 @@ public class SubmissionDaoImpl implements SubmissionDao {
     if (s == null) return false;
     // if submission's status is padding
     if (s.getResult() == 5) {
-      System.out.println(s.getLanguage());
-      System.out.println(submission.getLanguage());
       if (!s.getLanguage().equals(submission.getLanguage())) return false;
-
-
       return s.getCode().equals(submission.getCode());
     }
-
     return false;
   }
 
   @Override
   public List<Submission> findSubmissions(int page, int size, String search) {
     Pageable pageableRequest = PageRequest.of(page, size);
-    Query query = new Query();
+    Query query = new Query(Criteria.where("contest_id").is(null));
     if (search.length() > 0) {
       query.addCriteria(Criteria.where("user_nickname").regex(".*" + search + ".*"));
     }
@@ -97,6 +96,17 @@ public class SubmissionDaoImpl implements SubmissionDao {
   }
 
   @Override
+  public List<Submission> findContestSubmission(String contestName, int page, int size, String search) {
+    Query query = new Query(Criteria.where("contest_name").is(contestName));
+    Pageable pageableRequest = PageRequest.of(page, size);
+    if (search.length() > 0) {
+      query.addCriteria(Criteria.where("user_nickname").regex(".*" + search + ".*"));
+    }
+    query.with(pageableRequest);
+    return mongoTemplate.find(query, Submission.class);
+  }
+
+  @Override
   public long count(String search) {
     Query query = new Query();
     if (search.length() > 0) {
@@ -108,7 +118,17 @@ public class SubmissionDaoImpl implements SubmissionDao {
   @Override
   public long countSubmission(String problemOriginId) {
     Query query = new Query();
-    query.addCriteria(Criteria.where("problem_origin_id").is(problemOriginId));
+    query.addCriteria(Criteria.where("problem_origin_id").is(problemOriginId).and("contest_name").is(null));
+    return mongoTemplate.count(query, Submission.class);
+  }
+
+  @Override
+  public long countContestSubmission(String contestName, String search) {
+    Query query = new Query();
+    query.addCriteria(Criteria.where("contest_name").is(contestName));
+    if (search.length() > 0) {
+      query.addCriteria(Criteria.where("user_nickname").regex(".*" + search + ".*"));
+    }
     return mongoTemplate.count(query, Submission.class);
   }
 

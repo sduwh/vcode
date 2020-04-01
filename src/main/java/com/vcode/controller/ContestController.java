@@ -31,19 +31,18 @@ public class ContestController {
 
   private Logger log = Logger.getLogger("ContestController");
 
+  /**
+   * @Description 获取contest列表
+   * @Date 2020/2/11 15:33
+   * @param page 页码
+   * @param size 一页的容量
+   * @param search 查询条件
+   * @return com.vcode.entity.Response
+   */
   @GetMapping("/list")
   public Response getContestsList(@RequestParam(value = "page") int page,
                                   @RequestParam(value = "size") int size,
                                   @RequestParam(value = "search") String search) {
-
-    /**
-     * @Description 获取contest列表
-     * @Date 2020/2/11 15:33
-     * @param page 页码
-     * @param size 一页的容量
-     * @param search 查询条件
-     * @return com.vcode.entity.Response
-     */
     Response response = new Response();
     if (page < 1 || size < 1) {
       response.setCode(ResponseCode.ERROR);
@@ -59,14 +58,15 @@ public class ContestController {
     return response;
   }
 
+  /**
+   * @Description 获取Contest的详细信息
+   * @Date 2020/2/11 16:13
+   * @param contestName 1
+   * @return com.vcode.entity.Response
+   */
   @GetMapping("/detail")
-  public Response getContestDetail(@RequestParam(value = "name") @Size(min = 1) String contestName) {
-    /**
-     * @Description 获取Contest的详细信息
-     * @Date 2020/2/11 16:13
-     * @param contestName 1
-     * @return com.vcode.entity.Response
-     */
+  @RequiresAuthentication
+  public Response getContestDetail(@RequestParam(value = "contestName") String contestName) {
     Response response = new Response();
     if (contestName == null || contestName.length() == 0) {
       response.setCode(ResponseCode.ERROR);
@@ -83,14 +83,14 @@ public class ContestController {
     return response;
   }
 
+  /**
+   * @Description 创建一个新的contest
+   * @Date 2020/2/11 16:24
+   * @param contest contest的相关信息
+   * @return com.vcode.entity.Response
+   */
   @PostMapping("/create")
   public Response createContest(@RequestBody @Valid Contest contest) {
-    /**
-     * @Description 创建一个新的contest
-     * @Date 2020/2/11 16:24
-     * @param contest contest的相关信息
-     * @return com.vcode.entity.Response
-     */
     Response response = new Response();
     if (contestDao.isExist(contest)) {
       response.setCode(ResponseCode.FAIL);

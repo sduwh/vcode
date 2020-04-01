@@ -66,6 +66,13 @@ public class ContestDaoImpl implements ContestDao {
   }
 
   @Override
+  public boolean isExist(String contestName) {
+    Query query = new Query(Criteria.where("name").is(contestName));
+    Contest _contest = mongoTemplate.findOne(query, Contest.class);
+    return _contest != null;
+  }
+
+  @Override
   public Long count(String search) {
     Query query = new Query();
     // 添加查询条件

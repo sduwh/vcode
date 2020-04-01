@@ -23,6 +23,8 @@ public interface ContestDao {
 
   boolean isExist(Contest contest);
 
+  boolean isExist(String contestName);
+
   Long count(String search);
 
   void addProblem(Contest contest, Problem problem);
