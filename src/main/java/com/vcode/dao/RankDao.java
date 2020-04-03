@@ -15,5 +15,5 @@ public interface RankDao {
 
   List<Rank> getGlobalRankData();
 
-  void saveRank(Rank rank);
+  void saveRank(Rank rank) throws InterruptedException;
 }

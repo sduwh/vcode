@@ -51,4 +51,20 @@ public class RankController {
     rankDao.save(rank);
     return response;
   }
+
+  @PostMapping("/test")
+  public Response insertData() {
+    Response response = new Response();
+    Rank rank = new Rank("201600800528", "vscode", "test1111", 123123, "vcode-test1");
+    rank.setAcNum(6);
+    Rank rank1 = new Rank("201600800590", "vscode", "test1111", 123123, "vcode-test1");
+    rank.setAcNum(7);
+    try {
+      rankDao.saveRank(rank);
+      rankDao.saveRank(rank1);
+    }catch (InterruptedException e) {
+      System.out.println(e.getMessage());
+    }
+    return response;
+  }
 }
