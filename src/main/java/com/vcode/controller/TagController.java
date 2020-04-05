@@ -17,10 +17,14 @@ import java.util.logging.Logger;
 @RequestMapping("/tag")
 public class TagController {
 
-  @Autowired
   private TagDaoImpl tagDao;
 
   private Logger log = Logger.getLogger("TagController");
+
+  @Autowired
+  public TagController(TagDaoImpl tagDao) {
+    this.tagDao = tagDao;
+  }
 
   /*
  罗列逻辑

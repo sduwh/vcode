@@ -53,7 +53,7 @@ public class SubmissionController {
    * @Description get submission list
    * @Date 2020/3/19 14:30
    */
-  @GetMapping("/list")
+  @GetMapping()
   public Response getSubmissions(@RequestParam(value = "page") int page,
                                  @RequestParam(value = "size") int size,
                                  @RequestParam(value = "search") String search) {

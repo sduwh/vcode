@@ -6,9 +6,6 @@ import com.vcode.common.ResponseCode;
 import com.vcode.config.TestCaseConfig;
 import com.vcode.entity.Problem;
 import com.vcode.entity.Response;
-import org.apache.shiro.authz.annotation.Logical;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,13 +17,17 @@ import java.util.logging.Logger;
 @RequestMapping("/admin/problem")
 public class ProblemAdminController {
 
-  @Autowired
   private ProblemDaoImpl problemDao;
 
-  @Autowired
   private TestCaseConfig testCaseConfig;
 
   private Logger log = Logger.getLogger("ProblemAdminController");
+
+  @Autowired
+  public ProblemAdminController(ProblemDaoImpl problemDao, TestCaseConfig testCaseConfig) {
+    this.problemDao = problemDao;
+    this.testCaseConfig = testCaseConfig;
+  }
 
   /**
    * @param problem problem的字段
@@ -70,10 +71,10 @@ public class ProblemAdminController {
   @PostMapping("/edit")
   public Response editProblem(@RequestBody @Valid Problem problem) {
     Response res = new Response();
-    if (!problem.getOriginId().startsWith(problem.getOrigin()+"-"))
+    if (!problem.getOriginId().startsWith(problem.getOrigin() + "-"))
       problem.setOriginId(problem.getOriginId());
     String err = problemDao.updateProblem(problem);
-    if(err == null) {
+    if (err == null) {
       return res;
     }
     res.setCode(ResponseCode.ERROR);

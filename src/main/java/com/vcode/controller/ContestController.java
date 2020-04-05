@@ -23,21 +23,25 @@ import java.util.logging.Logger;
 @RequestMapping("/contest")
 public class ContestController {
 
-  @Autowired
   private ContestDaoImpl contestDao;
 
-  @Autowired
   private ProblemDaoImpl problemDao;
 
   private Logger log = Logger.getLogger("ContestController");
 
+  @Autowired
+  public ContestController(ContestDaoImpl contestDao, ProblemDaoImpl problemDao) {
+    this.contestDao = contestDao;
+    this.problemDao = problemDao;
+  }
+
   /**
-   * @Description 获取contest列表
-   * @Date 2020/2/11 15:33
-   * @param page 页码
-   * @param size 一页的容量
+   * @param page   页码
+   * @param size   一页的容量
    * @param search 查询条件
    * @return com.vcode.entity.Response
+   * @Description 获取contest列表
+   * @Date 2020/2/11 15:33
    */
   @GetMapping("/list")
   public Response getContestsList(@RequestParam(value = "page") int page,
@@ -59,10 +63,10 @@ public class ContestController {
   }
 
   /**
-   * @Description 获取Contest的详细信息
-   * @Date 2020/2/11 16:13
    * @param contestName 1
    * @return com.vcode.entity.Response
+   * @Description 获取Contest的详细信息
+   * @Date 2020/2/11 16:13
    */
   @GetMapping("/detail")
   @RequiresAuthentication
@@ -84,10 +88,10 @@ public class ContestController {
   }
 
   /**
-   * @Description 创建一个新的contest
-   * @Date 2020/2/11 16:24
    * @param contest contest的相关信息
    * @return com.vcode.entity.Response
+   * @Description 创建一个新的contest
+   * @Date 2020/2/11 16:24
    */
   @PostMapping("/create")
   public Response createContest(@RequestBody @Valid Contest contest) {

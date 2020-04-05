@@ -4,8 +4,10 @@ import com.vcode.Impl.RankDaoImpl;
 import com.vcode.entity.Rank;
 import com.vcode.entity.Response;
 import com.vcode.util.RankDataUtil;
+import org.apache.commons.collections.map.LinkedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import sun.tools.java.Type;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +33,12 @@ public class RankController {
 
   @GetMapping()
   public Response getGlobalRank() {
-    return null;
+    Response response = new Response();
+    List<HashMap> rankList = rankDao.getGlobalRankData();
+    Map<String, Object> data = new HashMap<>();
+    data.put("rankList", rankList);
+    response.setData(data);
+    return response;
   }
 
   @GetMapping("/contest")
@@ -41,30 +48,6 @@ public class RankController {
     Map<String, Object> data = new HashMap<>();
     data.put("rankList", RankDataUtil.SortRankData(rankList));
     response.setData(data);
-    return response;
-  }
-
-  @PostMapping("/insert-one-data")
-  public Response insertOneData() {
-    Response response = new Response();
-    Rank rank = new Rank("201600800528", "vscode", "test1", 123123, "vcode-test1");
-    rankDao.save(rank);
-    return response;
-  }
-
-  @PostMapping("/test")
-  public Response insertData() {
-    Response response = new Response();
-    Rank rank = new Rank("201600800528", "vscode", "test1111", 123123, "vcode-test1");
-    rank.setAcNum(6);
-    Rank rank1 = new Rank("201600800590", "vscode", "test1111", 123123, "vcode-test1");
-    rank.setAcNum(7);
-    try {
-      rankDao.saveRank(rank);
-      rankDao.saveRank(rank1);
-    }catch (InterruptedException e) {
-      System.out.println(e.getMessage());
-    }
     return response;
   }
 }

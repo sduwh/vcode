@@ -16,11 +16,14 @@ public class RankProblemItem {
 
   private boolean isAc;
 
+  private long timeUsed;
+
   public RankProblemItem(Rank rank) {
     this.problemOriginId = rank.getProblemOriginId();
     this.isAc = rank.getAcNum() > 0;
     this.isEarliest = rank.isEarliest();
     this.errorNum = rank.getWrongNum();
+    this.timeUsed = rank.getUsedTime();
   }
 
   public String getProblemOriginId() {
@@ -53,5 +56,13 @@ public class RankProblemItem {
 
   public void setAc(boolean ac) {
     isAc = ac;
+  }
+
+  public long getTimeUsed() {
+    return timeUsed;
+  }
+
+  public void setTimeUsed(long timeUsed) {
+    this.timeUsed = timeUsed;
   }
 }

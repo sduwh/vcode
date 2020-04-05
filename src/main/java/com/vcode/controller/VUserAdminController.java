@@ -24,10 +24,14 @@ import java.util.logging.Logger;
 @RequestMapping("/admin/user")
 public class VUserAdminController {
 
-  @Autowired
   private VUserDaoImpl userDao;
 
   private Logger log = Logger.getLogger("UserAdminController");
+
+  @Autowired
+  public VUserAdminController(VUserDaoImpl vUserDao) {
+    this.userDao = vUserDao;
+  }
 
   @GetMapping("/list")
   @RequiresRoles("admin")

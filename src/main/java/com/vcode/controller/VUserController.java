@@ -6,10 +6,7 @@ import com.vcode.entity.Response;
 import com.vcode.entity.VUser;
 import com.vcode.util.JWTUtil;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,10 +21,14 @@ import java.util.logging.Logger;
 @RequestMapping("/user")
 public class VUserController {
 
-  @Autowired
   private VUserDaoImpl userDao;
 
   private Logger log = Logger.getLogger("UserController");
+
+  @Autowired
+  public VUserController(VUserDaoImpl vUserDao) {
+    this.userDao = vUserDao;
+  }
 
   @GetMapping()
   @RequiresAuthentication

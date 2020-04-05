@@ -183,7 +183,9 @@ public class Submission {
     this.contestName = contestName;
   }
 
-
+  public String getHex(){
+    return this.id.toHexString();
+  }
 
   @JsonIgnore
   public Update getUpdateData() {

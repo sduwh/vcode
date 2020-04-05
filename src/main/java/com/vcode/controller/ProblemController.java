@@ -1,16 +1,12 @@
 package com.vcode.controller;
 
-import com.vcode.Handler.TestCaseHandler;
 import com.vcode.Impl.ProblemDaoImpl;
 import com.vcode.common.ResponseCode;
-import com.vcode.config.TestCaseConfig;
 import com.vcode.entity.Problem;
 import com.vcode.entity.Response;
-import com.vcode.entity.Submission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,11 +16,14 @@ import java.util.logging.Logger;
 @RequestMapping("/problem")
 public class ProblemController {
 
-  @Autowired
   private ProblemDaoImpl problemDao;
 
   private Logger log = Logger.getLogger("ProblemController");
 
+  @Autowired
+  public ProblemController(ProblemDaoImpl problemDao) {
+    this.problemDao = problemDao;
+  }
 
   /**
    * @param page    页码
@@ -49,7 +48,7 @@ public class ProblemController {
     // 数据库中的分页从0开始
     page--;
     List<Problem> problemList = problemDao.findProblems(page, size, search, visible);
-    HashMap<String, Object> resMap = new HashMap<>();
+    Map<String, Object> resMap = new HashMap<>();
     resMap.put("problem_list", problemList);
     resMap.put("total", problemDao.count(search));
     response.setData(resMap);
