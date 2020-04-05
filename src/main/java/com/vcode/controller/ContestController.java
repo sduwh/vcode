@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Size;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,9 +43,8 @@ public class ContestController {
    * @Date 2020/2/11 15:33
    */
   @GetMapping("/list")
-  public Response getContestsList(@RequestParam(value = "page") int page,
-                                  @RequestParam(value = "size") int size,
-                                  @RequestParam(value = "search") String search) {
+  public Response getContestsList(@RequestParam(value = "page") int page, @RequestParam(value = "size") int size,
+      @RequestParam(value = "search") String search) {
     Response response = new Response();
     if (page < 1 || size < 1) {
       response.setCode(ResponseCode.ERROR);
@@ -200,7 +198,7 @@ public class ContestController {
 
   @DeleteMapping("/problem")
   public Response RemoveProblem(@RequestParam(value = "problemOriginId") String problemOriginId,
-                                @RequestParam(value = "contestTitle") String contestTitle) {
+      @RequestParam(value = "contestTitle") String contestTitle) {
 
     Response response = new Response();
     // find Object
@@ -225,7 +223,7 @@ public class ContestController {
   @GetMapping("/password")
   @RequiresAuthentication
   public Response checkPassword(@RequestParam(value = "contestName") String contestName,
-                                @RequestParam(value = "password") String password) {
+      @RequestParam(value = "password") String password) {
     Response response = new Response();
     Map<String, Object> data = new HashMap<>();
     data.put("result", contestDao.checkPassword(contestName, password));

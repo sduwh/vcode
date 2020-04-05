@@ -17,6 +17,9 @@ import java.util.LinkedList;
  */
 @Document("tag")
 public class Tag implements Serializable {
+
+  private static final long serialVersionUID = 1L;
+
   @Id
   private ObjectId id;
 
@@ -24,7 +27,7 @@ public class Tag implements Serializable {
   private String name;
 
   @Field("problems")
-  private LinkedList<ObjectId> problems;  // 存放所有此tag下的问题ObjectId
+  private LinkedList<ObjectId> problems; // 存放所有此tag下的问题ObjectId
 
   public Tag() {
     this.setName("");

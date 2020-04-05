@@ -21,6 +21,9 @@ import java.io.Serializable;
  */
 @Document("problem")
 public class Problem implements Serializable {
+
+  private static final long serialVersionUID = 1L;
+
   @JsonIgnore
   @Id
   private ObjectId id;
@@ -68,7 +71,6 @@ public class Problem implements Serializable {
   @Field("sample_input")
   private String[] sampleInput;
 
-
   @NotNull(message = "sample_output不能为null")
   @Field("sample_output")
   private String[] sampleOutput;
@@ -103,7 +105,7 @@ public class Problem implements Serializable {
   private String hint;
 
   @Field("difficulty")
-  private int difficulty;  // 0 => low; 1 => mid; 2 => height;
+  private int difficulty; // 0 => low; 1 => mid; 2 => height;
 
   @Field("submission_number")
   private long submissionNumber;
@@ -119,25 +121,10 @@ public class Problem implements Serializable {
   @Field("test_case_id")
   private String testCaseId;
 
-  public Problem(String origin,
-                 String originId,
-                 String title,
-                 String description,
-                 String input,
-                 String output,
-                 String[] sampleInput,
-                 String[] sampleOutput,
-                 String author,
-                 String timeLimit,
-                 String memoryLimit,
-                 boolean visible,
-                 String[] languages,
-                 String hint,
-                 int difficulty,
-                 long submissionNumber,
-                 long acceptedNumber,
-                 String source,
-                 String testCaseId) {
+  public Problem(String origin, String originId, String title, String description, String input, String output,
+      String[] sampleInput, String[] sampleOutput, String author, String timeLimit, String memoryLimit, boolean visible,
+      String[] languages, String hint, int difficulty, long submissionNumber, long acceptedNumber, String source,
+      String testCaseId) {
     this.origin = origin;
     this.originId = originId;
     this.title = title;
@@ -330,20 +317,12 @@ public class Problem implements Serializable {
   @JsonIgnore
   public Update getUpdateData() {
     Update update = new Update();
-    update.set("title", this.getTitle())
-            .set("Description", this.getDescription())
-            .set("input", this.getInput())
-            .set("output", this.getOutput())
-            .set("sample_input", this.getSampleInput())
-            .set("sample_output", this.getSampleOutput())
-            .set("author", this.getOrigin())
-            .set("time_limit", this.getTimeLimit())
-            .set("memory_limit", this.getMemoryLimit())
-            .set("hint", this.hint)
-            .set("languages", this.languages)
-            .set("visible", this.visible)
-            .set("source", this.source)
-            .set("test_case_id", this.testCaseId);
+    update.set("title", this.getTitle()).set("Description", this.getDescription()).set("input", this.getInput())
+        .set("output", this.getOutput()).set("sample_input", this.getSampleInput())
+        .set("sample_output", this.getSampleOutput()).set("author", this.getOrigin())
+        .set("time_limit", this.getTimeLimit()).set("memory_limit", this.getMemoryLimit()).set("hint", this.hint)
+        .set("languages", this.languages).set("visible", this.visible).set("source", this.source)
+        .set("test_case_id", this.testCaseId);
     return update;
   }
 }

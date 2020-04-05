@@ -16,9 +16,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
-
 @Document("v_user")
 public class VUser implements Serializable {
+
+  private static final long serialVersionUID = 1L;
 
   @JsonIgnore
   @Id

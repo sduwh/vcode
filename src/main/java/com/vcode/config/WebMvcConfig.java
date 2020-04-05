@@ -5,6 +5,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/**
+ * @author moyee
+ * @version 1.0.0
+ * @Description
+ * @Date
+ */
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
   @Override
