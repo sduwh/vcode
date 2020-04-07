@@ -1,6 +1,8 @@
 package com.vcode.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -11,6 +13,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author moyee
@@ -121,10 +125,16 @@ public class Problem implements Serializable {
   @Field("test_case_id")
   private String testCaseId;
 
+  public Problem(){
+    this.createTime = System.currentTimeMillis();
+  }
+
   public Problem(String origin, String originId, String title, String description, String input, String output,
-      String[] sampleInput, String[] sampleOutput, String author, String timeLimit, String memoryLimit, boolean visible,
-      String[] languages, String hint, int difficulty, long submissionNumber, long acceptedNumber, String source,
-      String testCaseId) {
+                 String[] sampleInput, String[] sampleOutput, String author, String timeLimit, String memoryLimit,
+                 boolean visible,
+                 String[] languages, String hint, int difficulty, long submissionNumber, long acceptedNumber,
+                 String source,
+                 String testCaseId) {
     this.origin = origin;
     this.originId = originId;
     this.title = title;
@@ -145,6 +155,10 @@ public class Problem implements Serializable {
     this.source = source;
     this.testCaseId = testCaseId;
     this.createTime = System.currentTimeMillis();
+  }
+
+  public void setId(ObjectId id) {
+    this.id = id;
   }
 
   public ObjectId getId() {
@@ -318,11 +332,37 @@ public class Problem implements Serializable {
   public Update getUpdateData() {
     Update update = new Update();
     update.set("title", this.getTitle()).set("Description", this.getDescription()).set("input", this.getInput())
-        .set("output", this.getOutput()).set("sample_input", this.getSampleInput())
-        .set("sample_output", this.getSampleOutput()).set("author", this.getOrigin())
-        .set("time_limit", this.getTimeLimit()).set("memory_limit", this.getMemoryLimit()).set("hint", this.hint)
-        .set("languages", this.languages).set("visible", this.visible).set("source", this.source)
-        .set("test_case_id", this.testCaseId);
+            .set("output", this.getOutput()).set("sample_input", this.getSampleInput())
+            .set("sample_output", this.getSampleOutput()).set("author", this.getOrigin())
+            .set("time_limit", this.getTimeLimit()).set("memory_limit", this.getMemoryLimit()).set("hint", this.hint)
+            .set("languages", this.languages).set("visible", this.visible).set("source", this.source)
+            .set("test_case_id", this.testCaseId);
     return update;
+  }
+
+  public static Problem createProblemByJson(String jsonStr) {
+    ObjectMapper objectMapper = new ObjectMapper();
+    try {
+      HashMap map = objectMapper.readValue(jsonStr, HashMap.class);
+      Problem problem = new Problem();
+      problem.setOrigin((String) map.get("origin"));
+      problem.setOriginId((String) map.get("origin_id"));
+      problem.setTitle((String) map.get("title"));
+      problem.setTimeLimit(String.valueOf(map.get("time_limit")));
+      problem.setMemoryLimit((String.valueOf(map.get("memory_limit"))));
+      problem.setDescription((String) map.get("description"));
+      problem.setInput((String) map.get("input"));
+      problem.setOutput((String) map.get("output"));
+      problem.setSampleInput((new String[]{(String) map.get("sample_input")}));
+      problem.setSampleOutput((new String[]{(String) map.get("sample_output")}));
+      problem.setHint((String) map.get("hint"));
+      problem.setSource((String) map.get("source"));
+      return problem;
+    } catch (JsonProcessingException e) {
+      // TODO log error
+      System.out.println(e.getMessage());
+      System.out.println(jsonStr);
+      return null;
+    }
   }
 }

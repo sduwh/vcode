@@ -18,6 +18,7 @@ public class RedisApplicationTests {
 
   @Autowired
   private RedisTemplate<String, String> strRedisTemplate;
+
   @Autowired
   private RedisTemplate<String, Serializable> serializableRedisTemplate;
 
@@ -39,6 +40,4 @@ public class RedisApplicationTests {
     else
       System.out.println("null");
   }
-
-
 }

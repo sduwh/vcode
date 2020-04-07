@@ -54,12 +54,12 @@ public class TestCaseHandler {
       return e.toString();
     }
     // write info data
-    if (dir.list() == null || dir.list().length == 0) {
+    if (dir.list() == null || Objects.requireNonNull(dir.list()).length == 0) {
       return "dir is blank";
     }
     File[] infileList = dir.listFiles((directory, name) -> name.endsWith(".in"));
     if (infileList == null) return "there are no in files";
-    List<String> filenameList = Arrays.asList(dir.list());
+    List<String> filenameList = Arrays.asList(Objects.requireNonNull(dir.list()));
 
     HashMap<String, Object> info = new HashMap<>();   // generate info data
     Vector<HashMap<String, String>> data = new Vector<>();
@@ -120,7 +120,6 @@ public class TestCaseHandler {
     File folder = new File(testCasePath);
     if (!folder.exists() && !folder.isDirectory()) {
       folder.mkdirs();
-
     }
     Path targetPath = Paths.get(testCasePath + dirName);
     try {

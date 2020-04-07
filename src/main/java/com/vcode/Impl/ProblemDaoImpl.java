@@ -20,14 +20,22 @@ import java.util.List;
 @Component
 public class ProblemDaoImpl implements ProblemDao {
 
-  @Autowired
   private MongoTemplate mongoTemplate;
 
-  @Autowired
   private TestCaseConfig testCaseConfig;
+
+  @Autowired
+  public ProblemDaoImpl(MongoTemplate mongoTemplate, TestCaseConfig testCaseConfig){
+    this.mongoTemplate = mongoTemplate;
+    this.testCaseConfig = testCaseConfig;
+  }
 
   @Override
   public void saveProblem(Problem problem) {
+    Problem p = this.findByOriginId(problem.getOriginId());
+    if (p != null) {
+      problem.setId(p.getId());
+    }
     mongoTemplate.save(problem);
   }
 

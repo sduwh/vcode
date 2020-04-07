@@ -66,7 +66,7 @@ public class RankDaoImpl implements RankDao {
       query = new Query(Criteria.where("contest_name").is(rank.getContestName()).and("problem_origin_id")
           .is(rank.getProblemOriginId()));
     }
-    Lock lock = redisLockRegistry.obtain(RedisCode.RankLock);
+    Lock lock = redisLockRegistry.obtain(RedisCode.RANK_LOCK);
 
     lock.tryLock(500, TimeUnit.MILLISECONDS);
     List<Rank> rankList = mongoTemplate.find(query, Rank.class);
