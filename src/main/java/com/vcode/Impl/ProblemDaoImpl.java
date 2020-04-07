@@ -103,8 +103,11 @@ public class ProblemDaoImpl implements ProblemDao {
   }
 
   @Override
-  public Long count(String search) {
+  public Long count(String search, boolean visible) {
     Query query = new Query();
+    if (visible) {
+      query.addCriteria(Criteria.where("visible").is(true));
+    }
     if (search.length() > 0) {
       query.addCriteria(Criteria.where("title").regex(".*" + search + ".*"));
     }

@@ -38,8 +38,6 @@ public class ProblemAdminController {
   @PostMapping("/create")
   public Response createProblem(@RequestBody @Valid Problem problem) {
     Response res = new Response();
-    // 添加origin前缀
-    problem.setOriginId(problem.getOriginId());
     // check is this problem exist
     if (problemDao.isExist(problem)) {
       res.setCode(ResponseCode.FAIL);

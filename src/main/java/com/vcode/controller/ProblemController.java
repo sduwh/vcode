@@ -50,7 +50,7 @@ public class ProblemController {
     List<Problem> problemList = problemDao.findProblems(page, size, search, visible);
     Map<String, Object> resMap = new HashMap<>();
     resMap.put("problem_list", problemList);
-    resMap.put("total", problemDao.count(search));
+    resMap.put("total", problemDao.count(search, true));
     response.setData(resMap);
     return response;
   }

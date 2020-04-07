@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface ProblemDao {
 
-  Long count(String search);
+  Long count(String search, boolean visible);
 
   void saveProblem(Problem problem);
 

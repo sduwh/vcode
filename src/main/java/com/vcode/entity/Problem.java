@@ -357,6 +357,8 @@ public class Problem implements Serializable {
       problem.setSampleOutput((new String[]{(String) map.get("sample_output")}));
       problem.setHint((String) map.get("hint"));
       problem.setSource((String) map.get("source"));
+      problem.setVisible(true);
+      problem.setAuthor((String)map.get("origin"));
       return problem;
     } catch (JsonProcessingException e) {
       // TODO log error
