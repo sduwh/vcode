@@ -43,7 +43,7 @@ public class Rank {
   private String problemOriginId;
 
   @Field(value = "used_time")
-  private int usedTime;
+  private long usedTime;
 
   @Field(value = "is_earliest")
   private boolean isEarliest;
@@ -128,11 +128,11 @@ public class Rank {
     this.problemOriginId = problemOriginId;
   }
 
-  public int getUsedTime() {
+  public long getUsedTime() {
     return usedTime;
   }
 
-  public void setUsedTime(int usedTime) {
+  public void setUsedTime(long usedTime) {
     this.usedTime = usedTime;
   }
 

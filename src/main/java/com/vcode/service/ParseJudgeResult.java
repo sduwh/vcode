@@ -45,8 +45,8 @@ public class ParseJudgeResult {
         submission.setTime(result.getTimeUsed());
         submission.setMemory(result.getMemoryUsed());
         submission.setResultMessage(result.getInfo());
-        submissionDao.saveSubmission(submission);
-      } catch (JsonProcessingException e) {
+        submissionDao.updateSubmission(submission);
+      } catch (JsonProcessingException | InterruptedException e) {
         // TODO log error
       }
     }

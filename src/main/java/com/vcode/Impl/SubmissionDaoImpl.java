@@ -3,10 +3,7 @@ package com.vcode.Impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vcode.common.RedisCode;
 import com.vcode.dao.SubmissionDao;
-import com.vcode.entity.JudgeTask;
-import com.vcode.entity.Problem;
-import com.vcode.entity.Submission;
-import com.vcode.entity.VUser;
+import com.vcode.entity.*;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -15,7 +12,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -28,20 +24,28 @@ public class SubmissionDaoImpl implements SubmissionDao {
   private VUserDaoImpl vUserDao;
   private ProblemDaoImpl problemDao;
   private RedisTemplate<String, String> redisTemplate;
+  private RankDaoImpl rankDao;
+  private ContestDaoImpl contestDao;
 
   @Autowired
   public SubmissionDaoImpl(MongoTemplate mongoTemplate,
                            VUserDaoImpl vUserDao,
                            ProblemDaoImpl problemDao,
-                           RedisTemplate<String, String> redisTemplate) {
+                           RedisTemplate<String, String> redisTemplate,
+                           RankDaoImpl rankDao,
+                           ContestDaoImpl contestDao) {
     this.mongoTemplate = mongoTemplate;
     this.vUserDao = vUserDao;
     this.problemDao = problemDao;
     this.redisTemplate = redisTemplate;
+    this.rankDao = rankDao;
+    this.contestDao = contestDao;
   }
 
   @Override
   public Submission saveSubmission(Submission submission) {
+    // inc problem's submission number
+    problemDao.incSubmissionNum(submission.getProblemOriginId());
     return mongoTemplate.save(submission);
   }
 
@@ -58,10 +62,14 @@ public class SubmissionDaoImpl implements SubmissionDao {
   }
 
   @Override
-  public void updateSubmission(Submission submission) {
-    Query query = new Query(Criteria.where("id").is(submission.getProblemOriginId()));
-    Update update = submission.getUpdateData();
-    mongoTemplate.updateFirst(query, update, Submission.class);
+  public void updateSubmission(Submission submission) throws InterruptedException {
+    // submission need objectId
+    if (submission.getResult() == 1) {
+      // inc problem's accept number
+      problemDao.incAcceptNum(submission.getProblemOriginId());
+    }
+    mongoTemplate.save(submission);
+    rankDao.updateRank(submission);
   }
 
   @Override
@@ -76,7 +84,7 @@ public class SubmissionDaoImpl implements SubmissionDao {
     if (s == null) return false;
     // if submission's status is padding
     if (s.getResult() == 5) {
-      if(!s.getContestName().equals(submission.getContestName())) return false;
+      if (!s.getContestName().equals(submission.getContestName())) return false;
       if (!s.getLanguage().equals(submission.getLanguage())) return false;
       return s.getCode().equals(submission.getCode());
     }

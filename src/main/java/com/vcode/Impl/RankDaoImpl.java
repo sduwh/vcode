@@ -2,7 +2,9 @@ package com.vcode.Impl;
 
 import com.vcode.common.RedisCode;
 import com.vcode.dao.RankDao;
+import com.vcode.entity.Contest;
 import com.vcode.entity.Rank;
+import com.vcode.entity.Submission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -29,13 +31,16 @@ import java.util.concurrent.locks.Lock;
 public class RankDaoImpl implements RankDao {
 
   private MongoTemplate mongoTemplate;
-
+  private ContestDaoImpl contestDao;
   private RedisLockRegistry redisLockRegistry;
 
   @Autowired
-  public RankDaoImpl(MongoTemplate mongoTemplate, RedisLockRegistry redisLockRegistry) {
+  public RankDaoImpl(MongoTemplate mongoTemplate,
+                     RedisLockRegistry redisLockRegistry,
+                     ContestDaoImpl contestDao) {
     this.mongoTemplate = mongoTemplate;
     this.redisLockRegistry = redisLockRegistry;
+    this.contestDao = contestDao;
   }
 
   @Override
@@ -84,6 +89,57 @@ public class RankDaoImpl implements RankDao {
     if (flag)
       rank.setEarliest(true);
     mongoTemplate.save(rank);
+    lock.unlock();
+  }
+
+  @Override
+  public Rank find(String userAccount, String contestName, String problemOriginId) {
+    Query query = new Query(Criteria
+            .where("user_account").is(userAccount)
+            .and("contest_name").is(contestName)
+            .and("problem_origin_id").is(problemOriginId)
+    );
+    return mongoTemplate.findOne(query, Rank.class);
+  }
+
+  @Override
+  public void updateRank(Submission submission) throws InterruptedException {
+    Lock lock = redisLockRegistry.obtain(RedisCode.RANK_LOCK);
+    lock.tryLock(500, TimeUnit.MILLISECONDS);
+    Rank rank = find(submission.getUserAccount(), submission.getContestName(), submission.getProblemOriginId());
+    if (rank == null) {
+      if (submission.getContestName() == null || submission.getContestName().equals("")) {
+        rank = new Rank(
+                submission.getUserAccount(),
+                submission.getNickname(),
+                submission.getContestName(),
+                0,
+                submission.getProblemOriginId()
+        );
+      } else {
+        Contest contest = contestDao.findByName(submission.getContestName());
+        rank = new Rank(
+                submission.getUserAccount(),
+                submission.getNickname(),
+                submission.getContestName(),
+                contest.getStartTime().getTime(),
+                submission.getProblemOriginId()
+        );
+      }
+    }
+    if (submission.getResult() == 1) {
+      rank.setAcNum(rank.getAcNum() + 1);
+      if (submission.getContestName() != null && !submission.getContestName().equals("") && rank.getAcNum() == 0) {
+        rank.setUsedTime(rank.getUsedTime() + (System.currentTimeMillis() - rank.getStartTime()));
+      }
+    } else {
+      rank.setWrongNum(rank.getWrongNum() + 1);
+      if (submission.getContestName() != null && !submission.getContestName().equals("")) {
+        // Time penalty, 20 minute
+        rank.setUsedTime(rank.getUsedTime() + 20 * 60 * 1000);
+      }
+    }
+    saveRank(rank);
     lock.unlock();
   }
 }

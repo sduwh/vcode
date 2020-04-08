@@ -2,7 +2,6 @@ package com.vcode.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vcode.Impl.ContestDaoImpl;
-import com.vcode.Impl.ProblemDaoImpl;
 import com.vcode.Impl.SubmissionDaoImpl;
 import com.vcode.Impl.VUserDaoImpl;
 import com.vcode.common.ResponseCode;
@@ -31,17 +30,16 @@ public class SubmissionController {
 
   private SubmissionDaoImpl submissionDao;
 
-  private ProblemDaoImpl problemDao;
 
   private ContestDaoImpl contestDao;
 
   private VUserDaoImpl userDao;
 
   @Autowired
-  public SubmissionController(SubmissionDaoImpl submissionDao, ProblemDaoImpl problemDao,
-                              ContestDaoImpl contestDao, VUserDaoImpl userDao) {
+  public SubmissionController(SubmissionDaoImpl submissionDao,
+                              ContestDaoImpl contestDao,
+                              VUserDaoImpl userDao) {
     this.submissionDao = submissionDao;
-    this.problemDao = problemDao;
     this.contestDao = contestDao;
     this.userDao = userDao;
   }
@@ -109,24 +107,6 @@ public class SubmissionController {
   /**
    * @param submission 的submission字段
    * @return com.vcode.entity.Response
-   * @Description 修改Submission详情
-   */
-  @PostMapping("/edit")
-  public Response editSubmission(@RequestBody @Valid Submission submission) {
-    Response res = new Response();
-    if (submissionDao.isExist(submission)) {
-      submissionDao.updateSubmission(submission);
-      res.setMessage("修改成功");
-      return res;
-    }
-    res.setCode(ResponseCode.FAIL);
-    res.setMessage("此Submission不存在");
-    return res;
-  }
-
-  /**
-   * @param submission 的submission字段
-   * @return com.vcode.entity.Response
    * @Description 创建一个新的Submission
    */
   @PostMapping()
@@ -166,8 +146,6 @@ public class SubmissionController {
       res.setMessage("Parse submission error");
       return res;
     }
-    // inc problem's submission number
-    problemDao.incSubmissionNum(submission.getProblemOriginId());
 
     Map<String, Object> data = new HashMap<>();
     data.put("submissionId", savedSubmission.getId().toHexString());

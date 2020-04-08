@@ -15,7 +15,7 @@ public interface SubmissionDao {
   Submission findByIdHex(String hex);
 
   // 传入最新数据的实体即可
-  void updateSubmission(Submission submission);
+  void updateSubmission(Submission submission) throws InterruptedException;
 
   void deleteProblemByOriginId(String problemOriginId);
 
