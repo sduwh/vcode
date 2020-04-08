@@ -116,42 +116,42 @@ public class VUserController {
     String token = (String) subject.getPrincipal();
     String account = JWTUtil.getAccount(token);
 
-    String oldPassword = map.get("oldPassword");
-    String newPassword = map.get("newPassword");
-    String reNewPassword = map.get("reNewPassword");
+    String oldPassword = map.get("oldPass");
+    String newPassword = map.get("pass");
+    String reNewPassword = map.get("checkPass");
+
+    if (oldPassword == null || newPassword == null || reNewPassword == null){
+      res.setCode(ResponseCode.FAIL);
+      res.setMessage("Please input all params");
+      return res;
+    }
 
     VUser user = userDao.findUserByUserAccount(account);
 
-    if (user == null) {
+    if (!user.checkPassword(oldPassword)) {
       res.setCode(ResponseCode.FAIL);
-      res.setMessage("该用户不存在");
-      return res;
-    }
-    if (user.checkPassword(oldPassword)) {
-      res.setCode(ResponseCode.FAIL);
-      res.setMessage("密码输入错误");
+      res.setMessage("The old password is wrong");
       return res;
     }
 
     if (newPassword.length() < 6) {
       res.setData(ResponseCode.FAIL);
-      res.setMessage("请确保新密码长度大于或等于6");
+      res.setMessage("The new password's length is required more than 6");
       return res;
     }
 
     if (!newPassword.equals(reNewPassword)) {
       res.setData(ResponseCode.FAIL);
-      res.setMessage("请确保两次新密码输入一致");
+      res.setMessage("The check password is wrong");
       return res;
     }
 
     user.setPassword(reNewPassword);
     userDao.saveUser(user);
-
-    HashMap<String, String> resData = new HashMap<>();
-    resData.put("token", JWTUtil.sign(user.getAccount(), user.getPassword()));
-    res.setData(resData);
-    res.setMessage("修改密码成功");
+    HashMap<String, String> data = new HashMap<>();
+    data.put("token", JWTUtil.sign(account, user.getPassword()));
+    res.setData(data);
+    res.setMessage("Reset password success");
     return res;
   }
 
