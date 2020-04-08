@@ -1,6 +1,9 @@
 package com.vcode.Impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.vcode.common.RedisCode;
 import com.vcode.dao.SubmissionDao;
+import com.vcode.entity.JudgeTask;
 import com.vcode.entity.Problem;
 import com.vcode.entity.Submission;
 import com.vcode.entity.VUser;
@@ -13,6 +16,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -21,16 +25,19 @@ import java.util.List;
 public class SubmissionDaoImpl implements SubmissionDao {
 
   private MongoTemplate mongoTemplate;
-
   private VUserDaoImpl vUserDao;
-
   private ProblemDaoImpl problemDao;
+  private RedisTemplate<String, String> redisTemplate;
 
   @Autowired
-  public SubmissionDaoImpl(MongoTemplate mongoTemplate, VUserDaoImpl vUserDao, ProblemDaoImpl problemDao) {
+  public SubmissionDaoImpl(MongoTemplate mongoTemplate,
+                           VUserDaoImpl vUserDao,
+                           ProblemDaoImpl problemDao,
+                           RedisTemplate<String, String> redisTemplate) {
     this.mongoTemplate = mongoTemplate;
     this.vUserDao = vUserDao;
     this.problemDao = problemDao;
+    this.redisTemplate = redisTemplate;
   }
 
   @Override
@@ -163,5 +170,12 @@ public class SubmissionDaoImpl implements SubmissionDao {
                     .and("problem_origin_id").is(problemOriginId)
     ).with(Sort.by(Sort.Direction.DESC, "create_time"));
     return mongoTemplate.findOne(query, Submission.class);
+  }
+
+  @Override
+  public void sendToJudgeQueue(Submission submission) throws JsonProcessingException {
+    JudgeTask judgeTask = new JudgeTask(submission);
+    String task = judgeTask.toJsonString();
+    redisTemplate.opsForList().leftPush(RedisCode.JUDGE_TASK_TOPIC, task);
   }
 }

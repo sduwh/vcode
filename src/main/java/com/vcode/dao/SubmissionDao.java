@@ -1,5 +1,6 @@
 package com.vcode.dao;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vcode.entity.Submission;
 import org.bson.types.ObjectId;
 
@@ -37,4 +38,6 @@ public interface SubmissionDao {
   Submission fillInfo(Submission submission);
 
   Submission getUserLastSubmissionBySameProblem(String account, String problemOriginId);
+
+  void sendToJudgeQueue(Submission submission) throws JsonProcessingException;
 }

@@ -1,5 +1,6 @@
 package com.vcode.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vcode.Impl.ContestDaoImpl;
 import com.vcode.Impl.ProblemDaoImpl;
 import com.vcode.Impl.SubmissionDaoImpl;
@@ -158,6 +159,13 @@ public class SubmissionController {
     }
 
     Submission savedSubmission = submissionDao.saveSubmission(submission);
+    try {
+      submissionDao.sendToJudgeQueue(savedSubmission);
+    } catch (JsonProcessingException e) {
+      res.setCode(ResponseCode.ERROR);
+      res.setMessage("Parse submission error");
+      return res;
+    }
     // inc problem's submission number
     problemDao.incSubmissionNum(submission.getProblemOriginId());
 
