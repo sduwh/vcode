@@ -156,11 +156,11 @@ public class VUserController {
   }
 
   /*
-注册逻辑
-1. 检查输入参数的合法性
-2. 检查是否有用户已经使用改账户
-3. 注册账号，创建新的用户保存至数据库
-*/
+  注册逻辑
+  1. 检查输入参数的合法性
+  2. 检查是否有用户已经使用改账户
+  3. 注册账号，创建新的用户保存至数据库
+  */
   @PostMapping("/sign-in")
   public Response signIn(@RequestBody Map<String, Object> map) throws NoSuchAlgorithmException {
     /**

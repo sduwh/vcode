@@ -50,9 +50,10 @@ public class RankDaoImpl implements RankDao {
     List<Sort.Order> sortOrderList = new LinkedList<>();
     sortOrderList.add(new Sort.Order(Sort.Direction.DESC, "acNum"));
     sortOrderList.add(new Sort.Order(Sort.Direction.ASC, "wrongNum"));
-    Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-        Aggregation.group("userAccount", "username").sum("acNum").as("acNum").sum("wrongNum").as("wrongNum"),
-        Aggregation.sort(Sort.by(sortOrderList)));
+    Aggregation aggregation = Aggregation.newAggregation(
+            Aggregation.match(criteria),
+            Aggregation.group("userAccount", "username").sum("acNum").as("acNum").sum("wrongNum").as("wrongNum"),
+            Aggregation.sort(Sort.by(sortOrderList)));
     AggregationResults<HashMap> results = mongoTemplate.aggregate(aggregation, Rank.class, HashMap.class);
     return results.getMappedResults();
   }
@@ -64,7 +65,7 @@ public class RankDaoImpl implements RankDao {
       query = new Query(Criteria.where("problem_origin_id").is(rank.getProblemOriginId()));
     } else {
       query = new Query(Criteria.where("contest_name").is(rank.getContestName()).and("problem_origin_id")
-          .is(rank.getProblemOriginId()));
+              .is(rank.getProblemOriginId()));
     }
     Lock lock = redisLockRegistry.obtain(RedisCode.RANK_LOCK);
 
@@ -73,7 +74,7 @@ public class RankDaoImpl implements RankDao {
     boolean flag = true;
     for (Rank value : rankList) {
       if (value.getAcNum() > rank.getAcNum()
-          || (value.getAcNum() == rank.getAcNum() && value.getUsedTime() > rank.getUsedTime())) {
+              || (value.getAcNum() == rank.getAcNum() && value.getUsedTime() > rank.getUsedTime())) {
         value.setEarliest(false);
         mongoTemplate.save(value);
         flag = false;

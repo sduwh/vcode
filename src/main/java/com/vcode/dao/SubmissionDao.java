@@ -1,14 +1,17 @@
 package com.vcode.dao;
 
 import com.vcode.entity.Submission;
+import org.bson.types.ObjectId;
 
 import java.util.List;
 
 public interface SubmissionDao {
 
-  void saveSubmission(Submission submission);
+  Submission saveSubmission(Submission submission);
 
-  Submission findById(String problemOriginId);
+  Submission findById(ObjectId objectId);
+
+  Submission findByIdHex(String hex);
 
   // 传入最新数据的实体即可
   void updateSubmission(Submission submission);

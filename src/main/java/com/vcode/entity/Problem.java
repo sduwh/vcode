@@ -14,7 +14,6 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author moyee
@@ -125,7 +124,7 @@ public class Problem implements Serializable {
   @Field("test_case_id")
   private String testCaseId;
 
-  public Problem(){
+  public Problem() {
     this.createTime = System.currentTimeMillis();
   }
 
@@ -234,10 +233,7 @@ public class Problem implements Serializable {
   }
 
   public void setAuthor(String author) {
-    if (author == null) {
-      author = "";
-    }
-    this.author = author;
+    this.author = author == null ? "" : author;
   }
 
   public String getTimeLimit() {
@@ -309,7 +305,7 @@ public class Problem implements Serializable {
   }
 
   public void setHint(String hint) {
-    this.hint = hint;
+    this.hint = hint == null ? "" : hint;
   }
 
   public String getSource() {
@@ -317,7 +313,7 @@ public class Problem implements Serializable {
   }
 
   public void setSource(String source) {
-    this.source = source;
+    this.source = source == null ? "" : source;
   }
 
   public String getTestCaseId() {
@@ -358,7 +354,7 @@ public class Problem implements Serializable {
       problem.setHint((String) map.get("hint"));
       problem.setSource((String) map.get("source"));
       problem.setVisible(true);
-      problem.setAuthor((String)map.get("origin"));
+      problem.setAuthor((String) map.get("origin"));
       return problem;
     } catch (JsonProcessingException e) {
       // TODO log error

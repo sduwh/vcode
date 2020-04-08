@@ -4,6 +4,7 @@ import com.vcode.dao.SubmissionDao;
 import com.vcode.entity.Problem;
 import com.vcode.entity.Submission;
 import com.vcode.entity.VUser;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,14 +34,20 @@ public class SubmissionDaoImpl implements SubmissionDao {
   }
 
   @Override
-  public void saveSubmission(Submission submission) {
-    mongoTemplate.save(submission);
+  public Submission saveSubmission(Submission submission) {
+    return mongoTemplate.save(submission);
   }
 
   @Override
-  public Submission findById(String problemOriginId) {
-    Query query = new Query(Criteria.where("id").is(problemOriginId));
+  public Submission findById(ObjectId objectId) {
+    Query query = new Query(Criteria.where("id").is(objectId));
     return mongoTemplate.findOne(query, Submission.class);
+  }
+
+  @Override
+  public Submission findByIdHex(String hex) {
+    ObjectId objectId = new ObjectId(hex);
+    return findById(objectId);
   }
 
   @Override
@@ -62,6 +69,7 @@ public class SubmissionDaoImpl implements SubmissionDao {
     if (s == null) return false;
     // if submission's status is padding
     if (s.getResult() == 5) {
+      if(!s.getContestName().equals(submission.getContestName())) return false;
       if (!s.getLanguage().equals(submission.getLanguage())) return false;
       return s.getCode().equals(submission.getCode());
     }
@@ -71,7 +79,7 @@ public class SubmissionDaoImpl implements SubmissionDao {
   @Override
   public List<Submission> findSubmissions(int page, int size, String search) {
     Pageable pageableRequest = PageRequest.of(page, size);
-    Query query = new Query(Criteria.where("contest_id").is(null));
+    Query query = new Query(Criteria.where("contest_name").is(""));
     if (search.length() > 0) {
       query.addCriteria(Criteria.where("user_nickname").regex(".*" + search + ".*"));
     }
@@ -108,7 +116,7 @@ public class SubmissionDaoImpl implements SubmissionDao {
 
   @Override
   public long count(String search) {
-    Query query = new Query();
+    Query query = new Query(Criteria.where("contest_name").is(""));
     if (search.length() > 0) {
       query.addCriteria(Criteria.where("user_nickname").regex(".*" + search + ".*"));
     }

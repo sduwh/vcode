@@ -68,11 +68,23 @@ public class Submission {
   @Field("result")
   private int result;
 
+  @Field("result_message")
+  private String resultMessage;
+
   public Submission() {
+    this.userAccount = "";
+    this.nickname = "";
+    this.problemTitle = "";
+    this.problemOriginId = "";
+    this.language = "";
+    this.code = "";
+
     this.createTime = System.currentTimeMillis();
     this.result = SubmissionResultCode.PADDING;
-    this.time = null;
-    this.memory = null;
+    this.time = "";
+    this.memory = "";
+    this.contestName = "";
+    this.resultMessage = "";
   }
 
   public Submission(String userAccount,
@@ -80,19 +92,21 @@ public class Submission {
                     String problemTitle,
                     String problemOriginId,
                     String language,
-                    String code) {
+                    String code,
+                    String resultMessage) {
     this.userAccount = userAccount;
     this.nickname = nickname;
     this.problemTitle = problemTitle;
     this.problemOriginId = problemOriginId;
     this.language = language;
     this.code = code;
+    this.resultMessage = resultMessage;
 
     this.createTime = System.currentTimeMillis();
     this.result = SubmissionResultCode.PADDING;
-    this.time = null;
-    this.memory = null;
-    this.contestName = null;
+    this.time = "";
+    this.memory = "";
+    this.contestName = "";
   }
 
   public ObjectId getId() {
@@ -183,8 +197,16 @@ public class Submission {
     this.contestName = contestName;
   }
 
-  public String getHex(){
+  public String getHex() {
     return this.id.toHexString();
+  }
+
+  public String getResultMessage() {
+    return resultMessage;
+  }
+
+  public void setResultMessage(String resultMessage) {
+    this.resultMessage = resultMessage;
   }
 
   @JsonIgnore

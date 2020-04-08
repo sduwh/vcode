@@ -80,25 +80,28 @@ public class SubmissionController {
   }
 
   /**
-   * @param problemOriginId problem的唯一标示
+   * @param submissionIdHex submission的唯一标示
    * @return com.vcode.entity.Response
    * @Description 获取Submission的详情
    */
   @GetMapping("/detail")
-  public Response getSubmissionDetail(@RequestParam(value = "originId") String problemOriginId) {
+  public Response getSubmissionDetail(@RequestParam(value = "submissionIdHex") String submissionIdHex) {
     Response res = new Response();
-    if (problemOriginId == null) {
+    if (submissionIdHex == null) {
       res.setCode(ResponseCode.ERROR);
       res.setMessage("originId is required");
       return res;
     }
-    Submission submission = submissionDao.findById(problemOriginId);
+    Submission submission = submissionDao.findByIdHex(submissionIdHex);
     if (submission == null) {
       res.setCode(ResponseCode.FAIL);
       res.setMessage("Submission is not exit");
       return res;
     }
-    res.setData(submission);
+
+    Map<String, Object> data = new HashMap<>();
+    data.put("submission", submission);
+    res.setData(data);
     return res;
   }
 
@@ -132,12 +135,12 @@ public class SubmissionController {
     Subject subject = SecurityUtils.getSubject();
     String token = (String) subject.getPrincipal();
     String account = JWTUtil.getAccount(token);
-
-    if ((submission.getContestName() == null || submission.getContestName().equals("")) && !contestDao.isExist(submission.getContestName())) {
+    if ((submission.getContestName() != null && !submission.getContestName().equals("")) && !contestDao.isExist(submission.getContestName())) {
       res.setCode(ResponseCode.FAIL);
       res.setMessage("The contest is not exist");
       return res;
     }
+
     VUser user = userDao.findUserByUserAccount(account);
     submission.setUserAccount(account);
     submission.setNickname(user.getNickname());
@@ -146,14 +149,21 @@ public class SubmissionController {
       res.setMessage("The submission is repeat");
       return res;
     }
+
     submission = submissionDao.fillInfo(submission);
     if (submission.getProblemTitle() == null) {
       res.setCode(ResponseCode.FAIL);
       res.setMessage("Problem is not exist");
       return res;
     }
-    submissionDao.saveSubmission(submission);
+
+    Submission savedSubmission = submissionDao.saveSubmission(submission);
+    // inc problem's submission number
     problemDao.incSubmissionNum(submission.getProblemOriginId());
+
+    Map<String, Object> data = new HashMap<>();
+    data.put("submissionId", savedSubmission.getId().toHexString());
+    res.setData(data);
     return res;
   }
 
