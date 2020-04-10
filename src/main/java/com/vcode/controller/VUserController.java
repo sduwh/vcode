@@ -276,7 +276,6 @@ public class VUserController {
     }
     String refreshToken = (String) map.get("refreshToken");
     String account = JWTUtil.getAccount(refreshToken);
-    System.out.println(account);
     VUser user = userDao.findUserByUserAccount(account);
     if (user == null) {
       response.setCode(ResponseCode.FAIL);

@@ -23,7 +23,6 @@ public class RankDataUtil {
         rankUser.setTotalAcNum(rankUser.getTotalAcNum() + item.getAcNum());
         rankUser.setTotalErrorNum(rankUser.getTotalErrorNum() + item.getWrongNum());
         rankUser.setTotalTimeUsed(rankUser.getTotalTimeUsed() + item.getUsedTime());
-        System.out.println(item);
         rankUserMap.put(item.getUserAccount(), rankUser);
       } else {
         // init rankUser

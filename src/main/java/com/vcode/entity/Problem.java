@@ -358,8 +358,6 @@ public class Problem implements Serializable {
       return problem;
     } catch (JsonProcessingException e) {
       // TODO log error
-      System.out.println(e.getMessage());
-      System.out.println(jsonStr);
       return null;
     }
   }
