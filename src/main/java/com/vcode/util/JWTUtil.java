@@ -14,7 +14,8 @@ public class JWTUtil {
   private static final Logger log = Logger.getLogger("jwt");
 
   // 有效时间120分钟
-  private static final long EXPIRE_TIME = 120 * 60 * 1000;
+  private static final long EXPIRE_TIME = 120 * 60  * 1000;
+  private static final long REFRESH_EXPIRE_TIME = 360 * 60 * 1000;
 
   /**
    * @param account 用户账号
@@ -25,6 +26,22 @@ public class JWTUtil {
    */
   public static String sign(String account, String secret) {
     Date date = new Date(System.currentTimeMillis() + EXPIRE_TIME);
+    Algorithm algorithm = Algorithm.HMAC256(secret);
+    return JWT.create()
+            .withClaim("account", account)
+            .withExpiresAt(date)
+            .sign(algorithm);
+  }
+
+  /**
+   * @param account 用户账号
+   * @param secret  用户密码
+   * @return a token
+   * @Description 签名加密refresh token
+   * @Date 2020/1/30 18:59
+   */
+  public static String signRefreshToken(String account, String secret) {
+    Date date = new Date(System.currentTimeMillis() + REFRESH_EXPIRE_TIME);
     Algorithm algorithm = Algorithm.HMAC256(secret);
     return JWT.create()
             .withClaim("account", account)
@@ -47,7 +64,7 @@ public class JWTUtil {
             .build();
     try {
       DecodedJWT jwt = jwtVerifier.verify(token);
-      if (!account.equals(getAccount(token))){
+      if (!account.equals(getAccount(token))) {
         return false;
       }
       if (jwt.getExpiresAt().before(new Date(System.currentTimeMillis()))) {
@@ -63,10 +80,10 @@ public class JWTUtil {
   }
 
   /**
-   * @Description get user's account in token
-   * @Date 2020/2/26 16:15
    * @param token 1
    * @return java.lang.String
+   * @Description get user's account in token
+   * @Date 2020/2/26 16:15
    */
   public static String getAccount(String token) {
     try {

@@ -120,7 +120,7 @@ public class VUserController {
     String newPassword = map.get("pass");
     String reNewPassword = map.get("checkPass");
 
-    if (oldPassword == null || newPassword == null || reNewPassword == null){
+    if (oldPassword == null || newPassword == null || reNewPassword == null) {
       res.setCode(ResponseCode.FAIL);
       res.setMessage("Please input all params");
       return res;
@@ -150,6 +150,7 @@ public class VUserController {
     userDao.saveUser(user);
     HashMap<String, String> data = new HashMap<>();
     data.put("token", JWTUtil.sign(account, user.getPassword()));
+    data.put("refreshToken", JWTUtil.signRefreshToken(account, user.getPassword()));
     res.setData(data);
     res.setMessage("Reset password success");
     return res;
@@ -212,6 +213,7 @@ public class VUserController {
 
     HashMap<String, String> resData = new HashMap<>();
     resData.put("token", JWTUtil.sign(user.getAccount(), user.getPassword()));
+    resData.put("refreshToken", JWTUtil.signRefreshToken(account, user.getPassword()));
     resData.put("nickname", user.getNickname());
     resData.put("account", user.getAccount());
     res.setData(resData);
@@ -257,9 +259,41 @@ public class VUserController {
     }
     HashMap<String, Object> resData = new HashMap<>();
     resData.put("token", JWTUtil.sign(user.getAccount(), user.getPassword()));
+    resData.put("refreshToken", JWTUtil.signRefreshToken(account, user.getPassword()));
     resData.put("user", user);
     res.setData(resData);
     log.info(String.format("user %s is login:", user.getNickname()));
     return res;
+  }
+
+  @PostMapping("/refresh-token")
+  public Response refreshTokenHandle(@RequestBody Map<String, Object> map) {
+    Response response = new Response();
+    if (map.get("refreshToken") == null) {
+      response.setCode(ResponseCode.ERROR);
+      response.setMessage("refreshToken is required");
+      return response;
+    }
+    String refreshToken = (String) map.get("refreshToken");
+    String account = JWTUtil.getAccount(refreshToken);
+    System.out.println(account);
+    VUser user = userDao.findUserByUserAccount(account);
+    if (user == null) {
+      response.setCode(ResponseCode.FAIL);
+      response.setMessage("token is not valid");
+      return response;
+    }
+    Map<String, Object> data = new HashMap<>();
+    if (JWTUtil.verify(refreshToken, user.getAccount(), user.getPassword())) {
+      String newToken = JWTUtil.sign(user.getAccount(), user.getPassword());
+      String newRefreshToken = JWTUtil.signRefreshToken(user.getAccount(), user.getPassword());
+      data.put("token", newToken);
+      data.put("refreshToken", newRefreshToken);
+      response.setData(data);
+    } else {
+      response.setCode(ResponseCode.FAIL);
+      response.setMessage("The token is not valid");
+    }
+    return response;
   }
 }
