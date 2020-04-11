@@ -4,6 +4,9 @@ import com.vcode.Impl.AboutDaoImpl;
 import com.vcode.common.ResponseCode;
 import com.vcode.entity.About;
 import com.vcode.entity.Response;
+import com.vcode.shiro.ShiroCommon;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +24,9 @@ public class AboutController {
   }
 
   @PostMapping("/doc")
+  @RequiresRoles(
+          value = {ShiroCommon.ROLE_ADMIN, ShiroCommon.ROLE_TEACHER, ShiroCommon.ROLE_CAPTION},
+          logical = Logical.OR)
   public Response editDoc(@RequestBody @Valid About about) {
 
     Response response = new Response();

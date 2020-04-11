@@ -31,21 +31,21 @@ public class DIYShiroException {
   public Response handle401(ShiroException e) {
     Response response = new Response();
     response.setCode(ResponseCode.FAIL);
-    response.setMessage("permission denied");
+    response.setMessage("Unauthorized");
     Map<String, Object> map = new HashMap<>();
     map.put("401",  e.getMessage());
     response.setData(map);
     return response;
   }
 
-  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  @ResponseStatus(HttpStatus.FORBIDDEN)
   @ExceptionHandler(UnauthorizedException.class)
   public Response handle401() {
     Response response = new Response();
     response.setCode(ResponseCode.FAIL);
-    response.setMessage("permission denied");
+    response.setMessage("Access Denied");
     Map<String, Object> map = new HashMap<>();
-    map.put("401",  "Unauthorized");
+    map.put("403",  "forbidden");
     response.setData(map);
     return response;
   }
@@ -55,7 +55,7 @@ public class DIYShiroException {
   public Response globalException(HttpServletRequest request, Throwable ex) {
     Response response = new Response();
     response.setCode(ResponseCode.ERROR);
-    response.setMessage("permission denied");
+    response.setMessage("Server Bad");
     response.setError(getStatus(request).value()+ " " +ex.getMessage());
     return response;
   }

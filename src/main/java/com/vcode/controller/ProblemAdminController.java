@@ -6,6 +6,9 @@ import com.vcode.common.ResponseCode;
 import com.vcode.config.TestCaseConfig;
 import com.vcode.entity.Problem;
 import com.vcode.entity.Response;
+import com.vcode.shiro.ShiroCommon;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +39,9 @@ public class ProblemAdminController {
    * @Date 2020/2/11 15:36
    */
   @PostMapping("/create")
+  @RequiresRoles(
+          value = {ShiroCommon.ROLE_ADMIN, ShiroCommon.ROLE_TEACHER, ShiroCommon.ROLE_CAPTION},
+          logical = Logical.OR)
   public Response createProblem(@RequestBody @Valid Problem problem) {
     Response res = new Response();
     // check is this problem exist
@@ -67,6 +73,9 @@ public class ProblemAdminController {
    * @Date 2020/2/11 15:35
    */
   @PostMapping("/edit")
+  @RequiresRoles(
+          value = {ShiroCommon.ROLE_ADMIN, ShiroCommon.ROLE_TEACHER, ShiroCommon.ROLE_CAPTION},
+          logical = Logical.OR)
   public Response editProblem(@RequestBody @Valid Problem problem) {
     Response res = new Response();
     if (!problem.getOriginId().startsWith(problem.getOrigin() + "-"))
@@ -87,6 +96,9 @@ public class ProblemAdminController {
    * @Date 2020/2/11 15:36
    */
   @DeleteMapping("/delete")
+  @RequiresRoles(
+          value = {ShiroCommon.ROLE_ADMIN, ShiroCommon.ROLE_TEACHER, ShiroCommon.ROLE_CAPTION},
+          logical = Logical.OR)
   public Response deleteProblemByOriginId(@RequestParam(value = "originId") String originId) {
     Response res = new Response();
     if (originId == null) {
@@ -105,6 +117,9 @@ public class ProblemAdminController {
    * @Date 2020/2/25 14:57
    */
   @PostMapping("/visible")
+  @RequiresRoles(
+          value = {ShiroCommon.ROLE_ADMIN, ShiroCommon.ROLE_TEACHER, ShiroCommon.ROLE_CAPTION},
+          logical = Logical.OR)
   public Response changeVisible(@RequestBody Map<String, String> map) {
     Response res = new Response();
     String originId = map.get("originId");

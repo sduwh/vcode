@@ -84,6 +84,7 @@ public class SubmissionController {
    * @Description 获取Submission的详情
    */
   @GetMapping("/detail")
+  @RequiresAuthentication
   public Response getSubmissionDetail(@RequestParam(value = "submissionIdHex") String submissionIdHex) {
     Response res = new Response();
     if (submissionIdHex == null) {

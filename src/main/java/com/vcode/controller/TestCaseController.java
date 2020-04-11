@@ -3,7 +3,10 @@ package com.vcode.controller;
 import com.vcode.Handler.TestCaseHandler;
 import com.vcode.common.ResponseCode;
 import com.vcode.entity.Response;
+import com.vcode.shiro.ShiroCommon;
 import com.vcode.util.StringUtil;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,6 +33,9 @@ public class TestCaseController {
    * @Date 2020/2/24 12:37
    */
   @PostMapping("/upload")
+  @RequiresRoles(
+          value = {ShiroCommon.ROLE_ADMIN, ShiroCommon.ROLE_TEACHER, ShiroCommon.ROLE_CAPTION},
+          logical = Logical.OR)
   public Response uploadTestCase(@RequestParam("file") MultipartFile file) {
     Response response = new Response();
     // check file is exist

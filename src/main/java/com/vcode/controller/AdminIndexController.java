@@ -41,6 +41,11 @@ public class AdminIndexController {
     this.userDao = userDao;
   }
 
+  /**
+   * @return com.vcode.entity.Response
+   * @Description some data for admin index like problem's total and user's total
+   * @Date 2020/4/11 11:10
+   */
   @GetMapping("/index")
   @RequiresRoles(
           value = {ShiroCommon.ROLE_ADMIN, ShiroCommon.ROLE_TEACHER, ShiroCommon.ROLE_CAPTION},
