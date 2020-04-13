@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -58,8 +59,14 @@ public class ProblemAdminController {
       res.setMessage("Test Case is need to upload");
       return res;
     }
-    // process testCaseFile: mv the file to target dir
-    TestCaseHandler.moveTestCaseFiles(testCaseConfig.getPath(), targetDir);
+    try {
+      // process testCaseFile: mv the file to target dir
+      TestCaseHandler.moveTestCaseFiles(testCaseConfig.getPath(), targetDir);
+    } catch (IOException e) {
+      log.warning(e.getMessage());
+      res.setCode(ResponseCode.ERROR);
+      return res;
+    }
     problemDao.saveProblem(problem);
     log.info(String.format("create problem: origin_id: %s, title: %s", problem.getOrigin(), problem.getTitle()));
     res.setData(problem);
@@ -80,12 +87,16 @@ public class ProblemAdminController {
     Response res = new Response();
     if (!problem.getOriginId().startsWith(problem.getOrigin() + "-"))
       problem.setOriginId(problem.getOriginId());
-    String err = problemDao.updateProblem(problem);
-    if (err == null) {
-      return res;
+    try {
+      String err = problemDao.updateProblem(problem);
+      if (err == null) {
+        return res;
+      }
+    } catch (IOException e) {
+      log.warning(e.getMessage());
     }
     res.setCode(ResponseCode.ERROR);
-    res.setMessage(err);
+    res.setMessage("update error");
     return res;
   }
 

@@ -1,7 +1,11 @@
 FROM java:8
 
-VOLUME /tmp
+ARG JAR_FILE=target/*.jar
 
-ADD target/vcode-0.0.1.jar /app.jar
+COPY ${JAR_FILE} /app/app.jar
 
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+WORKDIR /app
+
+EXPOSE 8000
+
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar", "--spring.profiles.active=prod"]

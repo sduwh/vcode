@@ -3,6 +3,7 @@ package com.vcode.dao;
 import com.vcode.entity.Problem;
 import org.bson.types.ObjectId;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -17,7 +18,7 @@ public interface ProblemDao {
   Problem findByOriginId(String originId);
 
   // 传入最新数据的实体即可
-  String updateProblem(Problem problem);
+  String updateProblem(Problem problem) throws IOException;
 
   void deleteProblemByOriginId(String originId);
 

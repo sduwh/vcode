@@ -38,7 +38,6 @@ public class AboutController {
 
   @GetMapping("/doc")
   public Response getDoc() {
-
     Response response = new Response();
 
     if (!aboutDao.isExist()) {

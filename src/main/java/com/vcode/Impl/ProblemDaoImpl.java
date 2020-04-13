@@ -46,7 +46,7 @@ public class ProblemDaoImpl implements ProblemDao {
   }
 
   @Override
-  public String updateProblem(Problem problem) {
+  public String updateProblem(Problem problem) throws IOException {
     // 只能编辑非爬虫获取的的题目
     if (problem.getOrigin().equals("vcode")) {
       Problem p = findByOriginId(problem.getOriginId());

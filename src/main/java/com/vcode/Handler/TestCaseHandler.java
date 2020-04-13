@@ -1,10 +1,9 @@
 package com.vcode.Handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.apache.commons.io.FileUtils;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -12,8 +11,8 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class TestCaseHandler {
 
+public class TestCaseHandler {
 
   private static Logger log = Logger.getLogger("TestCaseHandler");
 
@@ -113,7 +112,7 @@ public class TestCaseHandler {
     file.createNewFile();
   }
 
-  public static void moveTestCaseFiles(String testCasePath, String dirName) {
+  public static void moveTestCaseFiles(String testCasePath, String dirName) throws IOException {
     Path sourcePath = Paths.get("/tmp/" + dirName);
     if (!testCasePath.endsWith(File.separator))
       testCasePath += File.separator;
@@ -122,11 +121,7 @@ public class TestCaseHandler {
       folder.mkdirs();
     }
     Path targetPath = Paths.get(testCasePath + dirName);
-    try {
-      Files.move(sourcePath, targetPath);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    FileUtils.moveDirectory(sourcePath.toFile(), targetPath.toFile());
   }
 
   public static void removeTestCaseFiles(String testCasePath, String dirName) throws IOException {

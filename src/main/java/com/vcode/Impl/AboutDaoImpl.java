@@ -36,6 +36,6 @@ public class AboutDaoImpl implements AboutDao {
   @Override
   public boolean isExist() {
     About a = getAbout();
-    return a.getDoc() != null;
+    return a != null;
   }
 }
