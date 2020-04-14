@@ -7,6 +7,8 @@ import com.vcode.entity.Response;
 import com.vcode.shiro.ShiroCommon;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +19,8 @@ import javax.validation.Valid;
 public class AboutController {
 
   private AboutDaoImpl aboutDao;
+
+  private Logger logger = LoggerFactory.getLogger(this.getClass());
 
   @Autowired
   public AboutController(AboutDaoImpl aboutDao) {
@@ -32,7 +36,7 @@ public class AboutController {
     Response response = new Response();
 
     aboutDao.updateAbout(about);
-
+    logger.debug("About doc is update: " + about.getDoc());
     return response;
   }
 
@@ -43,9 +47,11 @@ public class AboutController {
     if (!aboutDao.isExist()) {
       response.setCode(ResponseCode.FAIL);
       response.setMessage("doc is not exist");
+      logger.debug(response.getMessage());
       response.setData("");
     } else {
       response.setData(aboutDao.getAbout().getDoc());
+      logger.debug(String.format("get doc: %s", response.getData()));
     }
     return response;
   }

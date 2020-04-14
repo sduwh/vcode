@@ -13,6 +13,8 @@ import com.vcode.util.JWTUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.subject.Subject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,19 +22,15 @@ import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/submission")
 public class SubmissionController {
 
-  private Logger log = Logger.getLogger("SubmissionController");
+  private Logger logger = LoggerFactory.getLogger(this.getClass());
 
   private SubmissionDaoImpl submissionDao;
-
-
   private ContestDaoImpl contestDao;
-
   private VUserDaoImpl userDao;
 
   @Autowired
@@ -60,6 +58,7 @@ public class SubmissionController {
     if (page < 1 || size < 1) {
       response.setCode(ResponseCode.ERROR);
       response.setMessage("page or size must be greater than zero");
+      logger.debug(response.getMessage());
       return response;
     }
     page--;
@@ -72,8 +71,9 @@ public class SubmissionController {
       return response;
     } catch (Exception e) {
       response.setCode(ResponseCode.ERROR);
-      response.setMessage("find error");
-      response.setError(e.getMessage());
+      response.setMessage("Find error");
+      response.setError(e.toString());
+      logger.error(String.format("page: %d, size: %d, search: %s, error: %s", page, size, search, e.toString()));
       return response;
     }
   }
@@ -86,23 +86,31 @@ public class SubmissionController {
   @GetMapping("/detail")
   @RequiresAuthentication
   public Response getSubmissionDetail(@RequestParam(value = "submissionIdHex") String submissionIdHex) {
-    Response res = new Response();
+    Response response = new Response();
     if (submissionIdHex == null) {
-      res.setCode(ResponseCode.ERROR);
-      res.setMessage("originId is required");
-      return res;
+      response.setCode(ResponseCode.ERROR);
+      response.setMessage("The params originId is required");
+      logger.debug(response.getMessage());
+      return response;
     }
     Submission submission = submissionDao.findByIdHex(submissionIdHex);
     if (submission == null) {
-      res.setCode(ResponseCode.FAIL);
-      res.setMessage("Submission is not exit");
-      return res;
+      response.setCode(ResponseCode.FAIL);
+      response.setMessage(String.format("The submission: %s is not exist", submissionIdHex));
+      logger.debug(response.getMessage());
+      return response;
     }
+
+    Subject subject = SecurityUtils.getSubject();
+    String token = (String) subject.getPrincipal();
+    String account = JWTUtil.getAccount(token);
+
+    logger.info(String.format("user: %s has accessed the submission: %s", account, submissionIdHex));
 
     Map<String, Object> data = new HashMap<>();
     data.put("submission", submission);
-    res.setData(data);
-    return res;
+    response.setData(data);
+    return response;
   }
 
   /**
@@ -113,63 +121,74 @@ public class SubmissionController {
   @PostMapping()
   @RequiresAuthentication
   public Response uploadSubmission(@RequestBody @Valid Submission submission) {
-    Response res = new Response();
+    Response response = new Response();
     Subject subject = SecurityUtils.getSubject();
     String token = (String) subject.getPrincipal();
     String account = JWTUtil.getAccount(token);
     if ((submission.getContestName() != null && !submission.getContestName().equals("")) && !contestDao.isExist(submission.getContestName())) {
-      res.setCode(ResponseCode.FAIL);
-      res.setMessage("The contest is not exist");
-      return res;
+      response.setCode(ResponseCode.FAIL);
+      response.setMessage(String.format("The contest: %s is not exist", submission.getContestName()));
+      logger.debug(response.getMessage());
+      return response;
     }
 
     VUser user = userDao.findUserByUserAccount(account);
     submission.setUserAccount(account);
     submission.setNickname(user.getNickname());
     if (submissionDao.isExist(submission)) {
-      res.setCode(ResponseCode.FAIL);
-      res.setMessage("The submission is repeat");
-      return res;
+      response.setCode(ResponseCode.FAIL);
+      response.setMessage("The submission is repeat");
+      logger.debug(response.getMessage());
+      return response;
     }
 
     submission = submissionDao.fillInfo(submission);
     if (submission.getProblemTitle() == null) {
-      res.setCode(ResponseCode.FAIL);
-      res.setMessage("Problem is not exist");
-      return res;
+      response.setCode(ResponseCode.FAIL);
+      response.setMessage("Problem is not exist");
+      logger.debug(response.getMessage());
+      return response;
     }
 
     Submission savedSubmission = submissionDao.saveSubmission(submission);
     try {
       submissionDao.sendToJudgeQueue(savedSubmission);
     } catch (JsonProcessingException e) {
-      res.setCode(ResponseCode.ERROR);
-      res.setMessage("Parse submission error");
-      return res;
+      response.setCode(ResponseCode.ERROR);
+      response.setMessage("Parse submission error");
+      response.setError(e.toString());
+      logger.error(String.format("Parse submission error: %s", e.toString()));
+      return response;
     }
-
+    logger.info(String.format("user: %s upload submission: %s success", account,
+            savedSubmission.getId().toHexString()));
     Map<String, Object> data = new HashMap<>();
     data.put("submissionId", savedSubmission.getId().toHexString());
-    res.setData(data);
-    return res;
+    response.setData(data);
+    return response;
   }
 
   /**
-   * @param map 用于获取problemOriginId
+   * @param submissionHexId 用于获取submission
    * @return com.vcode.entity.Response
    * @Description 删除一个Submission
    */
   @DeleteMapping("/delete")
-  public Response deleteSubmissionByOriginId(@RequestBody Map<String, String> map) {
-    Response res = new Response();
-    String id = map.get("problemOriginId");
-    if (id == null) {
-      res.setCode(ResponseCode.FAIL);
-      res.setMessage("OriginId is required");
-      return res;
+  @RequiresAuthentication
+  public Response deleteSubmissionByHexId(@RequestParam(value = "submissionHexId") String submissionHexId) {
+    Response response = new Response();
+    Subject subject = SecurityUtils.getSubject();
+    String token = (String) subject.getPrincipal();
+    String account = JWTUtil.getAccount(token);
+    if (submissionHexId == null) {
+      response.setCode(ResponseCode.FAIL);
+      response.setMessage("The params originId is required");
+      logger.debug(String.format("user: %s, error: %s", account, response.getMessage()));
+      return response;
     }
-    submissionDao.deleteProblemByOriginId(id);
-    return res;
+    logger.warn(String.format("user: %s has delete the submission: %s", account, submissionHexId));
+    submissionDao.deleteSubmissionByHexId(submissionHexId);
+    return response;
   }
 
   /**
@@ -187,6 +206,7 @@ public class SubmissionController {
     String account = JWTUtil.getAccount(token);
 
     List<Submission> submissionList = submissionDao.findSubmissions(problemOriginId, account);
+    logger.info(String.format("user: %s has access the submission list of problem: %s", account, problemOriginId));
     Map<String, Object> dataMap = new HashMap<>();
     dataMap.put("submissionList", submissionList);
     res.setData(dataMap);
@@ -212,11 +232,17 @@ public class SubmissionController {
     Contest contest = contestDao.findByName(contestTitle);
     if (contest == null) {
       response.setCode(ResponseCode.FAIL);
-      response.setMessage("Contest is not exist");
+      response.setMessage(String.format("Contest: %s is not exist", contestTitle));
+      logger.debug(response.getMessage());
       return response;
     }
+    Subject subject = SecurityUtils.getSubject();
+    String token = (String) subject.getPrincipal();
+    String account = JWTUtil.getAccount(token);
     page--;
     List<Submission> submissionList = submissionDao.findContestSubmission(contest.getName(), page, size, search);
+    logger.info(String.format("user: %s has access the submission list of contest: %s, page: %d, size: %d, search: " +
+            "%s", account, contestTitle, page, size, search));
     Map<String, Object> dataMap = new HashMap<>();
     dataMap.put("submissionList", submissionList);
     dataMap.put("total", submissionDao.countContestSubmission(contest.getName(), search));

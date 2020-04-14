@@ -12,8 +12,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class AboutDaoImpl implements AboutDao {
 
-  @Autowired
   MongoTemplate mongoTemplate;
+
+  @Autowired
+  public AboutDaoImpl(MongoTemplate mongoTemplate){
+    this.mongoTemplate = mongoTemplate;
+  }
 
   @Override
   public void updateAbout(About about) {

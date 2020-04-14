@@ -1,6 +1,7 @@
 package com.vcode.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.vcode.shiro.ShiroCommon;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -72,7 +73,7 @@ public class VUser implements Serializable {
     this.setAccount(account);
     this.setPassword(password);
     this.setNickname(account);
-    this.setRole("user");
+    this.setRole(ShiroCommon.ROLE_USER);
     this.setPermission("");
   }
 
@@ -141,6 +142,6 @@ public class VUser implements Serializable {
   public boolean checkPassword(String inputPassword) throws NoSuchAlgorithmException {
     MessageDigest md = MessageDigest.getInstance("MD5");
     md.update(inputPassword.getBytes());
-    return this.password.equals(DatatypeConverter.printHexBinary(md.digest()));
+    return !this.password.equals(DatatypeConverter.printHexBinary(md.digest()));
   }
 }

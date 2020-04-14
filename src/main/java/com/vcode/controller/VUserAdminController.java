@@ -5,6 +5,8 @@ import com.vcode.common.ResponseCode;
 import com.vcode.entity.Response;
 import com.vcode.entity.VUser;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,7 +14,6 @@ import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * @author moyee
@@ -24,9 +25,9 @@ import java.util.logging.Logger;
 @RequestMapping("/admin/user")
 public class VUserAdminController {
 
-  private VUserDaoImpl userDao;
+  private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-  private Logger log = Logger.getLogger("UserAdminController");
+  private VUserDaoImpl userDao;
 
   @Autowired
   public VUserAdminController(VUserDaoImpl vUserDao) {
@@ -50,6 +51,7 @@ public class VUserAdminController {
     if (page < 1 || size < 1) {
       response.setCode(ResponseCode.ERROR);
       response.setMessage("page or size must be greater than zero");
+      logger.debug(response.getMessage());
       return response;
     }
     page--;

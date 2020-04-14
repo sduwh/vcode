@@ -15,8 +15,13 @@ import java.util.List;
 
 @Component
 public class VUserDaoImpl implements VUserDao {
-  @Autowired
+
   private MongoTemplate mongoTemplate;
+
+  @Autowired
+  public VUserDaoImpl(MongoTemplate mongoTemplate) {
+    this.mongoTemplate = mongoTemplate;
+  }
 
   @Override
   public void saveUser(VUser user) {

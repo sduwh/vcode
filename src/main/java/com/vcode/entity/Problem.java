@@ -336,29 +336,24 @@ public class Problem implements Serializable {
     return update;
   }
 
-  public static Problem createProblemByJson(String jsonStr) {
+  public static Problem createProblemByJson(String jsonStr) throws JsonProcessingException {
     ObjectMapper objectMapper = new ObjectMapper();
-    try {
-      HashMap map = objectMapper.readValue(jsonStr, HashMap.class);
-      Problem problem = new Problem();
-      problem.setOrigin((String) map.get("origin"));
-      problem.setOriginId((String) map.get("origin_id"));
-      problem.setTitle((String) map.get("title"));
-      problem.setTimeLimit(String.valueOf(map.get("time_limit")));
-      problem.setMemoryLimit((String.valueOf(map.get("memory_limit"))));
-      problem.setDescription((String) map.get("description"));
-      problem.setInput((String) map.get("input"));
-      problem.setOutput((String) map.get("output"));
-      problem.setSampleInput((new String[]{(String) map.get("sample_input")}));
-      problem.setSampleOutput((new String[]{(String) map.get("sample_output")}));
-      problem.setHint((String) map.get("hint"));
-      problem.setSource((String) map.get("source"));
-      problem.setVisible(true);
-      problem.setAuthor((String) map.get("origin"));
-      return problem;
-    } catch (JsonProcessingException e) {
-      // TODO log error
-      return null;
-    }
+    HashMap map = objectMapper.readValue(jsonStr, HashMap.class);
+    Problem problem = new Problem();
+    problem.setOrigin((String) map.get("origin"));
+    problem.setOriginId((String) map.get("origin_id"));
+    problem.setTitle((String) map.get("title"));
+    problem.setTimeLimit(String.valueOf(map.get("time_limit")));
+    problem.setMemoryLimit((String.valueOf(map.get("memory_limit"))));
+    problem.setDescription((String) map.get("description"));
+    problem.setInput((String) map.get("input"));
+    problem.setOutput((String) map.get("output"));
+    problem.setSampleInput((new String[]{(String) map.get("sample_input")}));
+    problem.setSampleOutput((new String[]{(String) map.get("sample_output")}));
+    problem.setHint((String) map.get("hint"));
+    problem.setSource((String) map.get("source"));
+    problem.setVisible(true);
+    problem.setAuthor((String) map.get("origin"));
+    return problem;
   }
 }

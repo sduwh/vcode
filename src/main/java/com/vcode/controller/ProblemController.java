@@ -4,21 +4,22 @@ import com.vcode.Impl.ProblemDaoImpl;
 import com.vcode.common.ResponseCode;
 import com.vcode.entity.Problem;
 import com.vcode.entity.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/problem")
 public class ProblemController {
 
-  private ProblemDaoImpl problemDao;
+  private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-  private Logger log = Logger.getLogger("ProblemController");
+  private ProblemDaoImpl problemDao;
 
   @Autowired
   public ProblemController(ProblemDaoImpl problemDao) {
@@ -43,6 +44,7 @@ public class ProblemController {
     if (page < 1 || size < 1) {
       response.setCode(ResponseCode.ERROR);
       response.setMessage("page or size must be greater than zero");
+      logger.debug(response.getMessage());
       return response;
     }
     // 数据库中的分页从0开始
@@ -56,26 +58,29 @@ public class ProblemController {
   }
 
   /**
-   * @param originId problem的唯一标示
+   * @param problemOriginId problem的唯一标示
    * @return com.vcode.entity.Response
    * @Description 获取problems的详情
    * @Date 2020/2/11 15:34
    */
   @GetMapping("/detail")
-  public Response getProblemDetail(@RequestParam(value = "originId") String originId) {
+  public Response getProblemDetail(@RequestParam(value = "originId") String problemOriginId) {
 
     Response response = new Response();
-    if (originId == null || originId.length() == 0) {
+    if (problemOriginId == null || problemOriginId.length() == 0) {
       response.setCode(ResponseCode.ERROR);
-      response.setMessage("originId 不能为空");
+      response.setMessage("The params originId is required");
+      logger.debug(response.getMessage());
       return response;
     }
-    Problem problem = problemDao.findByOriginId(originId);
+    Problem problem = problemDao.findByOriginId(problemOriginId);
     if (problem == null) {
       response.setCode(ResponseCode.FAIL);
-      response.setMessage("Problem is not exit");
+      response.setMessage(String.format("Problem: %s is not exit", problemOriginId));
+      logger.debug(response.getMessage());
       return response;
     }
+    logger.info(String.format("Problem: %s has been accessed", problemOriginId));
     response.setData(problem);
     return response;
   }

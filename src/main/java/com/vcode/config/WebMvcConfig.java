@@ -20,7 +20,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
             .allowedHeaders("*")
             .allowedMethods("*")
             .allowedOrigins("*")
-            .allowCredentials(true) // 是否允许发送cookie
+            .allowCredentials(false) // 是否允许发送cookie
             .exposedHeaders(HttpHeaders.SET_COOKIE);;
   }
 }

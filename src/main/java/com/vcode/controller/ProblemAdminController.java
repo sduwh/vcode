@@ -7,25 +7,28 @@ import com.vcode.config.TestCaseConfig;
 import com.vcode.entity.Problem;
 import com.vcode.entity.Response;
 import com.vcode.shiro.ShiroCommon;
+import com.vcode.util.JWTUtil;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.subject.Subject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Map;
-import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/admin/problem")
 public class ProblemAdminController {
 
+  private Logger logger = LoggerFactory.getLogger(this.getClass());
+
   private ProblemDaoImpl problemDao;
-
   private TestCaseConfig testCaseConfig;
-
-  private Logger log = Logger.getLogger("ProblemAdminController");
 
   @Autowired
   public ProblemAdminController(ProblemDaoImpl problemDao, TestCaseConfig testCaseConfig) {
@@ -49,6 +52,7 @@ public class ProblemAdminController {
     if (problemDao.isExist(problem)) {
       res.setCode(ResponseCode.FAIL);
       res.setMessage("ID or Title is repeat");
+      logger.debug(res.getMessage());
       return res;
     }
     // check testCaseId
@@ -57,18 +61,24 @@ public class ProblemAdminController {
     if (!TestCaseHandler.isZipExist(fileFullPath)) {
       res.setCode(ResponseCode.FAIL);
       res.setMessage("Test Case is need to upload");
+      logger.debug(res.getMessage());
       return res;
     }
     try {
       // process testCaseFile: mv the file to target dir
       TestCaseHandler.moveTestCaseFiles(testCaseConfig.getPath(), targetDir);
     } catch (IOException e) {
-      log.warning(e.getMessage());
+      logger.error(e.toString());
       res.setCode(ResponseCode.ERROR);
       return res;
     }
+    Subject subject = SecurityUtils.getSubject();
+    String token = (String) subject.getPrincipal();
+    String account = JWTUtil.getAccount(token);
+
     problemDao.saveProblem(problem);
-    log.info(String.format("create problem: origin_id: %s, title: %s", problem.getOrigin(), problem.getTitle()));
+    logger.info(String.format("user: %s create problem: origin_id: %s, title: %s", account, problem.getOrigin(),
+            problem.getTitle()));
     res.setData(problem);
     return res;
   }
@@ -85,23 +95,30 @@ public class ProblemAdminController {
           logical = Logical.OR)
   public Response editProblem(@RequestBody @Valid Problem problem) {
     Response res = new Response();
-    if (!problem.getOriginId().startsWith(problem.getOrigin() + "-"))
+    if (!problem.getOriginId().startsWith(problem.getOrigin() + "-")) {
       problem.setOriginId(problem.getOriginId());
+    }
+    Subject subject = SecurityUtils.getSubject();
+    String token = (String) subject.getPrincipal();
+    String account = JWTUtil.getAccount(token);
     try {
       String err = problemDao.updateProblem(problem);
       if (err == null) {
+        logger.info(String.format("user: %s update the problem: %s", account, problem.getOriginId()));
         return res;
       }
     } catch (IOException e) {
-      log.warning(e.getMessage());
+      logger.error(e.toString());
     }
     res.setCode(ResponseCode.ERROR);
     res.setMessage("update error");
+    logger.debug(res.getMessage());
     return res;
+
   }
 
   /**
-   * @param originId originId
+   * @param problemOriginId problemOriginId
    * @return com.vcode.entity.Response
    * @Description 根据OriginId删除problem
    * @Date 2020/2/11 15:36
@@ -110,14 +127,19 @@ public class ProblemAdminController {
   @RequiresRoles(
           value = {ShiroCommon.ROLE_ADMIN, ShiroCommon.ROLE_TEACHER, ShiroCommon.ROLE_CAPTION},
           logical = Logical.OR)
-  public Response deleteProblemByOriginId(@RequestParam(value = "originId") String originId) {
+  public Response deleteProblemByOriginId(@RequestParam(value = "originId") String problemOriginId) {
     Response res = new Response();
-    if (originId == null) {
+    if (problemOriginId == null) {
       res.setCode(ResponseCode.FAIL);
-      res.setMessage("originId is required");
+      res.setMessage("The params originId is required");
+      logger.debug(res.getMessage());
       return res;
     }
-    problemDao.deleteProblemByOriginId(originId);
+    Subject subject = SecurityUtils.getSubject();
+    String token = (String) subject.getPrincipal();
+    String account = JWTUtil.getAccount(token);
+    problemDao.deleteProblemByOriginId(problemOriginId);
+    logger.warn(String.format("user: %s has deleted the problem: %s", account, problemOriginId));
     return res;
   }
 
@@ -133,20 +155,26 @@ public class ProblemAdminController {
           logical = Logical.OR)
   public Response changeVisible(@RequestBody Map<String, String> map) {
     Response res = new Response();
-    String originId = map.get("originId");
+    String problemOriginId = map.get("originId");
     String visibleStr = map.get("visible");
-    if (originId == null || visibleStr == null) {
+    if (problemOriginId == null || visibleStr == null) {
       res.setCode(ResponseCode.FAIL);
-      res.setMessage("originId and visible are required");
+      res.setMessage("The params originId and visible are required");
+      logger.debug(res.getMessage());
       return res;
     }
-    if (!problemDao.isExist(originId)) {
+    if (!problemDao.isExist(problemOriginId)) {
       res.setCode(ResponseCode.FAIL);
       res.setMessage("The problem is not exist");
+      logger.debug(res.getMessage());
       return res;
     }
+    Subject subject = SecurityUtils.getSubject();
+    String token = (String) subject.getPrincipal();
+    String account = JWTUtil.getAccount(token);
     boolean visible = Boolean.parseBoolean(visibleStr);
-    problemDao.updateProblemVisible(originId, visible);
+    problemDao.updateProblemVisible(problemOriginId, visible);
+    logger.info(String.format("user: %s has changed the visible of problem: %s", account, problemOriginId));
     return res;
   }
 }

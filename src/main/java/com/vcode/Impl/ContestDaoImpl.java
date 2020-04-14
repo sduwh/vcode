@@ -19,8 +19,12 @@ import java.util.List;
 @Component
 public class ContestDaoImpl implements ContestDao {
 
-  @Autowired
   private MongoTemplate mongoTemplate;
+
+  @Autowired
+  public ContestDaoImpl(MongoTemplate mongoTemplate) {
+    this.mongoTemplate = mongoTemplate;
+  }
 
   @Override
   public void saveContest(Contest contest) {

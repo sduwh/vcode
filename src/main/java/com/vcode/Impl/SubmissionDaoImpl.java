@@ -25,21 +25,18 @@ public class SubmissionDaoImpl implements SubmissionDao {
   private ProblemDaoImpl problemDao;
   private RedisTemplate<String, String> redisTemplate;
   private RankDaoImpl rankDao;
-  private ContestDaoImpl contestDao;
 
   @Autowired
   public SubmissionDaoImpl(MongoTemplate mongoTemplate,
                            VUserDaoImpl vUserDao,
                            ProblemDaoImpl problemDao,
                            RedisTemplate<String, String> redisTemplate,
-                           RankDaoImpl rankDao,
-                           ContestDaoImpl contestDao) {
+                           RankDaoImpl rankDao) {
     this.mongoTemplate = mongoTemplate;
     this.vUserDao = vUserDao;
     this.problemDao = problemDao;
     this.redisTemplate = redisTemplate;
     this.rankDao = rankDao;
-    this.contestDao = contestDao;
   }
 
   @Override
@@ -73,8 +70,8 @@ public class SubmissionDaoImpl implements SubmissionDao {
   }
 
   @Override
-  public void deleteProblemByOriginId(String problemOriginId) {
-    Query query = new Query(Criteria.where("problemOriginId").is(problemOriginId));
+  public void deleteSubmissionByHexId(String submissionHexId) {
+    Query query = new Query(Criteria.where("id").is(new ObjectId(submissionHexId)));
     mongoTemplate.remove(query, Submission.class);
   }
 

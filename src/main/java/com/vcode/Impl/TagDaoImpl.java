@@ -14,8 +14,12 @@ import java.util.List;
 @Component
 public class TagDaoImpl implements TagDao {
 
-  @Autowired
   private MongoTemplate mongoTemplate;
+
+  @Autowired
+  public TagDaoImpl(MongoTemplate mongoTemplate) {
+    this.mongoTemplate = mongoTemplate;
+  }
 
   @Override
   public void saveTag(Tag tag) {
@@ -51,6 +55,4 @@ public class TagDaoImpl implements TagDao {
   public List<Tag> findAll() {
     return mongoTemplate.findAll(Tag.class);
   }
-
-
 }

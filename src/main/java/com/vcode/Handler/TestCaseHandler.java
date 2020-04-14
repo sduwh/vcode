@@ -7,14 +7,11 @@ import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 
 public class TestCaseHandler {
-
-  private static Logger log = Logger.getLogger("TestCaseHandler");
 
   public static boolean isZipExist(String filePath) {
     File file = new File(filePath);
@@ -49,7 +46,6 @@ public class TestCaseHandler {
         extractEntryContent(zis, entry, unzipTargetPath);
       }
     } catch (IOException e) {
-      e.printStackTrace();
       return e.toString();
     }
     // write info data
@@ -80,8 +76,7 @@ public class TestCaseHandler {
       pw.println(mapper.writeValueAsString(info));
       pw.close();
     } catch (IOException e) {
-      log.warning(e.toString());
-      e.printStackTrace();
+      return e.toString();
     }
     return null;
   }

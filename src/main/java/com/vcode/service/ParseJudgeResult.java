@@ -5,6 +5,8 @@ import com.vcode.Impl.SubmissionDaoImpl;
 import com.vcode.common.RedisCode;
 import com.vcode.entity.JudgeResult;
 import com.vcode.entity.Submission;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
@@ -19,6 +21,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ParseJudgeResult {
+
+  private Logger logger = LoggerFactory.getLogger(this.getClass());
 
   private RedisTemplate<String, String> redisTemplate;
   private SubmissionDaoImpl submissionDao;
@@ -41,13 +45,16 @@ public class ParseJudgeResult {
       try {
         JudgeResult result = new JudgeResult(judgeResult);
         Submission submission = submissionDao.findByIdHex(result.getSubmitId());
-        submission.setResult(result.getResult());
-        submission.setTime(result.getTimeUsed());
-        submission.setMemory(result.getMemoryUsed());
-        submission.setResultMessage(result.getInfo());
-        submissionDao.updateSubmission(submission);
+        if (submission != null) {
+          submission.setResult(result.getResult());
+          submission.setTime(result.getTimeUsed());
+          submission.setMemory(result.getMemoryUsed());
+          submission.setResultMessage(result.getInfo());
+          submissionDao.updateSubmission(submission);
+          logger.info(String.format("update submission: %s success", submission.getId().toHexString()));
+        }
       } catch (JsonProcessingException | InterruptedException e) {
-        // TODO log error
+        logger.error(e.toString());
       }
     }
   }

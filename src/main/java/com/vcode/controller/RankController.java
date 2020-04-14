@@ -4,6 +4,8 @@ import com.vcode.Impl.RankDaoImpl;
 import com.vcode.entity.Rank;
 import com.vcode.entity.Response;
 import com.vcode.util.RankDataUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +24,8 @@ import java.util.Map;
 @RequestMapping("/rank")
 public class RankController {
 
+  private Logger logger = LoggerFactory.getLogger(this.getClass());
+
   private RankDaoImpl rankDao;
 
   @Autowired
@@ -36,10 +40,9 @@ public class RankController {
    */
   @GetMapping()
   public Response getGlobalRank() {
-
-
     Response response = new Response();
     List<HashMap> rankList = rankDao.getGlobalRankData();
+    logger.debug("The rank data of global has been accessed");
     Map<String, Object> data = new HashMap<>();
     data.put("rankList", rankList);
     response.setData(data);
@@ -56,6 +59,7 @@ public class RankController {
   public Response getContestRank(@RequestParam(value = "contestName") String contestName) {
     Response response = new Response();
     List<Rank> rankList = rankDao.getContestRankData(contestName);
+    logger.debug(String.format("The rank data of contest: %s has been accessed", contestName));
     Map<String, Object> data = new HashMap<>();
     data.put("rankList", RankDataUtil.SortRankData(rankList));
     response.setData(data);

@@ -19,7 +19,7 @@ import java.io.IOException;
  * @Date
  */
 public class JWTFilter extends BasicHttpAuthenticationFilter {
-  private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+  private Logger logger = LoggerFactory.getLogger(this.getClass());
 
   @Override
   protected boolean isLoginAttempt(ServletRequest request, ServletResponse response) {
@@ -43,6 +43,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
       try {
         executeLogin(request, response);
       } catch (Exception e) {
+        logger.error(e.toString());
         response401(request, response);
       }
     }
@@ -71,7 +72,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
       HttpServletResponse httpServletResponse = (HttpServletResponse) resp;
       httpServletResponse.sendRedirect("/api/401");
     } catch (IOException e) {
-      LOGGER.error(e.getMessage());
+      logger.error(e.getMessage());
     }
   }
 }

@@ -7,10 +7,15 @@ import com.vcode.entity.Contest;
 import com.vcode.entity.Problem;
 import com.vcode.entity.Response;
 import com.vcode.shiro.ShiroCommon;
+import com.vcode.util.JWTUtil;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.subject.Subject;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,17 +24,15 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/contest")
 public class ContestController {
 
+  private Logger logger = LoggerFactory.getLogger(this.getClass());
+
   private ContestDaoImpl contestDao;
-
   private ProblemDaoImpl problemDao;
-
-  private Logger log = Logger.getLogger("ContestController");
 
   @Autowired
   public ContestController(ContestDaoImpl contestDao, ProblemDaoImpl problemDao) {
@@ -52,6 +55,7 @@ public class ContestController {
     if (page < 1 || size < 1) {
       response.setCode(ResponseCode.ERROR);
       response.setMessage("page or size must be greater than zero");
+      logger.debug(response.getMessage());
       return response;
     }
     page--;
@@ -73,17 +77,23 @@ public class ContestController {
   @RequiresAuthentication
   public Response getContestDetail(@RequestParam(value = "contestName") String contestName) {
     Response response = new Response();
+    Subject subject = SecurityUtils.getSubject();
+    String token = (String) subject.getPrincipal();
+    String account = JWTUtil.getAccount(token);
     if (contestName == null || contestName.length() == 0) {
       response.setCode(ResponseCode.ERROR);
       response.setMessage("name is required");
+      logger.debug("the params name is required");
       return response;
     }
     Contest contest = contestDao.findByName(contestName);
     if (contest == null) {
       response.setCode(ResponseCode.FAIL);
-      response.setMessage("此Contest不存在");
+      response.setMessage(String.format("contest: %s is not exist", contestName));
+      logger.debug(response.getMessage());
       return response;
     }
+    logger.info(String.format("user: %s has access the Contest: %s", account, contestName));
     response.setData(contest);
     return response;
   }
@@ -102,10 +112,12 @@ public class ContestController {
     Response response = new Response();
     if (contestDao.isExist(contest)) {
       response.setCode(ResponseCode.FAIL);
-      response.setMessage("contest已存在");
+      response.setMessage(String.format("The contest: %s is exist", contest.getName()));
+      logger.debug(response.getMessage());
       return response;
     }
     contestDao.saveContest(contest);
+    logger.info(String.format("The contest: %s is created", contest.getName()));
     return response;
   }
 
@@ -123,10 +135,12 @@ public class ContestController {
     Response response = new Response();
     if (contestDao.isExist(contest)) {
       contestDao.updateContest(contest);
+      logger.info(String.format("The contest: %s is updated", contest.getUpdateData()));
       return response;
     }
     response.setCode(ResponseCode.FAIL);
-    response.setMessage("contest不存在");
+    response.setMessage(String.format("The contest: %s is exist", contest.getName()));
+    logger.debug(response.getMessage());
     return response;
   }
 
@@ -146,9 +160,11 @@ public class ContestController {
     if (contestName == null || contestName.length() == 0) {
       response.setCode(ResponseCode.ERROR);
       response.setMessage("name is required");
+      logger.debug("the params name is required");
       return response;
     }
     contestDao.deleteContestByName(contestName);
+    logger.warn(String.format("The contest: %s is deleted", contestName));
     return response;
   }
 
@@ -159,12 +175,14 @@ public class ContestController {
    * @Date 2020/4/11 11:04
    */
   @GetMapping("/problems")
+  @RequiresAuthentication
   public Response problems(@RequestParam(value = "contestTitle") String name) {
     Response response = new Response();
     Contest contest = contestDao.findByName(name);
     if (contest == null) {
       response.setCode(ResponseCode.FAIL);
-      response.setMessage("此Contest不存在");
+      response.setMessage(String.format("The contest: %s is not exist", name));
+      logger.debug(response.getMessage());
       return response;
     }
     LinkedList<ObjectId> problemIds = contest.getProblems();
@@ -194,11 +212,13 @@ public class ContestController {
     if (contestTitle == null) {
       response.setCode(ResponseCode.FAIL);
       response.setMessage("contestTitle is required");
+      logger.debug("the params contestTitle is required");
       return response;
     }
     if (problemOriginId == null) {
       response.setCode(ResponseCode.FAIL);
       response.setMessage("problemOriginId is required");
+      logger.debug("the params problemOriginId is required");
       return response;
     }
 
@@ -206,18 +226,26 @@ public class ContestController {
     Contest contest = contestDao.findByName(contestTitle);
     if (contest == null) {
       response.setCode(ResponseCode.FAIL);
-      response.setMessage("contest不存在");
+      response.setMessage(String.format("The contest: %s is not exist", contestTitle));
+      logger.debug(response.getMessage());
       return response;
     }
 
     Problem problem = problemDao.findByOriginId(problemOriginId);
     if (problem == null) {
       response.setCode(ResponseCode.FAIL);
-      response.setMessage("problem不存在");
+      response.setMessage(String.format("The problem: %s is not exist", problemOriginId));
+      logger.debug(response.getMessage());
       return response;
     }
 
+    Subject subject = SecurityUtils.getSubject();
+    String token = (String) subject.getPrincipal();
+    String account = JWTUtil.getAccount(token);
+
     contestDao.addProblem(contest, problem);
+    logger.info(
+            String.format("user: %s has added one problem: %s to contest: %s", account, problemOriginId, contestTitle));
     return response;
   }
 
@@ -239,17 +267,28 @@ public class ContestController {
     Contest contest = contestDao.findByName(contestTitle);
     if (contest == null) {
       response.setCode(ResponseCode.FAIL);
-      response.setMessage("contest不存在");
+      response.setMessage(String.format("The contest: %s is not exist", contestTitle));
+      logger.debug(response.getMessage());
       return response;
     }
     Problem problem = problemDao.findByOriginId(problemOriginId);
     if (problem == null) {
       response.setCode(ResponseCode.FAIL);
-      response.setMessage("problem不存在");
+      response.setMessage(String.format("The problem: %s is not exist", problemOriginId));
+      logger.debug(response.getMessage());
       return response;
     }
 
+    Subject subject = SecurityUtils.getSubject();
+    String token = (String) subject.getPrincipal();
+    String account = JWTUtil.getAccount(token);
+
     contestDao.removeProblem(contest, problem);
+    logger.warn(
+            String.format("user: %s has deleted the problem: %s from contest: %s",
+                    account,
+                    problemOriginId,
+                    contestTitle));
     return response;
   }
 
