@@ -35,3 +35,6 @@ build/
 /app
 
 /data
+
+mvnw
+mvnw.cmd
