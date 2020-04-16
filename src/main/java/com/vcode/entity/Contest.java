@@ -130,8 +130,8 @@ public class Contest {
     this.ownerAccount = ownerAccount;
   }
 
-  public boolean checkOwner(String owner_account) {
-    return this.ownerAccount.equals(owner_account);
+  public boolean checkOwner(String ownerAccount) {
+    return this.ownerAccount.equals(ownerAccount);
   }
 
   public LinkedList<ObjectId> getProblems() {

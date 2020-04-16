@@ -10,7 +10,6 @@ import org.apache.shiro.authc.AuthenticationToken;
  */
 public class JwtToken implements AuthenticationToken {
 
-  // 密钥
   private final String token;
 
   public JwtToken(String token) {

@@ -66,7 +66,7 @@ public class RankDaoImpl implements RankDao {
   @Override
   public void saveRank(Rank rank) throws InterruptedException {
     Query query;
-    if (rank.getContestName() == null || rank.getContestName().equals("")) {
+    if (rank.getContestName() == null || "".equals(rank.getContestName())) {
       query = new Query(Criteria.where("problem_origin_id").is(rank.getProblemOriginId()));
     } else {
       query = new Query(Criteria.where("contest_name").is(rank.getContestName()).and("problem_origin_id")
@@ -78,16 +78,21 @@ public class RankDaoImpl implements RankDao {
     List<Rank> rankList = mongoTemplate.find(query, Rank.class);
     boolean flag = true;
     for (Rank value : rankList) {
-      if (value.getAcNum() > rank.getAcNum()
-              || (value.getAcNum() == rank.getAcNum() && value.getUsedTime() > rank.getUsedTime())) {
+      if (value.getAcNum() < rank.getAcNum()) {
+        value.setEarliest(false);
+        mongoTemplate.save(value);
+        flag = false;
+        break;
+      } else if (value.getAcNum() == rank.getAcNum() && value.getUsedTime() > rank.getUsedTime()) {
         value.setEarliest(false);
         mongoTemplate.save(value);
         flag = false;
         break;
       }
     }
-    if (flag)
+    if (flag) {
       rank.setEarliest(true);
+    }
     mongoTemplate.save(rank);
     lock.unlock();
   }

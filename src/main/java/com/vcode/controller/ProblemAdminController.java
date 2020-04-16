@@ -98,7 +98,7 @@ public class ProblemAdminController {
           logical = Logical.OR)
   public Response editProblem(@RequestBody @Valid Problem problem) {
     Response res = new Response();
-    if (!problem.getOriginId().startsWith(problem.getOrigin() + "-")) {
+    if (!problem.getOriginId().startsWith(problem.getOrigin() + Problem.ORIGIN_ID_SPLIT_KEY)) {
       problem.setOriginId(problem.getOriginId());
     }
     Subject subject = SecurityUtils.getSubject();

@@ -56,7 +56,7 @@ public class UserAdminController {
     }
     page--;
     List<User> userList = userDao.findUsers(page, size, search);
-    Map<String, Object> data = new HashMap<>();
+    Map<String, Object> data = new HashMap<>(2);
     data.put("userList", userList);
     data.put("total", userDao.count(search));
     response.setData(data);
@@ -84,7 +84,7 @@ public class UserAdminController {
     }
     page--;
     List<User> userList = userDao.findAdmins(page, size, search);
-    Map<String, Object> data = new HashMap<>();
+    Map<String, Object> data = new HashMap<>(2);
     data.put("adminList", userList);
     data.put("total", userDao.countAdmins(search));
     response.setData(data);

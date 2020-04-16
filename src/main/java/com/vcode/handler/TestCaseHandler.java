@@ -61,13 +61,13 @@ public class TestCaseHandler {
     }
     List<String> filenameList = Arrays.asList(Objects.requireNonNull(dir.list()));
     // generate info data
-    HashMap<String, Object> info = new HashMap<>();
+    HashMap<String, Object> info = new HashMap<>(1);
     Vector<HashMap<String, String>> data = new Vector<>();
     for (File file : infileList) {
-      HashMap<String, String> infoItem = new HashMap<>();
+      HashMap<String, String> infoItem = new HashMap<>(2);
       String infileFullName = file.getName();
-      String _filename = infileFullName.substring(0, infileFullName.lastIndexOf("."));
-      String outfileFullName = _filename + ".out";
+      String itemFilename = infileFullName.substring(0, infileFullName.lastIndexOf("."));
+      String outfileFullName = itemFilename + ".out";
       if (filenameList.contains(outfileFullName)) {
         infoItem.put("input_name", infileFullName);
         infoItem.put("out_name", outfileFullName);

@@ -82,7 +82,7 @@ public class JudgeTask {
 
   public String toJsonString() throws JsonProcessingException {
     ObjectMapper objectMapper = new ObjectMapper();
-    Map<String, String> map = new HashMap<>();
+    Map<String, String> map = new HashMap<>(5);
     map.put("origin", this.origin);
     map.put("key", this.key);
     map.put("code", this.code);

@@ -1,4 +1,4 @@
-package com.vcode.util;
+package com.vcode.handler;
 
 import com.vcode.entity.Rank;
 import com.vcode.entity.RankProblemItem;
@@ -12,9 +12,9 @@ import java.util.*;
  * @Description
  * @Date
  */
-public class RankDataUtil {
+public class RankDataHandler {
   public static List<RankUser> sortRankData(List<Rank> rankList) {
-    Map<String, RankUser> rankUserMap = new HashMap<>();
+    Map<String, RankUser> rankUserMap = new HashMap<>(16);
     for (Rank item : rankList) {
       RankUser rankUser;
       if (rankUserMap.containsKey(item.getUserAccount())) {

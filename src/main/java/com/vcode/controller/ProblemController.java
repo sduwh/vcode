@@ -42,7 +42,8 @@ public class ProblemController {
   public Response getProblemList(@RequestParam(value = "page") int page,
                                  @RequestParam(value = "size") int size,
                                  @RequestParam(value = "search") String search,
-                                 @RequestParam(value = "visible") boolean visible) {
+                                 @RequestParam(value = "visible") boolean visible,
+                                 @RequestParam(value = "originType") int originType) {
     Response response = new Response();
     if (page < 1 || size < 1) {
       response.setCode(ResponseCode.ERROR);
@@ -52,10 +53,10 @@ public class ProblemController {
     }
     // 数据库中的分页从0开始
     page--;
-    List<Problem> problemList = problemDao.findProblems(page, size, search, visible);
-    Map<String, Object> resMap = new HashMap<>();
-    resMap.put("problem_list", problemList);
-    resMap.put("total", problemDao.count(search, true));
+    List<Problem> problemList = problemDao.findProblems(page, size, search, visible, originType);
+    Map<String, Object> resMap = new HashMap<>(2);
+    resMap.put("problemList", problemList);
+    resMap.put("total", problemDao.count(search, true, originType));
     response.setData(resMap);
     return response;
   }

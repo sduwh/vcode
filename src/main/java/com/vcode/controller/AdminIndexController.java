@@ -66,19 +66,19 @@ public class AdminIndexController {
 
     logger.info(String.format("user: %s has login admin", account));
 
-    Map<String, Object> problemForm = new HashMap<>();
+    Map<String, Object> problemForm = new HashMap<>(3);
     List<String> ojList = judgeServerDao.getOjSupport();
-    Long problemTotal = problemDao.count("", false);
+    Long problemTotal = problemDao.count("", false, 0);
     Long submissionTotal = submissionDao.count("");
     problemForm.put("ojList", ojList);
     problemForm.put("problemTotal", problemTotal);
     problemForm.put("submissionTotal", submissionTotal);
 
-    Map<String, Object> userForm = new HashMap<>();
+    Map<String, Object> userForm = new HashMap<>(1);
     Long userTotal = userDao.count("");
     userForm.put("userTotal", userTotal);
 
-    Map<String, Object> data = new HashMap<>();
+    Map<String, Object> data = new HashMap<>(2);
     data.put("problemForm", problemForm);
     data.put("userForm", userForm);
     response.setData(data);

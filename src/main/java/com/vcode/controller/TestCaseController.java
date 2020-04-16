@@ -75,7 +75,7 @@ public class TestCaseController {
     }
     String unzipResult = TestCaseHandler.processZipFile(zipFileFullPath, testCaseId, "/tmp");
     if (unzipResult == null) {
-      HashMap<String, Object> resData = new HashMap<>();
+      HashMap<String, Object> resData = new HashMap<>(1);
       resData.put("testCaseId", testCaseId);
       response.setData(resData);
       logger.error(String.format("user: %s upload test case: %s success", account, testCaseId));

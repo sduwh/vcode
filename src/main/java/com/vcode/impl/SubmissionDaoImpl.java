@@ -2,6 +2,7 @@ package com.vcode.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vcode.common.RedisCode;
+import com.vcode.common.SubmissionResultCode;
 import com.vcode.dao.SubmissionDao;
 import com.vcode.entity.*;
 import org.bson.types.ObjectId;
@@ -82,7 +83,7 @@ public class SubmissionDaoImpl implements SubmissionDao {
       return false;
     }
     // if submission's status is padding
-    if (s.getResult() == 5) {
+    if (s.getResult() == SubmissionResultCode.PADDING) {
       if (!s.getContestName().equals(submission.getContestName())) {
         return false;
       }

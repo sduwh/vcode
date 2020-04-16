@@ -67,7 +67,7 @@ public class SubmissionController {
     page--;
     try {
       List<Submission> submissionList = submissionDao.findSubmissions(page, size, search);
-      HashMap<String, Object> resMap = new HashMap<>();
+      HashMap<String, Object> resMap = new HashMap<>(2);
       resMap.put("submissionList", submissionList);
       resMap.put("total", submissionDao.count(search));
       response.setData(resMap);
@@ -110,7 +110,7 @@ public class SubmissionController {
 
     logger.info(String.format("user: %s has accessed the submission: %s", account, submissionIdHex));
 
-    Map<String, Object> data = new HashMap<>();
+    Map<String, Object> data = new HashMap<>(1);
     data.put("submission", submission);
     response.setData(data);
     return response;
@@ -128,7 +128,7 @@ public class SubmissionController {
     Subject subject = SecurityUtils.getSubject();
     String token = (String) subject.getPrincipal();
     String account = JwtUtil.getAccount(token);
-    if ((submission.getContestName() != null && !submission.getContestName().equals("")) && !contestDao.isExist(submission.getContestName())) {
+    if ((submission.getContestName() == null || !contestDao.isExist(submission.getContestName()))) {
       response.setCode(ResponseCode.FAIL);
       response.setMessage(String.format("The contest: %s is not exist", submission.getContestName()));
       logger.debug(response.getMessage());
@@ -165,7 +165,7 @@ public class SubmissionController {
     }
     logger.info(String.format("user: %s upload submission: %s success", account,
             savedSubmission.getId().toHexString()));
-    Map<String, Object> data = new HashMap<>();
+    Map<String, Object> data = new HashMap<>(1);
     data.put("submissionId", savedSubmission.getId().toHexString());
     response.setData(data);
     return response;
@@ -210,7 +210,7 @@ public class SubmissionController {
 
     List<Submission> submissionList = submissionDao.findSubmissions(problemOriginId, account);
     logger.info(String.format("user: %s has access the submission list of problem: %s", account, problemOriginId));
-    Map<String, Object> dataMap = new HashMap<>();
+    Map<String, Object> dataMap = new HashMap<>(1);
     dataMap.put("submissionList", submissionList);
     res.setData(dataMap);
     return res;
@@ -246,7 +246,7 @@ public class SubmissionController {
     List<Submission> submissionList = submissionDao.findContestSubmission(contest.getName(), page, size, search);
     logger.info(String.format("user: %s has access the submission list of contest: %s, page: %d, size: %d, search: " +
             "%s", account, contestTitle, page, size, search));
-    Map<String, Object> dataMap = new HashMap<>();
+    Map<String, Object> dataMap = new HashMap<>(2);
     dataMap.put("submissionList", submissionList);
     dataMap.put("total", submissionDao.countContestSubmission(contest.getName(), search));
     response.setData(dataMap);

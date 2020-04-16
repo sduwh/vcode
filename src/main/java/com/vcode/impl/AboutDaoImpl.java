@@ -24,11 +24,11 @@ public class AboutDaoImpl implements AboutDao {
 
   @Override
   public void updateAbout(About about) {
-    About _about = getAbout();
-    if (_about == null) {
+    About dbAbout = getAbout();
+    if (dbAbout == null) {
       mongoTemplate.save(about);
     } else {
-      Query query = new Query(Criteria.where("id").is(_about.getId()));
+      Query query = new Query(Criteria.where("id").is(dbAbout.getId()));
       Update update = new Update().set("doc", about.getDoc());
       mongoTemplate.updateFirst(query, update, About.class);
     }

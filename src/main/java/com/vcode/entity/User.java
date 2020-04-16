@@ -25,6 +25,9 @@ public class User implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
+  public static final int PASSWORD_LENGTH = 6;
+  public static final int ACCOUNT_LENGTH = 8;
+
   @JsonIgnore
   @Id
   private ObjectId id;

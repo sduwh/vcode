@@ -7,9 +7,25 @@ import com.vcode.entity.About;
  */
 public interface AboutDao {
 
-    void updateAbout(About about);
+  /**
+   * 更新about
+   *
+   * @param about about实例对象
+   */
+  void updateAbout(About about);
 
-    About getAbout();
+  /**
+   * 获取数据库中的about
+   *
+   * @return About 实例对象
+   */
+  About getAbout();
 
-    boolean isExist();
+
+  /**
+   * 返回数据库中是否存在about数据
+   *
+   * @return 布尔值，true存在，false不存在
+   */
+  boolean isExist();
 }

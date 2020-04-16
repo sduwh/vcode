@@ -9,5 +9,10 @@ import java.util.List;
  * @Date
  */
 public interface JudgeServerDao {
+  /**
+   * 获取爬虫所支持的OJ
+   *
+   * @return Oj列表
+   */
   List<String> getOjSupport();
 }

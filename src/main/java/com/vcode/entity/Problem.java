@@ -3,6 +3,7 @@ package com.vcode.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vcode.common.ProblemDifficultCode;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -25,6 +26,8 @@ import java.util.HashMap;
 public class Problem implements Serializable {
 
   private static final long serialVersionUID = 1L;
+
+  public static final String ORIGIN_ID_SPLIT_KEY = "-";
 
   @JsonIgnore
   @Id
@@ -259,7 +262,7 @@ public class Problem implements Serializable {
   }
 
   public void setDifficulty(int difficulty) {
-    if (difficulty == 0 || difficulty == 1 || difficulty == 2) {
+    if (difficulty == ProblemDifficultCode.LOW || difficulty == ProblemDifficultCode.MID || difficulty == ProblemDifficultCode.HEIGHT) {
       this.difficulty = difficulty;
     } else {
       this.difficulty = 1;

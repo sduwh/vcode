@@ -35,8 +35,8 @@ public class ContestDaoImpl implements ContestDao {
   }
 
   @Override
-  public Contest findByName(String Name) {
-    Query query = new Query(Criteria.where("name").is(Name));
+  public Contest findByName(String name) {
+    Query query = new Query(Criteria.where("name").is(name));
     return mongoTemplate.findOne(query, Contest.class);
   }
 
@@ -48,8 +48,8 @@ public class ContestDaoImpl implements ContestDao {
   }
 
   @Override
-  public void deleteContestByName(String Name) {
-    Query query = new Query(Criteria.where("name").is(Name));
+  public void deleteContestByName(String name) {
+    Query query = new Query(Criteria.where("name").is(name));
     mongoTemplate.remove(query, Contest.class);
   }
 
@@ -68,15 +68,13 @@ public class ContestDaoImpl implements ContestDao {
   @Override
   public boolean isExist(Contest contest) {
     Query query = new Query(Criteria.where("name").is(contest.getName()));
-    Contest _contest = mongoTemplate.findOne(query, Contest.class);
-    return _contest != null;
+    return mongoTemplate.exists(query, Contest.class);
   }
 
   @Override
   public boolean isExist(String contestName) {
     Query query = new Query(Criteria.where("name").is(contestName));
-    Contest _contest = mongoTemplate.findOne(query, Contest.class);
-    return _contest != null;
+    return mongoTemplate.exists(query, Contest.class);
   }
 
   @Override
@@ -116,7 +114,9 @@ public class ContestDaoImpl implements ContestDao {
   public boolean checkPassword(String contestName, String password) {
     Query query = new Query(Criteria.where("name").is(contestName));
     Contest contest = mongoTemplate.findOne(query, Contest.class);
-    if (contest == null) return false;
+    if (contest == null) {
+      return false;
+    }
     return contest.checkPassword(password);
   }
 }

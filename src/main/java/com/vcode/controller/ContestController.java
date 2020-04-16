@@ -62,7 +62,7 @@ public class ContestController {
       return response;
     }
     page--;
-    HashMap<String, Object> resMap = new HashMap<>();
+    HashMap<String, Object> resMap = new HashMap<>(2);
     List<Contest> contestList = contestDao.findContests(page, size, search);
     resMap.put("contestList", contestList);
     resMap.put("total", contestDao.count(search));
@@ -190,7 +190,7 @@ public class ContestController {
     }
     LinkedList<ObjectId> problemIds = contest.getProblems();
     List<Problem> problems = problemDao.getAllProblems(problemIds);
-    HashMap<String, Object> map = new HashMap<>();
+    HashMap<String, Object> map = new HashMap<>(1);
     map.put("problems", problems);
     response.setData(map);
     return response;
@@ -263,7 +263,7 @@ public class ContestController {
   @RequiresRoles(
           value = {ShiroCommon.ROLE_ADMIN, ShiroCommon.ROLE_TEACHER, ShiroCommon.ROLE_CAPTION},
           logical = Logical.OR)
-  public Response RemoveProblem(@RequestParam(value = "problemOriginId") String problemOriginId,
+  public Response removeProblem(@RequestParam(value = "problemOriginId") String problemOriginId,
                                 @RequestParam(value = "contestTitle") String contestTitle) {
     Response response = new Response();
     // find Object
@@ -307,7 +307,7 @@ public class ContestController {
   public Response checkPassword(@RequestParam(value = "contestName") String contestName,
                                 @RequestParam(value = "password") String password) {
     Response response = new Response();
-    Map<String, Object> data = new HashMap<>();
+    Map<String, Object> data = new HashMap<>(1);
     data.put("result", contestDao.checkPassword(contestName, password));
     response.setData(data);
     return response;

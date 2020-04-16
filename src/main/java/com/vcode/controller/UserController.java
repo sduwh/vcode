@@ -53,7 +53,7 @@ public class UserController {
       return response;
     }
     logger.info(String.format("user: %s has access full user info", account));
-    HashMap<String, Object> resData = new HashMap<>();
+    HashMap<String, Object> resData = new HashMap<>(1);
     resData.put("user", user);
     response.setData(resData);
     return response;
@@ -67,6 +67,8 @@ public class UserController {
   @PostMapping()
   @RequiresAuthentication
   public Response updateUserInfo(@RequestBody Map<String, String> map) {
+    String nicknameKey = "nickname";
+    String emailKey = "email";
     Response response = new Response();
     Subject subject = SecurityUtils.getSubject();
     String token = (String) subject.getPrincipal();
@@ -74,11 +76,11 @@ public class UserController {
     String email = "";
     String nickname = "";
 
-    if (map.get("nickname") != null) {
-      nickname = map.get("nickname");
+    if (map.get(nicknameKey) != null) {
+      nickname = map.get(nicknameKey);
     }
-    if (map.get("email") != null) {
-      email = map.get("email");
+    if (map.get(emailKey) != null) {
+      email = map.get(emailKey);
     }
 
     User user = userDao.findUserByUserAccount(account);
@@ -97,7 +99,7 @@ public class UserController {
       return response;
     }
     logger.info(String.format("user: %s has been updated", account));
-    Map<String, Object> resData = new HashMap<>();
+    Map<String, Object> resData = new HashMap<>(1);
     resData.put("user", user);
     response.setData(resData);
     return response;
@@ -136,7 +138,7 @@ public class UserController {
       return response;
     }
 
-    if (newPassword.length() < 6) {
+    if (newPassword.length() < User.PASSWORD_LENGTH) {
       response.setData(ResponseCode.FAIL);
       response.setMessage("The new password's length is required more than 6");
       logger.debug(String.format("user: %s, error: %s", account, response.getMessage()));
@@ -154,7 +156,7 @@ public class UserController {
     userDao.saveUser(user);
     logger.info(String.format("user: %s has changed the password", account));
 
-    HashMap<String, String> data = new HashMap<>();
+    HashMap<String, String> data = new HashMap<>(2);
     data.put("token", JwtUtil.sign(account, user.getPassword()));
     data.put("refreshToken", JwtUtil.signRefreshToken(account, user.getPassword()));
     response.setData(data);
@@ -163,10 +165,10 @@ public class UserController {
   }
 
   /**
-   * @Description 用户注册api
-   * @Date 2020/1/31 01:40
    * @param map 参数map
    * @return 注册结果（包含token）
+   * @Description 用户注册api
+   * @Date 2020/1/31 01:40
    */
   @PostMapping("/sign-in")
   public Response signIn(@RequestBody Map<String, Object> map) throws NoSuchAlgorithmException {
@@ -176,24 +178,27 @@ public class UserController {
       2. 检查是否有用户已经使用改账户
       3. 注册账号，创建新的用户保存至数据库
     */
+    String accountKey = "account";
+    String passwordKey = "password";
+    String rePasswordKey = "rePassword";
     Response res = new Response();
-    if (map.get("account") == null || map.get("password") == null || map.get("rePassword") == null) {
+    if (map.get(accountKey) == null || map.get(passwordKey) == null || map.get(rePasswordKey) == null) {
       res.setCode(ResponseCode.ERROR);
-      res.setMessage("请输入完整参数");
+      res.setMessage("Please input all params");
       return res;
     }
     // 获取参数
-    String account = map.get("account").toString();
-    String password = map.get("password").toString();
-    String rePassword = map.get("rePassword").toString();
+    String account = map.get(accountKey).toString();
+    String password = map.get(passwordKey).toString();
+    String rePassword = map.get(rePasswordKey).toString();
 
-    if (account.length() < 8) {
+    if (account.length() < User.ACCOUNT_LENGTH) {
       res.setCode(ResponseCode.FAIL);
       res.setMessage("account's length must be more than 8");
       return res;
     }
 
-    if (password.length() < 6) {
+    if (password.length() < User.PASSWORD_LENGTH) {
       res.setCode(ResponseCode.FAIL);
       res.setMessage("password's length must be more than 6");
       return res;
@@ -215,7 +220,7 @@ public class UserController {
     user = new User(account, password);
     userDao.saveUser(user);
 
-    HashMap<String, String> resData = new HashMap<>();
+    HashMap<String, String> resData = new HashMap<>(4);
     resData.put("token", JwtUtil.sign(user.getAccount(), user.getPassword()));
     resData.put("refreshToken", JwtUtil.signRefreshToken(account, user.getPassword()));
     resData.put("nickname", user.getNickname());
@@ -241,8 +246,10 @@ public class UserController {
       2. 检查输入账号是否存在对应的用户
       3. 若存在，检查密码是否一致
     */
+    String accountKey = "account";
+    String passwordKey = "password";
     Response response = new Response();
-    if (map.get("account") == null || map.get("password") == null) {
+    if (map.get(accountKey) == null || map.get(passwordKey) == null) {
       response.setCode(ResponseCode.ERROR);
       response.setMessage("请输入完整参数");
       logger.debug(response.getMessage());
@@ -264,7 +271,7 @@ public class UserController {
       logger.debug(response.getMessage());
       return response;
     }
-    HashMap<String, Object> resData = new HashMap<>();
+    HashMap<String, Object> resData = new HashMap<>(3);
     resData.put("token", JwtUtil.sign(user.getAccount(), user.getPassword()));
     resData.put("refreshToken", JwtUtil.signRefreshToken(account, user.getPassword()));
     resData.put("user", user);
@@ -275,8 +282,9 @@ public class UserController {
 
   @PostMapping("/refresh-token")
   public Response refreshTokenHandle(@RequestBody Map<String, Object> map) {
+    String refreshTokenKey = "refreshToken";
     Response response = new Response();
-    if (map.get("refreshToken") == null) {
+    if (map.get(refreshTokenKey) == null) {
       response.setCode(ResponseCode.ERROR);
       response.setMessage("refreshToken is required");
       logger.debug(response.getMessage());
@@ -291,7 +299,7 @@ public class UserController {
       logger.debug(response.getMessage());
       return response;
     }
-    Map<String, Object> data = new HashMap<>();
+    Map<String, Object> data = new HashMap<>(2);
     if (JwtUtil.verify(refreshToken, user.getAccount(), user.getPassword())) {
       String newToken = JwtUtil.sign(user.getAccount(), user.getPassword());
       String newRefreshToken = JwtUtil.signRefreshToken(user.getAccount(), user.getPassword());

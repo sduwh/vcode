@@ -1,5 +1,6 @@
 package com.vcode.impl;
 
+import com.vcode.common.MongoCode;
 import com.vcode.handler.TestCaseHandler;
 import com.vcode.config.TestCaseConfig;
 import com.vcode.dao.ProblemDao;
@@ -28,7 +29,7 @@ public class ProblemDaoImpl implements ProblemDao {
   private final TestCaseConfig testCaseConfig;
 
   @Autowired
-  public ProblemDaoImpl(MongoTemplate mongoTemplate, TestCaseConfig testCaseConfig){
+  public ProblemDaoImpl(MongoTemplate mongoTemplate, TestCaseConfig testCaseConfig) {
     this.mongoTemplate = mongoTemplate;
     this.testCaseConfig = testCaseConfig;
   }
@@ -51,7 +52,7 @@ public class ProblemDaoImpl implements ProblemDao {
   @Override
   public String updateProblem(Problem problem) throws IOException {
     // 只能编辑非爬虫获取的的题目
-    if ("vcode".equals(problem.getOrigin())) {
+    if (MongoCode.VCODE.equals(problem.getOrigin())) {
       Problem p = findByOriginId(problem.getOriginId());
       if (p == null) {
         return "problem is not exit";
@@ -92,7 +93,7 @@ public class ProblemDaoImpl implements ProblemDao {
   }
 
   @Override
-  public List<Problem> findProblems(int page, int size, String search, boolean visible) {
+  public List<Problem> findProblems(int page, int size, String search, boolean visible, int originType) {
     Pageable pageableRequest = PageRequest.of(page, size);
     Query query = new Query();
     if (visible) {
@@ -101,18 +102,36 @@ public class ProblemDaoImpl implements ProblemDao {
     if (search.length() > 0) {
       query.addCriteria(Criteria.where("title").regex(".*" + search + ".*"));
     }
+    switch (originType) {
+      case 1:
+        query.addCriteria(Criteria.where("origin").is(MongoCode.VCODE));
+        break;
+      case 2:
+        query.addCriteria(Criteria.where("origin").ne(MongoCode.VCODE));
+        break;
+      default:
+    }
     query.with(pageableRequest);
     return mongoTemplate.find(query, Problem.class);
   }
 
   @Override
-  public Long count(String search, boolean visible) {
+  public Long count(String search, boolean visible, int originType) {
     Query query = new Query();
     if (visible) {
       query.addCriteria(Criteria.where("visible").is(true));
     }
     if (search.length() > 0) {
       query.addCriteria(Criteria.where("title").regex(".*" + search + ".*"));
+    }
+    switch (originType) {
+      case 1:
+        query.addCriteria(Criteria.where("origin").is(MongoCode.VCODE));
+        break;
+      case 2:
+        query.addCriteria(Criteria.where("origin").ne(MongoCode.VCODE));
+        break;
+      default:
     }
     return mongoTemplate.count(query, Problem.class);
   }

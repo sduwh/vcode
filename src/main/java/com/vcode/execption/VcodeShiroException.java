@@ -31,7 +31,7 @@ public class VcodeShiroException {
     Response response = new Response();
     response.setCode(ResponseCode.FAIL);
     response.setMessage("Unauthorized");
-    Map<String, Object> map = new HashMap<>();
+    Map<String, Object> map = new HashMap<>(1);
     map.put("401", e.getMessage());
     response.setData(map);
     return response;
@@ -43,7 +43,7 @@ public class VcodeShiroException {
     Response response = new Response();
     response.setCode(ResponseCode.FAIL);
     response.setMessage("Access Denied");
-    Map<String, Object> map = new HashMap<>();
+    Map<String, Object> map = new HashMap<>(1);
     map.put("403", "forbidden");
     response.setData(map);
     return response;
