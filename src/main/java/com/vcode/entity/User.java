@@ -17,8 +17,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
+/**
+ * @author moyee
+ */
 @Document("v_user")
-public class VUser implements Serializable {
+public class User implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
@@ -61,13 +64,13 @@ public class VUser implements Serializable {
   @Field("permission")
   private String permission;
 
-  public VUser() {
+  public User() {
     this.setCreateTime();
     this.setEmail(null);
     this.setNickname("");
   }
 
-  public VUser(String account, String password) throws NoSuchAlgorithmException {
+  public User(String account, String password) throws NoSuchAlgorithmException {
     this.setCreateTime();
     this.setEmail("");
     this.setAccount(account);

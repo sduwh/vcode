@@ -1,4 +1,4 @@
-package com.vcode.Impl;
+package com.vcode.impl;
 
 import com.vcode.dao.AboutDao;
 import com.vcode.entity.About;
@@ -9,10 +9,13 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author moyee
+ */
 @Component
 public class AboutDaoImpl implements AboutDao {
 
-  MongoTemplate mongoTemplate;
+  private final MongoTemplate mongoTemplate;
 
   @Autowired
   public AboutDaoImpl(MongoTemplate mongoTemplate){

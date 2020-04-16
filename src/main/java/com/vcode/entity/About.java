@@ -8,6 +8,9 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import javax.validation.constraints.NotNull;
 
+/**
+ * @author moyee
+ */
 @Document("about")
 public class About {
     @JsonIgnore

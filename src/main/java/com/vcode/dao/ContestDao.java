@@ -7,6 +7,7 @@ import java.util.List;
 
 /**
  * 操作题组的实体类的接口
+ * @author moyee
  */
 public interface ContestDao {
 
@@ -14,7 +15,6 @@ public interface ContestDao {
 
   Contest findByName(String Name);
 
-  // 传入最新数据的实体即可
   void updateContest(Contest contest);
 
   void deleteContestByName(String Name);

@@ -1,7 +1,7 @@
 package com.vcode.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.vcode.Impl.SubmissionDaoImpl;
+import com.vcode.impl.SubmissionDaoImpl;
 import com.vcode.common.RedisCode;
 import com.vcode.entity.JudgeResult;
 import com.vcode.entity.Submission;
@@ -22,10 +22,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class ParseJudgeResult {
 
-  private Logger logger = LoggerFactory.getLogger(this.getClass());
+  private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-  private RedisTemplate<String, String> redisTemplate;
-  private SubmissionDaoImpl submissionDao;
+  private final RedisTemplate<String, String> redisTemplate;
+  private final SubmissionDaoImpl submissionDao;
 
   @Autowired
   public ParseJudgeResult(RedisTemplate<String, String> redisTemplate, SubmissionDaoImpl submissionDao) {

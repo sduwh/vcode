@@ -1,10 +1,8 @@
 package com.vcode.shiro;
 
-import com.vcode.Impl.VUserDaoImpl;
-import com.vcode.entity.VUser;
-import com.vcode.util.JWTUtil;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.vcode.impl.UserDaoImpl;
+import com.vcode.entity.User;
+import com.vcode.util.JwtUtil;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -13,6 +11,8 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,29 +30,29 @@ import java.util.Set;
 
 @Service
 public class Realm extends AuthorizingRealm {
-  private static final Logger LOGGER = LogManager.getLogger(Realm.class);
 
-  private VUserDaoImpl userDao;
+  private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+  private UserDaoImpl userDao;
 
   @Autowired
-  public void setUserService(VUserDaoImpl userDao) {
+  public void setUserService(UserDaoImpl userDao) {
     this.userDao = userDao;
   }
 
   @Override
   public boolean supports(AuthenticationToken token) {
-    return token instanceof JWTToken;
+    return token instanceof JwtToken;
   }
 
   /**
    * 获得用户权限和角色
-   * @param principals
-   * @return
+   * @param principals jwt
    */
   @Override
   protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-    String account = JWTUtil.getAccount(principals.toString());
-    VUser user = userDao.findUserByUserAccount(account);
+    String account = JwtUtil.getAccount(principals.toString());
+    User user = userDao.findUserByUserAccount(account);
     SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
     simpleAuthorizationInfo.addRole(user.getRole());
     Set<String> permission = new HashSet<>(Arrays.asList(user.getPermission().split(",")));
@@ -62,25 +62,24 @@ public class Realm extends AuthorizingRealm {
 
   /**
    * 身份校验
-   * @param auth
-   * @return
+   * @param auth twt
    * @throws AuthenticationException
    */
   @Override
   protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken auth) throws AuthenticationException {
     String token = (String) auth.getCredentials();
     // 解密获得username，用于和数据库进行对比
-    String username = JWTUtil.getAccount(token);
+    String username = JwtUtil.getAccount(token);
     if (username == null) {
       throw new AuthenticationException("token invalid");
     }
 
-    VUser userBean = userDao.findUserByUserAccount(username);
+    User userBean = userDao.findUserByUserAccount(username);
     if (userBean == null) {
       throw new AuthenticationException("User didn't existed!");
     }
 
-    if (! JWTUtil.verify(token, username, userBean.getPassword())) {
+    if (! JwtUtil.verify(token, username, userBean.getPassword())) {
       throw new AuthenticationException("Username or password error");
     }
 

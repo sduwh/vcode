@@ -20,9 +20,9 @@ import java.util.Map;
  * @Date 2020/2/25
  */
 @RestControllerAdvice
-public class DIYShiroException {
+public class VcodeShiroException {
 
-  private Logger logger = LoggerFactory.getLogger(this.getClass());
+  private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
   @ResponseStatus(HttpStatus.UNAUTHORIZED)
   @ExceptionHandler(ShiroException.class)

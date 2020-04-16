@@ -6,8 +6,8 @@ import java.util.List;
 
 /**
  * 标签实体的数据接口
+ * @author moyee
  */
-
 public interface TagDao {
 
   void saveTag(Tag tag);

@@ -19,7 +19,6 @@ import java.util.HashMap;
  * @author moyee
  * @version 1.0.0
  * @Description 问题实体
- * @return 新的问题对象
  * @since 1.0.0
  */
 @Document("problem")
@@ -62,13 +61,13 @@ public class Problem implements Serializable {
   @NotBlank(message = "input不能为空格字符串")
   @NotNull(message = "input不能为null")
   @Field("input")
-  private String input; // 输入描述
+  private String input;
 
   @NotEmpty(message = "output不能为空")
   @NotBlank(message = "output不能为空格字符串")
   @NotNull(message = "output不能为null")
   @Field("output")
-  private String output; // 输出描述
+  private String output;
 
   @NotNull(message = "sample_input不能为null")
   @Field("sample_input")
@@ -88,13 +87,13 @@ public class Problem implements Serializable {
   @NotBlank(message = "time_limit不能为空格字符串")
   @NotNull(message = "time_limit不能为null")
   @Field("time_limit")
-  private String timeLimit; // ms
+  private String timeLimit;
 
   @NotEmpty(message = "memory_limit不能为空")
   @NotBlank(message = "memory_limit不能为空格字符串")
   @NotNull(message = "memory_limit不能为null")
   @Field("memory_limit")
-  private String memoryLimit; // MB
+  private String memoryLimit;
 
   @NotNull(message = "visible is required")
   @Field("visible")
@@ -107,8 +106,11 @@ public class Problem implements Serializable {
   @Field("hint")
   private String hint;
 
+  /**
+   * 0 => low; 1 => mid; 2 => height;
+   */
   @Field("difficulty")
-  private int difficulty; // 0 => low; 1 => mid; 2 => height;
+  private int difficulty;
 
   @Field("submission_number")
   private long submissionNumber;

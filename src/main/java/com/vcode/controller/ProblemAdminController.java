@@ -1,13 +1,13 @@
 package com.vcode.controller;
 
-import com.vcode.Handler.TestCaseHandler;
-import com.vcode.Impl.ProblemDaoImpl;
+import com.vcode.handler.TestCaseHandler;
+import com.vcode.impl.ProblemDaoImpl;
 import com.vcode.common.ResponseCode;
 import com.vcode.config.TestCaseConfig;
 import com.vcode.entity.Problem;
 import com.vcode.entity.Response;
 import com.vcode.shiro.ShiroCommon;
-import com.vcode.util.JWTUtil;
+import com.vcode.util.JwtUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -21,14 +21,17 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Map;
 
+/**
+ * @author moyee
+ */
 @RestController
 @RequestMapping("/admin/problem")
 public class ProblemAdminController {
 
-  private Logger logger = LoggerFactory.getLogger(this.getClass());
+  private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-  private ProblemDaoImpl problemDao;
-  private TestCaseConfig testCaseConfig;
+  private final ProblemDaoImpl problemDao;
+  private final TestCaseConfig testCaseConfig;
 
   @Autowired
   public ProblemAdminController(ProblemDaoImpl problemDao, TestCaseConfig testCaseConfig) {
@@ -74,7 +77,7 @@ public class ProblemAdminController {
     }
     Subject subject = SecurityUtils.getSubject();
     String token = (String) subject.getPrincipal();
-    String account = JWTUtil.getAccount(token);
+    String account = JwtUtil.getAccount(token);
 
     problemDao.saveProblem(problem);
     logger.info(String.format("user: %s create problem: origin_id: %s, title: %s", account, problem.getOrigin(),
@@ -100,7 +103,7 @@ public class ProblemAdminController {
     }
     Subject subject = SecurityUtils.getSubject();
     String token = (String) subject.getPrincipal();
-    String account = JWTUtil.getAccount(token);
+    String account = JwtUtil.getAccount(token);
     try {
       String err = problemDao.updateProblem(problem);
       if (err == null) {
@@ -137,7 +140,7 @@ public class ProblemAdminController {
     }
     Subject subject = SecurityUtils.getSubject();
     String token = (String) subject.getPrincipal();
-    String account = JWTUtil.getAccount(token);
+    String account = JwtUtil.getAccount(token);
     problemDao.deleteProblemByOriginId(problemOriginId);
     logger.warn(String.format("user: %s has deleted the problem: %s", account, problemOriginId));
     return res;
@@ -171,7 +174,7 @@ public class ProblemAdminController {
     }
     Subject subject = SecurityUtils.getSubject();
     String token = (String) subject.getPrincipal();
-    String account = JWTUtil.getAccount(token);
+    String account = JwtUtil.getAccount(token);
     boolean visible = Boolean.parseBoolean(visibleStr);
     problemDao.updateProblemVisible(problemOriginId, visible);
     logger.info(String.format("user: %s has changed the visible of problem: %s", account, problemOriginId));

@@ -1,4 +1,4 @@
-package com.vcode.Handler;
+package com.vcode.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
@@ -11,6 +11,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 
+/**
+ * @author yaorui
+ */
 public class TestCaseHandler {
 
   public static boolean isZipExist(String filePath) {
@@ -53,10 +56,12 @@ public class TestCaseHandler {
       return "dir is blank";
     }
     File[] infileList = dir.listFiles((directory, name) -> name.endsWith(".in"));
-    if (infileList == null) return "there are no in files";
+    if (infileList == null) {
+      return "there are no in files";
+    }
     List<String> filenameList = Arrays.asList(Objects.requireNonNull(dir.list()));
-
-    HashMap<String, Object> info = new HashMap<>();   // generate info data
+    // generate info data
+    HashMap<String, Object> info = new HashMap<>();
     Vector<HashMap<String, String>> data = new Vector<>();
     for (File file : infileList) {
       HashMap<String, String> infoItem = new HashMap<>();
@@ -109,8 +114,9 @@ public class TestCaseHandler {
 
   public static void moveTestCaseFiles(String testCasePath, String dirName) throws IOException {
     Path sourcePath = Paths.get("/tmp/" + dirName);
-    if (!testCasePath.endsWith(File.separator))
+    if (!testCasePath.endsWith(File.separator)) {
       testCasePath += File.separator;
+    }
     File folder = new File(testCasePath);
     if (!folder.exists() && !folder.isDirectory()) {
       folder.mkdirs();
@@ -120,8 +126,9 @@ public class TestCaseHandler {
   }
 
   public static void removeTestCaseFiles(String testCasePath, String dirName) throws IOException {
-    if (!testCasePath.endsWith(File.separator))
+    if (!testCasePath.endsWith(File.separator)) {
       testCasePath += File.separator;
+    }
     File dir = new File(testCasePath + dirName);
     FileUtils.deleteDirectory(dir);
   }

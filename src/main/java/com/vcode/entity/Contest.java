@@ -17,7 +17,6 @@ import java.util.LinkedList;
  * @author moyee
  * @version 1.0.0
  * @Description 标签实体
- * @return Tag实例
  * @since 1.0.0
  */
 @Document("contest")
@@ -33,9 +32,12 @@ public class Contest {
   @Field("name")
   private String name;
 
+  /**
+   * true => 永久开放；false => 限时开放；
+   */
   @NotNull(message = "always不能为null")
   @Field("always")
-  private boolean always; // true => 永久开放；false => 限时开放；
+  private boolean always;
 
   @Field("start_time")
   private Date startTime;
@@ -49,17 +51,23 @@ public class Contest {
   @Field("owner_account")
   private String ownerAccount;
 
+  /**
+   * true => lock
+   */
   @NotNull(message = "contestType不能为null")
   @Field("is_lock")
-  private Boolean isLock; // true => lock
+  private Boolean isLock;
 
 
   @Field("password")
   private String password;
 
+  /**
+   * // 存放所有此tag下的问题ObjectId
+   */
   @JsonIgnore
   @Field("problems")
-  private LinkedList<ObjectId> problems;  // 存放所有此tag下的问题ObjectId
+  private LinkedList<ObjectId> problems;
 
   public Contest(String name,
                  boolean always,

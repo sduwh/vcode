@@ -12,7 +12,6 @@ import java.util.LinkedList;
  * @author moyee
  * @version 1.0.0
  * @Description 标签实体
- * @return Tag实例
  * @since 1.0.0
  */
 @Document("tag")
@@ -27,7 +26,7 @@ public class Tag implements Serializable {
   private String name;
 
   @Field("problems")
-  private LinkedList<ObjectId> problems; // 存放所有此tag下的问题ObjectId
+  private final LinkedList<ObjectId> problems;
 
   public Tag() {
     this.setName("");

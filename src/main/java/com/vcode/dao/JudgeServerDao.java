@@ -9,5 +9,5 @@ import java.util.List;
  * @Date
  */
 public interface JudgeServerDao {
-  List<String> getOJSupport();
+  List<String> getOjSupport();
 }

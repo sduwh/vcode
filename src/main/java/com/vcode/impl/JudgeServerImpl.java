@@ -1,4 +1,4 @@
-package com.vcode.Impl;
+package com.vcode.impl;
 
 import com.vcode.common.RedisCode;
 import com.vcode.dao.JudgeServerDao;
@@ -19,7 +19,7 @@ import java.util.List;
 @Component
 public class JudgeServerImpl implements JudgeServerDao {
 
-  private RedisTemplate<String, String> redisTemplate;
+  private final RedisTemplate<String, String> redisTemplate;
 
   @Autowired
   public JudgeServerImpl(RedisTemplate<String, String> redisTemplate) {
@@ -27,7 +27,7 @@ public class JudgeServerImpl implements JudgeServerDao {
   }
 
   @Override
-  public List<String> getOJSupport() {
+  public List<String> getOjSupport() {
     String ojListStr = redisTemplate.opsForValue().get(RedisCode.OJ_LIST);
     List<String> ojList = new LinkedList<>();
     ojList.add("VCODE");

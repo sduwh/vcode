@@ -19,7 +19,10 @@ public class RankUser {
 
   private long totalErrorNum;
 
-  private long totalAcNum; // every problem only can increase 1
+  /**
+   * every problem only can increase 1
+   */
+  private long totalAcNum;
 
   private long totalTimeUsed;
 

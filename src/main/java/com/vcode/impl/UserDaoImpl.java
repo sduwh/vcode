@@ -1,7 +1,7 @@
-package com.vcode.Impl;
+package com.vcode.impl;
 
-import com.vcode.dao.VUserDao;
-import com.vcode.entity.VUser;
+import com.vcode.dao.UserDao;
+import com.vcode.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,64 +13,67 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * @author moyee
+ */
 @Component
-public class VUserDaoImpl implements VUserDao {
+public class UserDaoImpl implements UserDao {
 
-  private MongoTemplate mongoTemplate;
+  private final MongoTemplate mongoTemplate;
 
   @Autowired
-  public VUserDaoImpl(MongoTemplate mongoTemplate) {
+  public UserDaoImpl(MongoTemplate mongoTemplate) {
     this.mongoTemplate = mongoTemplate;
   }
 
   @Override
-  public void saveUser(VUser user) {
+  public void saveUser(User user) {
     mongoTemplate.save(user);
   }
 
   @Override
-  public VUser findUserByUserAccount(String account) {
+  public User findUserByUserAccount(String account) {
     Query query = new Query(Criteria.where("account").is(account));
-    return mongoTemplate.findOne(query, VUser.class);
+    return mongoTemplate.findOne(query, User.class);
   }
 
   @Override
-  public String updateUser(VUser user) {
+  public String updateUser(User user) {
     Query query = new Query(Criteria.where("account").is(user.getAccount()));
     Update update = new Update()
             .set("nickname", user.getNickname())
             .set("email", user.getEmail())
             .set("role", user.getRole());
-    mongoTemplate.updateFirst(query, update, VUser.class);
+    mongoTemplate.updateFirst(query, update, User.class);
     return null;
   }
 
   @Override
   public void deleteUserByAccount(String account) {
     Query query = new Query(Criteria.where("account").is(account));
-    mongoTemplate.remove(query, VUser.class);
+    mongoTemplate.remove(query, User.class);
   }
 
   @Override
-  public List<VUser> findAdmins(int page, int size, String search) {
+  public List<User> findAdmins(int page, int size, String search) {
     Pageable pageableRequest = PageRequest.of(page, size);
     Query query = new Query(Criteria.where("role").is("admin"));
     if (search.length() > 0) {
       query.addCriteria(Criteria.where("title").regex(".*" + search + ".*"));
     }
     query.with(pageableRequest);
-    return mongoTemplate.find(query, VUser.class);
+    return mongoTemplate.find(query, User.class);
   }
 
   @Override
-  public List<VUser> findUsers(int page, int size, String search) {
+  public List<User> findUsers(int page, int size, String search) {
     Pageable pageableRequest = PageRequest.of(page, size);
     Query query = new Query();
     if (search.length() > 0) {
       query.addCriteria(Criteria.where("title").regex(".*" + search + ".*"));
     }
     query.with(pageableRequest);
-    return mongoTemplate.find(query, VUser.class);
+    return mongoTemplate.find(query, User.class);
   }
 
   @Override
@@ -79,7 +82,7 @@ public class VUserDaoImpl implements VUserDao {
     if (search.length() > 0) {
       query.addCriteria(Criteria.where("nickname").regex(".*" + search + ".*"));
     }
-    return mongoTemplate.count(query, VUser.class);
+    return mongoTemplate.count(query, User.class);
   }
 
   @Override
@@ -88,18 +91,18 @@ public class VUserDaoImpl implements VUserDao {
     if (search.length() > 0) {
       query.addCriteria(Criteria.where("nickname").regex(".*" + search + ".*"));
     }
-    return mongoTemplate.count(query, VUser.class);
+    return mongoTemplate.count(query, User.class);
   }
 
   @Override
-  public boolean isNicknameExist(VUser user) {
+  public boolean isNicknameExist(User user) {
     Query query = new Query(Criteria.where("nickname").is(user.getNickname()).and("account").ne(user.getAccount()));
-    return mongoTemplate.exists(query, VUser.class);
+    return mongoTemplate.exists(query, User.class);
   }
 
   @Override
-  public boolean isEmailExist(VUser user) {
+  public boolean isEmailExist(User user) {
     Query query = new Query(Criteria.where("email").is(user.getEmail()).and("account").ne(user.getAccount()));
-    return mongoTemplate.exists(query, VUser.class);
+    return mongoTemplate.exists(query, User.class);
   }
 }

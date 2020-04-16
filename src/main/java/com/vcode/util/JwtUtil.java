@@ -10,10 +10,12 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import java.util.Date;
 import java.util.logging.Logger;
 
-public class JWTUtil {
+/**
+ * @author moyee
+ */
+public class JwtUtil {
   private static final Logger log = Logger.getLogger("jwt");
 
-  // 有效时间120分钟
   private static final long EXPIRE_TIME = 120 * 60  * 1000;
   private static final long REFRESH_EXPIRE_TIME = 360 * 60 * 1000;
 

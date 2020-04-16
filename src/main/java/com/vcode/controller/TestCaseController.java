@@ -1,10 +1,10 @@
 package com.vcode.controller;
 
-import com.vcode.Handler.TestCaseHandler;
+import com.vcode.handler.TestCaseHandler;
 import com.vcode.common.ResponseCode;
 import com.vcode.entity.Response;
 import com.vcode.shiro.ShiroCommon;
-import com.vcode.util.JWTUtil;
+import com.vcode.util.JwtUtil;
 import com.vcode.util.StringUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.Logical;
@@ -24,11 +24,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
+/**
+ * @author moyee
+ */
 @RestController
 @RequestMapping("/test_case")
 public class TestCaseController {
 
-  private Logger logger = LoggerFactory.getLogger(this.getClass());
+  private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
   /**
    * @param file testcase.zip
@@ -44,7 +47,7 @@ public class TestCaseController {
     Response response = new Response();
     Subject subject = SecurityUtils.getSubject();
     String token = (String) subject.getPrincipal();
-    String account = JWTUtil.getAccount(token);
+    String account = JwtUtil.getAccount(token);
 
     // check file is exist
     if (file.isEmpty()) {

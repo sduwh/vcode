@@ -1,10 +1,10 @@
 package com.vcode.controller;
 
-import com.vcode.Impl.VUserDaoImpl;
+import com.vcode.impl.UserDaoImpl;
 import com.vcode.common.ResponseCode;
 import com.vcode.entity.Response;
-import com.vcode.entity.VUser;
-import com.vcode.util.JWTUtil;
+import com.vcode.entity.User;
+import com.vcode.util.JwtUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.subject.Subject;
@@ -18,16 +18,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+/**
+ * @author moyee
+ */
 @RestController
 @RequestMapping("/user")
-public class VUserController {
+public class UserController {
 
-  private VUserDaoImpl userDao;
+  private final UserDaoImpl userDao;
 
-  private Logger logger = LoggerFactory.getLogger(this.getClass());
+  private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
   @Autowired
-  public VUserController(VUserDaoImpl vUserDao) {
+  public UserController(UserDaoImpl vUserDao) {
     this.userDao = vUserDao;
   }
 
@@ -41,8 +44,8 @@ public class VUserController {
     Response response = new Response();
     Subject subject = SecurityUtils.getSubject();
     String token = (String) subject.getPrincipal();
-    String account = JWTUtil.getAccount(token);
-    VUser user = userDao.findUserByUserAccount(account);
+    String account = JwtUtil.getAccount(token);
+    User user = userDao.findUserByUserAccount(account);
     if (user == null) {
       response.setCode(ResponseCode.FAIL);
       response.setMessage("The user is not exist");
@@ -67,7 +70,7 @@ public class VUserController {
     Response response = new Response();
     Subject subject = SecurityUtils.getSubject();
     String token = (String) subject.getPrincipal();
-    String account = JWTUtil.getAccount(token);
+    String account = JwtUtil.getAccount(token);
     String email = "";
     String nickname = "";
 
@@ -78,11 +81,11 @@ public class VUserController {
       email = map.get("email");
     }
 
-    VUser user = userDao.findUserByUserAccount(account);
-    if (!nickname.equals("")) {
+    User user = userDao.findUserByUserAccount(account);
+    if (!"".equals(nickname)) {
       user.setNickname(nickname);
     }
-    if (!email.equals("")) {
+    if (!"".equals(email)) {
       user.setEmail(email);
     }
 
@@ -111,7 +114,7 @@ public class VUserController {
     Response response = new Response();
     Subject subject = SecurityUtils.getSubject();
     String token = (String) subject.getPrincipal();
-    String account = JWTUtil.getAccount(token);
+    String account = JwtUtil.getAccount(token);
 
     String oldPassword = map.get("oldPass");
     String newPassword = map.get("pass");
@@ -124,7 +127,7 @@ public class VUserController {
       return response;
     }
 
-    VUser user = userDao.findUserByUserAccount(account);
+    User user = userDao.findUserByUserAccount(account);
 
     if (user.checkPassword(oldPassword)) {
       response.setCode(ResponseCode.FAIL);
@@ -152,29 +155,27 @@ public class VUserController {
     logger.info(String.format("user: %s has changed the password", account));
 
     HashMap<String, String> data = new HashMap<>();
-    data.put("token", JWTUtil.sign(account, user.getPassword()));
-    data.put("refreshToken", JWTUtil.signRefreshToken(account, user.getPassword()));
+    data.put("token", JwtUtil.sign(account, user.getPassword()));
+    data.put("refreshToken", JwtUtil.signRefreshToken(account, user.getPassword()));
     response.setData(data);
     response.setMessage("Reset password success");
     return response;
   }
 
-  /*
-  注册逻辑
-  1. 检查输入参数的合法性
-  2. 检查是否有用户已经使用改账户
-  3. 注册账号，创建新的用户保存至数据库
-  */
+  /**
+   * @Description 用户注册api
+   * @Date 2020/1/31 01:40
+   * @param map 参数map
+   * @return 注册结果（包含token）
+   */
   @PostMapping("/sign-in")
   public Response signIn(@RequestBody Map<String, Object> map) throws NoSuchAlgorithmException {
-    /**
-     * @Description 用户注册api
-     * @Date 2020/1/31 01:40
-     * @param account 用户账号
-     * @param password 密码
-     * @param rePassword 重复密码
-     * @return 注册结果（包含token）
-     */
+    /*
+      注册逻辑
+      1. 检查输入参数的合法性
+      2. 检查是否有用户已经使用改账户
+      3. 注册账号，创建新的用户保存至数据库
+    */
     Response res = new Response();
     if (map.get("account") == null || map.get("password") == null || map.get("rePassword") == null) {
       res.setCode(ResponseCode.ERROR);
@@ -204,19 +205,19 @@ public class VUserController {
       return res;
     }
 
-    VUser user = userDao.findUserByUserAccount(account);
+    User user = userDao.findUserByUserAccount(account);
     if (user != null) {
       res.setCode(ResponseCode.FAIL);
       res.setMessage("该账号已存在");
       return res;
     }
     // 创建用户
-    user = new VUser(account, password);
+    user = new User(account, password);
     userDao.saveUser(user);
 
     HashMap<String, String> resData = new HashMap<>();
-    resData.put("token", JWTUtil.sign(user.getAccount(), user.getPassword()));
-    resData.put("refreshToken", JWTUtil.signRefreshToken(account, user.getPassword()));
+    resData.put("token", JwtUtil.sign(user.getAccount(), user.getPassword()));
+    resData.put("refreshToken", JwtUtil.signRefreshToken(account, user.getPassword()));
     resData.put("nickname", user.getNickname());
     resData.put("account", user.getAccount());
     res.setData(resData);
@@ -249,7 +250,7 @@ public class VUserController {
     }
     String account = map.get("account").toString();
     String password = map.get("password").toString();
-    VUser user = userDao.findUserByUserAccount(account);
+    User user = userDao.findUserByUserAccount(account);
 
     if (user == null) {
       response.setMessage("The account is not exist");
@@ -264,8 +265,8 @@ public class VUserController {
       return response;
     }
     HashMap<String, Object> resData = new HashMap<>();
-    resData.put("token", JWTUtil.sign(user.getAccount(), user.getPassword()));
-    resData.put("refreshToken", JWTUtil.signRefreshToken(account, user.getPassword()));
+    resData.put("token", JwtUtil.sign(user.getAccount(), user.getPassword()));
+    resData.put("refreshToken", JwtUtil.signRefreshToken(account, user.getPassword()));
     resData.put("user", user);
     response.setData(resData);
     logger.info(String.format("user %s is login:", user.getNickname()));
@@ -282,8 +283,8 @@ public class VUserController {
       return response;
     }
     String refreshToken = (String) map.get("refreshToken");
-    String account = JWTUtil.getAccount(refreshToken);
-    VUser user = userDao.findUserByUserAccount(account);
+    String account = JwtUtil.getAccount(refreshToken);
+    User user = userDao.findUserByUserAccount(account);
     if (user == null) {
       response.setCode(ResponseCode.FAIL);
       response.setMessage("The user is not exist");
@@ -291,9 +292,9 @@ public class VUserController {
       return response;
     }
     Map<String, Object> data = new HashMap<>();
-    if (JWTUtil.verify(refreshToken, user.getAccount(), user.getPassword())) {
-      String newToken = JWTUtil.sign(user.getAccount(), user.getPassword());
-      String newRefreshToken = JWTUtil.signRefreshToken(user.getAccount(), user.getPassword());
+    if (JwtUtil.verify(refreshToken, user.getAccount(), user.getPassword())) {
+      String newToken = JwtUtil.sign(user.getAccount(), user.getPassword());
+      String newRefreshToken = JwtUtil.signRefreshToken(user.getAccount(), user.getPassword());
       data.put("token", newToken);
       data.put("refreshToken", newRefreshToken);
       logger.info(String.format("user: %s refresh the token success, token: %s; refreshToken: %s", account, newToken,

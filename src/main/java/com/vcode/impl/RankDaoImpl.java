@@ -1,4 +1,4 @@
-package com.vcode.Impl;
+package com.vcode.impl;
 
 import com.vcode.common.RedisCode;
 import com.vcode.dao.RankDao;
@@ -30,9 +30,9 @@ import java.util.concurrent.locks.Lock;
 @Component
 public class RankDaoImpl implements RankDao {
 
-  private MongoTemplate mongoTemplate;
-  private ContestDaoImpl contestDao;
-  private RedisLockRegistry redisLockRegistry;
+  private final MongoTemplate mongoTemplate;
+  private final ContestDaoImpl contestDao;
+  private final RedisLockRegistry redisLockRegistry;
 
   @Autowired
   public RankDaoImpl(MongoTemplate mongoTemplate,
@@ -108,7 +108,7 @@ public class RankDaoImpl implements RankDao {
     lock.tryLock(500, TimeUnit.MILLISECONDS);
     Rank rank = find(submission.getUserAccount(), submission.getContestName(), submission.getProblemOriginId());
     if (rank == null) {
-      if (submission.getContestName() == null || submission.getContestName().equals("")) {
+      if (submission.getContestName() == null || "".equals(submission.getContestName())) {
         rank = new Rank(
                 submission.getUserAccount(),
                 submission.getNickname(),
@@ -129,12 +129,12 @@ public class RankDaoImpl implements RankDao {
     }
     if (submission.getResult() == 1) {
       rank.setAcNum(rank.getAcNum() + 1);
-      if (submission.getContestName() != null && !submission.getContestName().equals("") && rank.getAcNum() == 0) {
+      if (submission.getContestName() != null && !"".equals(submission.getContestName()) && rank.getAcNum() == 0) {
         rank.setUsedTime(rank.getUsedTime() + (System.currentTimeMillis() - rank.getStartTime()));
       }
     } else {
       rank.setWrongNum(rank.getWrongNum() + 1);
-      if (submission.getContestName() != null && !submission.getContestName().equals("")) {
+      if (submission.getContestName() != null && !"".equals(submission.getContestName())) {
         // Time penalty, 20 minute
         rank.setUsedTime(rank.getUsedTime() + 20 * 60 * 1000);
       }

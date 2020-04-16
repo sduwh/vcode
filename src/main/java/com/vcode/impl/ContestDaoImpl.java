@@ -1,4 +1,4 @@
-package com.vcode.Impl;
+package com.vcode.impl;
 
 import com.vcode.dao.ContestDao;
 import com.vcode.entity.Contest;
@@ -16,10 +16,13 @@ import org.springframework.stereotype.Component;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * @author moyee
+ */
 @Component
 public class ContestDaoImpl implements ContestDao {
 
-  private MongoTemplate mongoTemplate;
+  private final MongoTemplate mongoTemplate;
 
   @Autowired
   public ContestDaoImpl(MongoTemplate mongoTemplate) {

@@ -1,6 +1,6 @@
 package com.vcode.controller;
 
-import com.vcode.Impl.RankDaoImpl;
+import com.vcode.impl.RankDaoImpl;
 import com.vcode.entity.Rank;
 import com.vcode.entity.Response;
 import com.vcode.util.RankDataUtil;
@@ -19,14 +19,13 @@ import java.util.Map;
  * @Description
  * @Date
  */
-
 @RestController
 @RequestMapping("/rank")
 public class RankController {
 
-  private Logger logger = LoggerFactory.getLogger(this.getClass());
+  private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-  private RankDaoImpl rankDao;
+  private final RankDaoImpl rankDao;
 
   @Autowired
   public RankController(RankDaoImpl rankDao) {
@@ -61,7 +60,7 @@ public class RankController {
     List<Rank> rankList = rankDao.getContestRankData(contestName);
     logger.debug(String.format("The rank data of contest: %s has been accessed", contestName));
     Map<String, Object> data = new HashMap<>();
-    data.put("rankList", RankDataUtil.SortRankData(rankList));
+    data.put("rankList", RankDataUtil.sortRankData(rankList));
     response.setData(data);
     return response;
   }

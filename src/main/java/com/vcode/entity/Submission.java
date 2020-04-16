@@ -25,8 +25,11 @@ public class Submission {
   @Id
   private ObjectId id;
 
+  /**
+   * 提交时间戳
+   */
   @Field("create_time")
-  private long createTime; // 提交时间戳
+  private long createTime;
 
   @Field("user_account")
   private String userAccount;
@@ -43,8 +46,11 @@ public class Submission {
   @NotEmpty(message = "problemOriginId is required")
   private String problemOriginId;
 
+  /**
+   * 代码耗时
+   */
   @Field("time")
-  private String time; // 代码耗时
+  private String time;
 
   @Field("memory")
   private String memory;
@@ -64,7 +70,9 @@ public class Submission {
   @Field("contest_name")
   private String contestName;
 
-  // 0 => wrong; 1 => success; 2 => time_out; 3 => memory_out; 4 => unknown_error; 5 => padding; 6 => compile error
+  /**
+   * 0 => wrong; 1 => success; 2 => time_out; 3 => memory_out; 4 => unknown_error; 5 => padding; 6 => compile error
+   */
   @Field("result")
   private int result;
 
@@ -186,7 +194,7 @@ public class Submission {
   }
 
   public void setResult(String result) {
-    this.result = SubmissionResultCode.ResultStrToInt(result);
+    this.result = SubmissionResultCode.resultStrToInt(result);
   }
 
   public String getContestName() {

@@ -8,6 +8,7 @@ import java.util.List;
 
 /**
  * 问题实体的数据接口
+ * @author moyee
  */
 public interface ProblemDao {
 
@@ -17,7 +18,6 @@ public interface ProblemDao {
 
   Problem findByOriginId(String originId);
 
-  // 传入最新数据的实体即可
   String updateProblem(Problem problem) throws IOException;
 
   void deleteProblemByOriginId(String originId);

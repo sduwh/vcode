@@ -1,12 +1,12 @@
 package com.vcode.controller;
 
-import com.vcode.Impl.JudgeServerImpl;
-import com.vcode.Impl.ProblemDaoImpl;
-import com.vcode.Impl.SubmissionDaoImpl;
-import com.vcode.Impl.VUserDaoImpl;
+import com.vcode.impl.JudgeServerImpl;
+import com.vcode.impl.ProblemDaoImpl;
+import com.vcode.impl.SubmissionDaoImpl;
+import com.vcode.impl.UserDaoImpl;
 import com.vcode.entity.Response;
 import com.vcode.shiro.ShiroCommon;
-import com.vcode.util.JWTUtil;
+import com.vcode.util.JwtUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -30,18 +30,18 @@ import java.util.*;
 @RequestMapping("/admin")
 public class AdminIndexController {
 
-  private Logger logger = LoggerFactory.getLogger(this.getClass());
+  private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-  private ProblemDaoImpl problemDao;
-  private JudgeServerImpl judgeServerDao;
-  private SubmissionDaoImpl submissionDao;
-  private VUserDaoImpl userDao;
+  private final ProblemDaoImpl problemDao;
+  private final JudgeServerImpl judgeServerDao;
+  private final SubmissionDaoImpl submissionDao;
+  private final UserDaoImpl userDao;
 
   @Autowired
   public AdminIndexController(ProblemDaoImpl problemDao,
                               JudgeServerImpl judgeServerDao,
                               SubmissionDaoImpl submissionDao,
-                              VUserDaoImpl userDao) {
+                              UserDaoImpl userDao) {
     this.problemDao = problemDao;
     this.judgeServerDao = judgeServerDao;
     this.submissionDao = submissionDao;
@@ -62,12 +62,12 @@ public class AdminIndexController {
 
     Subject subject = SecurityUtils.getSubject();
     String token = (String) subject.getPrincipal();
-    String account = JWTUtil.getAccount(token);
+    String account = JwtUtil.getAccount(token);
 
     logger.info(String.format("user: %s has login admin", account));
 
     Map<String, Object> problemForm = new HashMap<>();
-    List<String> ojList = judgeServerDao.getOJSupport();
+    List<String> ojList = judgeServerDao.getOjSupport();
     Long problemTotal = problemDao.count("", false);
     Long submissionTotal = submissionDao.count("");
     problemForm.put("ojList", ojList);

@@ -1,7 +1,7 @@
 package com.vcode.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.vcode.Impl.ProblemDaoImpl;
+import com.vcode.impl.ProblemDaoImpl;
 import com.vcode.entity.Problem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,11 +22,11 @@ import static com.vcode.common.RedisCode.PROBLEM_TOPIC;
 @Component
 public class ParseSpiderProblem {
 
-  private Logger logger = LoggerFactory.getLogger(this.getClass());
+  private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-  private RedisTemplate<String, String> redisTemplate;
+  private final RedisTemplate<String, String> redisTemplate;
 
-  private ProblemDaoImpl problemDao;
+  private final ProblemDaoImpl problemDao;
 
   @Autowired
   public ParseSpiderProblem(RedisTemplate<String, String> redisTemplate, ProblemDaoImpl problemDao) {

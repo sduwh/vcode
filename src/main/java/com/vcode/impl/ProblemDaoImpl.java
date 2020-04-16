@@ -1,6 +1,6 @@
-package com.vcode.Impl;
+package com.vcode.impl;
 
-import com.vcode.Handler.TestCaseHandler;
+import com.vcode.handler.TestCaseHandler;
 import com.vcode.config.TestCaseConfig;
 import com.vcode.dao.ProblemDao;
 import com.vcode.entity.Problem;
@@ -17,12 +17,15 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * @author moyee
+ */
 @Component
 public class ProblemDaoImpl implements ProblemDao {
 
-  private MongoTemplate mongoTemplate;
+  private final MongoTemplate mongoTemplate;
 
-  private TestCaseConfig testCaseConfig;
+  private final TestCaseConfig testCaseConfig;
 
   @Autowired
   public ProblemDaoImpl(MongoTemplate mongoTemplate, TestCaseConfig testCaseConfig){
@@ -48,7 +51,7 @@ public class ProblemDaoImpl implements ProblemDao {
   @Override
   public String updateProblem(Problem problem) throws IOException {
     // 只能编辑非爬虫获取的的题目
-    if (problem.getOrigin().equals("vcode")) {
+    if ("vcode".equals(problem.getOrigin())) {
       Problem p = findByOriginId(problem.getOriginId());
       if (p == null) {
         return "problem is not exit";

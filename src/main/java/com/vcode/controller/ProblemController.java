@@ -1,6 +1,6 @@
 package com.vcode.controller;
 
-import com.vcode.Impl.ProblemDaoImpl;
+import com.vcode.impl.ProblemDaoImpl;
 import com.vcode.common.ResponseCode;
 import com.vcode.entity.Problem;
 import com.vcode.entity.Response;
@@ -13,13 +13,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author moyee
+ */
 @RestController
 @RequestMapping("/problem")
 public class ProblemController {
 
-  private Logger logger = LoggerFactory.getLogger(this.getClass());
+  private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-  private ProblemDaoImpl problemDao;
+  private final ProblemDaoImpl problemDao;
 
   @Autowired
   public ProblemController(ProblemDaoImpl problemDao) {

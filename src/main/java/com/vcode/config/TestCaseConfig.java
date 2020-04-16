@@ -5,6 +5,9 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 
+/**
+ * @author moyee
+ */
 @Component
 @ConfigurationProperties(prefix = "test-case")
 @PropertySource("classpath:config.properties")

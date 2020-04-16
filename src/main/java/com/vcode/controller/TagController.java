@@ -1,6 +1,6 @@
 package com.vcode.controller;
 
-import com.vcode.Impl.TagDaoImpl;
+import com.vcode.impl.TagDaoImpl;
 import com.vcode.common.ResponseCode;
 import com.vcode.entity.Response;
 import com.vcode.entity.Tag;
@@ -14,13 +14,16 @@ import javax.validation.Valid;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * @author moyee
+ */
 @RestController
 @RequestMapping("/tag")
 public class TagController {
 
-  private TagDaoImpl tagDao;
+  private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-  private Logger logger = LoggerFactory.getLogger(this.getClass());
+  private final TagDaoImpl tagDao;
 
   @Autowired
   public TagController(TagDaoImpl tagDao) {

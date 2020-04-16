@@ -1,6 +1,6 @@
 package com.vcode.controller;
 
-import com.vcode.Impl.AboutDaoImpl;
+import com.vcode.impl.AboutDaoImpl;
 import com.vcode.common.ResponseCode;
 import com.vcode.entity.About;
 import com.vcode.entity.Response;
@@ -14,13 +14,16 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+/**
+ * @author moyee
+ */
 @RestController
 @RequestMapping("/about")
 public class AboutController {
 
-  private AboutDaoImpl aboutDao;
+  private final AboutDaoImpl aboutDao;
 
-  private Logger logger = LoggerFactory.getLogger(this.getClass());
+  private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
   @Autowired
   public AboutController(AboutDaoImpl aboutDao) {

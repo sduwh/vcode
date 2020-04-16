@@ -1,13 +1,13 @@
 package com.vcode.controller;
 
-import com.vcode.Impl.ContestDaoImpl;
-import com.vcode.Impl.ProblemDaoImpl;
+import com.vcode.impl.ContestDaoImpl;
+import com.vcode.impl.ProblemDaoImpl;
 import com.vcode.common.ResponseCode;
 import com.vcode.entity.Contest;
 import com.vcode.entity.Problem;
 import com.vcode.entity.Response;
 import com.vcode.shiro.ShiroCommon;
-import com.vcode.util.JWTUtil;
+import com.vcode.util.JwtUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -25,14 +25,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author moyee
+ */
 @RestController
 @RequestMapping("/contest")
 public class ContestController {
 
-  private Logger logger = LoggerFactory.getLogger(this.getClass());
+  private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-  private ContestDaoImpl contestDao;
-  private ProblemDaoImpl problemDao;
+  private final ContestDaoImpl contestDao;
+  private final ProblemDaoImpl problemDao;
 
   @Autowired
   public ContestController(ContestDaoImpl contestDao, ProblemDaoImpl problemDao) {
@@ -79,7 +82,7 @@ public class ContestController {
     Response response = new Response();
     Subject subject = SecurityUtils.getSubject();
     String token = (String) subject.getPrincipal();
-    String account = JWTUtil.getAccount(token);
+    String account = JwtUtil.getAccount(token);
     if (contestName == null || contestName.length() == 0) {
       response.setCode(ResponseCode.ERROR);
       response.setMessage("name is required");
@@ -241,7 +244,7 @@ public class ContestController {
 
     Subject subject = SecurityUtils.getSubject();
     String token = (String) subject.getPrincipal();
-    String account = JWTUtil.getAccount(token);
+    String account = JwtUtil.getAccount(token);
 
     contestDao.addProblem(contest, problem);
     logger.info(
@@ -281,7 +284,7 @@ public class ContestController {
 
     Subject subject = SecurityUtils.getSubject();
     String token = (String) subject.getPrincipal();
-    String account = JWTUtil.getAccount(token);
+    String account = JwtUtil.getAccount(token);
 
     contestDao.removeProblem(contest, problem);
     logger.warn(

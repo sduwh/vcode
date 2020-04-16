@@ -1,15 +1,15 @@
 package com.vcode.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.vcode.Impl.ContestDaoImpl;
-import com.vcode.Impl.SubmissionDaoImpl;
-import com.vcode.Impl.VUserDaoImpl;
+import com.vcode.impl.ContestDaoImpl;
+import com.vcode.impl.SubmissionDaoImpl;
+import com.vcode.impl.UserDaoImpl;
 import com.vcode.common.ResponseCode;
 import com.vcode.entity.Contest;
 import com.vcode.entity.Response;
 import com.vcode.entity.Submission;
-import com.vcode.entity.VUser;
-import com.vcode.util.JWTUtil;
+import com.vcode.entity.User;
+import com.vcode.util.JwtUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.subject.Subject;
@@ -23,20 +23,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author moyee
+ */
 @RestController
 @RequestMapping("/submission")
 public class SubmissionController {
 
-  private Logger logger = LoggerFactory.getLogger(this.getClass());
+  private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-  private SubmissionDaoImpl submissionDao;
-  private ContestDaoImpl contestDao;
-  private VUserDaoImpl userDao;
+  private final SubmissionDaoImpl submissionDao;
+  private final ContestDaoImpl contestDao;
+  private final UserDaoImpl userDao;
 
   @Autowired
   public SubmissionController(SubmissionDaoImpl submissionDao,
                               ContestDaoImpl contestDao,
-                              VUserDaoImpl userDao) {
+                              UserDaoImpl userDao) {
     this.submissionDao = submissionDao;
     this.contestDao = contestDao;
     this.userDao = userDao;
@@ -103,7 +106,7 @@ public class SubmissionController {
 
     Subject subject = SecurityUtils.getSubject();
     String token = (String) subject.getPrincipal();
-    String account = JWTUtil.getAccount(token);
+    String account = JwtUtil.getAccount(token);
 
     logger.info(String.format("user: %s has accessed the submission: %s", account, submissionIdHex));
 
@@ -124,7 +127,7 @@ public class SubmissionController {
     Response response = new Response();
     Subject subject = SecurityUtils.getSubject();
     String token = (String) subject.getPrincipal();
-    String account = JWTUtil.getAccount(token);
+    String account = JwtUtil.getAccount(token);
     if ((submission.getContestName() != null && !submission.getContestName().equals("")) && !contestDao.isExist(submission.getContestName())) {
       response.setCode(ResponseCode.FAIL);
       response.setMessage(String.format("The contest: %s is not exist", submission.getContestName()));
@@ -132,7 +135,7 @@ public class SubmissionController {
       return response;
     }
 
-    VUser user = userDao.findUserByUserAccount(account);
+    User user = userDao.findUserByUserAccount(account);
     submission.setUserAccount(account);
     submission.setNickname(user.getNickname());
     if (submissionDao.isExist(submission)) {
@@ -179,7 +182,7 @@ public class SubmissionController {
     Response response = new Response();
     Subject subject = SecurityUtils.getSubject();
     String token = (String) subject.getPrincipal();
-    String account = JWTUtil.getAccount(token);
+    String account = JwtUtil.getAccount(token);
     if (submissionHexId == null) {
       response.setCode(ResponseCode.FAIL);
       response.setMessage("The params originId is required");
@@ -203,7 +206,7 @@ public class SubmissionController {
     Response res = new Response();
     Subject subject = SecurityUtils.getSubject();
     String token = (String) subject.getPrincipal();
-    String account = JWTUtil.getAccount(token);
+    String account = JwtUtil.getAccount(token);
 
     List<Submission> submissionList = submissionDao.findSubmissions(problemOriginId, account);
     logger.info(String.format("user: %s has access the submission list of problem: %s", account, problemOriginId));
@@ -238,7 +241,7 @@ public class SubmissionController {
     }
     Subject subject = SecurityUtils.getSubject();
     String token = (String) subject.getPrincipal();
-    String account = JWTUtil.getAccount(token);
+    String account = JwtUtil.getAccount(token);
     page--;
     List<Submission> submissionList = submissionDao.findContestSubmission(contest.getName(), page, size, search);
     logger.info(String.format("user: %s has access the submission list of contest: %s, page: %d, size: %d, search: " +

@@ -18,8 +18,8 @@ import java.io.IOException;
  * @Description
  * @Date
  */
-public class JWTFilter extends BasicHttpAuthenticationFilter {
-  private Logger logger = LoggerFactory.getLogger(this.getClass());
+public class JwtFilter extends BasicHttpAuthenticationFilter {
+  private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
   @Override
   protected boolean isLoginAttempt(ServletRequest request, ServletResponse response) {
@@ -32,7 +32,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
   protected boolean executeLogin(ServletRequest request, ServletResponse response) {
     HttpServletRequest httpServletRequest = (HttpServletRequest) request;
     String authorization = httpServletRequest.getHeader("Authorization");
-    JWTToken token = new JWTToken(authorization);
+    JwtToken token = new JwtToken(authorization);
     getSubject(request, response).login(token);
     return true;
   }

@@ -1,9 +1,9 @@
 package com.vcode.controller;
 
-import com.vcode.Impl.VUserDaoImpl;
+import com.vcode.impl.UserDaoImpl;
 import com.vcode.common.ResponseCode;
 import com.vcode.entity.Response;
-import com.vcode.entity.VUser;
+import com.vcode.entity.User;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,14 +23,14 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/admin/user")
-public class VUserAdminController {
+public class UserAdminController {
 
-  private Logger logger = LoggerFactory.getLogger(this.getClass());
+  private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-  private VUserDaoImpl userDao;
+  private final UserDaoImpl userDao;
 
   @Autowired
-  public VUserAdminController(VUserDaoImpl vUserDao) {
+  public UserAdminController(UserDaoImpl vUserDao) {
     this.userDao = vUserDao;
   }
 
@@ -55,7 +55,7 @@ public class VUserAdminController {
       return response;
     }
     page--;
-    List<VUser> userList = userDao.findUsers(page, size, search);
+    List<User> userList = userDao.findUsers(page, size, search);
     Map<String, Object> data = new HashMap<>();
     data.put("userList", userList);
     data.put("total", userDao.count(search));
@@ -83,7 +83,7 @@ public class VUserAdminController {
       return response;
     }
     page--;
-    List<VUser> userList = userDao.findAdmins(page, size, search);
+    List<User> userList = userDao.findAdmins(page, size, search);
     Map<String, Object> data = new HashMap<>();
     data.put("adminList", userList);
     data.put("total", userDao.countAdmins(search));
@@ -114,7 +114,7 @@ public class VUserAdminController {
    */
   @PostMapping("/info")
   @RequiresRoles("admin")
-  public Response editUserInfo(@RequestBody @Valid VUser user) {
+  public Response editUserInfo(@RequestBody @Valid User user) {
     Response response = new Response();
 
     if (userDao.isNicknameExist(user)) {

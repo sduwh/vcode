@@ -1,5 +1,8 @@
 package com.vcode.common;
 
+/**
+ * @author moyee
+ */
 public class SubmissionResultCode {
   static final public int WRONG = 0;
   static final public int SUCCESS = 1;
@@ -9,7 +12,7 @@ public class SubmissionResultCode {
   static final public int PADDING = 5;
   static final public int COMPILE_ERROR = 6;
 
-  static public int ResultStrToInt(String result) {
+  static public int resultStrToInt(String result) {
     int res;
     switch (result.toLowerCase()) {
       case "wrong":

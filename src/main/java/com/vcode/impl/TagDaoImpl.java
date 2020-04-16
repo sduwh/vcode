@@ -1,4 +1,4 @@
-package com.vcode.Impl;
+package com.vcode.impl;
 
 import com.vcode.dao.TagDao;
 import com.vcode.entity.Tag;
@@ -11,10 +11,13 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * @author moyee
+ */
 @Component
 public class TagDaoImpl implements TagDao {
 
-  private MongoTemplate mongoTemplate;
+  private final MongoTemplate mongoTemplate;
 
   @Autowired
   public TagDaoImpl(MongoTemplate mongoTemplate) {

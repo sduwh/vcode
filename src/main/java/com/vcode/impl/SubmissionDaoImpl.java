@@ -1,4 +1,4 @@
-package com.vcode.Impl;
+package com.vcode.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vcode.common.RedisCode;
@@ -20,15 +20,15 @@ import java.util.List;
 @Component
 public class SubmissionDaoImpl implements SubmissionDao {
 
-  private MongoTemplate mongoTemplate;
-  private VUserDaoImpl vUserDao;
-  private ProblemDaoImpl problemDao;
-  private RedisTemplate<String, String> redisTemplate;
-  private RankDaoImpl rankDao;
+  private final MongoTemplate mongoTemplate;
+  private final UserDaoImpl vUserDao;
+  private final ProblemDaoImpl problemDao;
+  private final RedisTemplate<String, String> redisTemplate;
+  private final RankDaoImpl rankDao;
 
   @Autowired
   public SubmissionDaoImpl(MongoTemplate mongoTemplate,
-                           VUserDaoImpl vUserDao,
+                           UserDaoImpl vUserDao,
                            ProblemDaoImpl problemDao,
                            RedisTemplate<String, String> redisTemplate,
                            RankDaoImpl rankDao) {
@@ -78,11 +78,17 @@ public class SubmissionDaoImpl implements SubmissionDao {
   @Override
   public boolean isExist(Submission submission) {
     Submission s = getUserLastSubmissionBySameProblem(submission.getUserAccount(), submission.getProblemOriginId());
-    if (s == null) return false;
+    if (s == null) {
+      return false;
+    }
     // if submission's status is padding
     if (s.getResult() == 5) {
-      if (!s.getContestName().equals(submission.getContestName())) return false;
-      if (!s.getLanguage().equals(submission.getLanguage())) return false;
+      if (!s.getContestName().equals(submission.getContestName())) {
+        return false;
+      }
+      if (!s.getLanguage().equals(submission.getLanguage())) {
+        return false;
+      }
       return s.getCode().equals(submission.getCode());
     }
     return false;
@@ -154,7 +160,7 @@ public class SubmissionDaoImpl implements SubmissionDao {
 
   @Override
   public Submission fillInfo(Submission submission) {
-    VUser user = vUserDao.findUserByUserAccount(submission.getUserAccount());
+    User user = vUserDao.findUserByUserAccount(submission.getUserAccount());
     submission.setNickname(user.getNickname());
     Problem problem = problemDao.findByOriginId(submission.getProblemOriginId());
     if (problem == null) {
