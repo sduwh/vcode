@@ -9,8 +9,8 @@ package com.vcode.common;
 public class RedisCode {
   public static String RANK_LOCK = "rank-lock";
   public static String PROBLEM_TOPIC = "vcode-spider-problem";
-  public static String TARGET_TOPIC = "vcode-spider-target";
-  public static String TARGET_RESULT_TOPIC = "vcode-spider-target-result";
+  public static String TARGET_CRAWL_TOPIC = "vcode-spider-target";
+  public static String TARGET_CRAWL_RESULT_TOPIC = "vcode-spider-target-result";
   public static String OJ_LIST = "vcode-spider-namespace";
   public static String JUDGE_TASK_TOPIC = "vcode-submit";
   public static String JUDGE_RESULT_TOPIC = "vcode-submit-result";
