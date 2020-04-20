@@ -116,7 +116,9 @@ public class CrawlProblemTaskDaoImpl implements CrawlProblemTaskDao {
    */
   @Override
   public void updateResult(CrawlProblemTask crawlProblemTask) {
-    Update update = new Update().set("result", crawlProblemTask.getResult());
+    Update update = new Update()
+            .set("result", crawlProblemTask.getResult())
+            .set("message", crawlProblemTask.getMessage());
     Query query = new Query(Criteria.where("task_id").is(crawlProblemTask.getTaskId()));
     mongoTemplate.updateFirst(query, update, CrawlProblemTask.class);
   }

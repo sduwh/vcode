@@ -8,7 +8,6 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.data.mongodb.core.query.Update;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -54,6 +53,9 @@ public class CrawlProblemTask {
   @Field("author")
   private String author;
 
+  @Field("message")
+  private String message;
+
   public CrawlProblemTask() {
     this.setTaskId();
     this.oj = "";
@@ -61,6 +63,7 @@ public class CrawlProblemTask {
     this.result = TaskResultCode.CRAWLING;
     this.createTime = System.currentTimeMillis();
     this.author = "admin";
+    this.message = "";
   }
 
   public String getHex() {
@@ -127,6 +130,14 @@ public class CrawlProblemTask {
     this.author = author;
   }
 
+  public String getMessage() {
+    return message;
+  }
+
+  public void setMessage(String message) {
+    this.message = message;
+  }
+
   public String toJsonString() throws JsonProcessingException {
     ObjectMapper objectMapper = new ObjectMapper();
     Map<String, Object> map = new HashMap<>(3);
@@ -134,14 +145,5 @@ public class CrawlProblemTask {
     map.put("key", this.key);
     map.put("task_id", this.taskId);
     return objectMapper.writeValueAsString(map);
-  }
-
-  @JsonIgnore
-  public Update getUpdateData() {
-    Update update = new Update();
-    update.set("oj", this.oj)
-            .set("key", this.key)
-            .set("task_id", this.taskId);
-    return update;
   }
 }

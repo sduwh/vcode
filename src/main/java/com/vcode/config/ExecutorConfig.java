@@ -38,4 +38,15 @@ public class ExecutorConfig {
     executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
     return executor;
   }
+
+  @Bean
+  public Executor getSpiderProblemTaskResultExecutor() {
+    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    executor.setThreadNamePrefix("vcode-spider-task-result");
+    executor.setMaxPoolSize(20);
+    executor.setCorePoolSize(10);
+    executor.setQueueCapacity(0);
+    executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+    return executor;
+  }
 }
