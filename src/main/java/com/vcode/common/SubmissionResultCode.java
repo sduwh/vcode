@@ -19,18 +19,23 @@ public class SubmissionResultCode {
         res = WRONG;
         break;
       case "success":
+      case "accepted":
+      case "accept":
         res = SUCCESS;
         break;
       case "time_out":
+      case "timeout":
         res = TIME_OUT;
         break;
       case "memory_out":
+      case "memory out":
         res = MEMORY_OUT;
         break;
       case "padding":
         res = PADDING;
         break;
       case "compile_error":
+      case "compile error":
         res = COMPILE_ERROR;
         break;
       default:

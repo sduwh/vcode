@@ -67,6 +67,7 @@ public class Submission {
   @NotEmpty(message = "code is required")
   private String code;
 
+  @NotNull(message = "contest_name is required")
   @Field("contest_name")
   private String contestName;
 

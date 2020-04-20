@@ -188,6 +188,6 @@ public class SubmissionDaoImpl implements SubmissionDao {
   public void sendToJudgeQueue(Submission submission) throws JsonProcessingException {
     JudgeTask judgeTask = new JudgeTask(submission);
     String task = judgeTask.toJsonString();
-    redisTemplate.opsForList().leftPush(RedisCode.JUDGE_TASK_TOPIC, task);
+    redisTemplate.opsForList().leftPush(RedisCode.JUDGE_REMOTE_TASK_TOPIC, task);
   }
 }

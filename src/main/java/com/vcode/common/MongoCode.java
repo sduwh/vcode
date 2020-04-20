@@ -7,5 +7,9 @@ package com.vcode.common;
  * @Date
  */
 public class MongoCode {
+
+  /**
+   * 本地题目标识
+   */
   public static String VCODE = "VCODE";
 }

@@ -104,12 +104,6 @@ public class SubmissionController {
       return response;
     }
 
-    Subject subject = SecurityUtils.getSubject();
-    String token = (String) subject.getPrincipal();
-    String account = JwtUtil.getAccount(token);
-
-    logger.info(String.format("user: %s has accessed the submission: %s", account, submissionIdHex));
-
     Map<String, Object> data = new HashMap<>(1);
     data.put("submission", submission);
     response.setData(data);
@@ -128,7 +122,7 @@ public class SubmissionController {
     Subject subject = SecurityUtils.getSubject();
     String token = (String) subject.getPrincipal();
     String account = JwtUtil.getAccount(token);
-    if ((submission.getContestName() == null || !contestDao.isExist(submission.getContestName()))) {
+    if (!"".equals(submission.getContestName()) && !contestDao.isExist(submission.getContestName())) {
       response.setCode(ResponseCode.FAIL);
       response.setMessage(String.format("The contest: %s is not exist", submission.getContestName()));
       logger.debug(response.getMessage());
@@ -209,7 +203,6 @@ public class SubmissionController {
     String account = JwtUtil.getAccount(token);
 
     List<Submission> submissionList = submissionDao.findSubmissions(problemOriginId, account);
-    logger.info(String.format("user: %s has access the submission list of problem: %s", account, problemOriginId));
     Map<String, Object> dataMap = new HashMap<>(1);
     dataMap.put("submissionList", submissionList);
     res.setData(dataMap);

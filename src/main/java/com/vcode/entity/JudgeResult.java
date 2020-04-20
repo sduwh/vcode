@@ -2,9 +2,8 @@ package com.vcode.entity;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vcode.common.SubmissionResultCode;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.HashMap;
 
 /**
@@ -23,11 +22,15 @@ public class JudgeResult {
   public JudgeResult(String jsonInfo) throws JsonProcessingException {
     ObjectMapper objectMapper = new ObjectMapper();
     HashMap map = objectMapper.readValue(jsonInfo, HashMap.class);
-    this.submitId = (String) map.get("submit_id");
-    this.result = (String) map.get("result");
-    this.timeUsed = (String) map.get("time_used");
-    this.memoryUsed = (String) map.get("memory_used");
-    this.setInfo((String) map.get("info"));
+    this.submitId = (String) map.get("task_id");
+    this.result = (String) map.get("status");
+    this.timeUsed = Integer.toString((Integer) map.get("time_used"));
+    this.memoryUsed = Integer.toString((Integer) map.get("memory_used"));
+    if (SubmissionResultCode.resultStrToInt(this.result) == SubmissionResultCode.COMPILE_ERROR) {
+      this.setInfo((String) map.get("compile_error"));
+    } else {
+      this.info = this.result;
+    }
   }
 
   public String getSubmitId() {
@@ -67,6 +70,6 @@ public class JudgeResult {
   }
 
   public void setInfo(String info) {
-    this.info = new String(Base64.getDecoder().decode(info), StandardCharsets.UTF_8);
+    this.info = info;
   }
 }
