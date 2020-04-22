@@ -51,6 +51,8 @@ public class Contest {
   @Field("owner_account")
   private String ownerAccount;
 
+  private long createTime;
+
   /**
    * true => lock
    */
@@ -69,6 +71,18 @@ public class Contest {
   @Field("problems")
   private LinkedList<ObjectId> problems;
 
+  public Contest(){
+    this.name = "";
+    this.always = true;
+    this.startTime = null;
+    this.endTime = null;
+    this.ownerAccount = "admin";
+    this.problems = new LinkedList<>();
+    this.isLock = false;
+    this.password = "";
+    this.createTime = System.currentTimeMillis();
+  }
+
   public Contest(String name,
                  boolean always,
                  Date startTime,
@@ -84,6 +98,7 @@ public class Contest {
     this.problems = new LinkedList<>();
     this.isLock = isLock;
     this.password = password;
+    this.createTime = System.currentTimeMillis();
   }
 
   public ObjectId getId() {
@@ -156,6 +171,14 @@ public class Contest {
 
   public boolean checkPassword(String password) {
     return this.password.equals(password);
+  }
+
+  public long getCreateTime() {
+    return createTime;
+  }
+
+  public void setCreateTime(long createTime) {
+    this.createTime = createTime;
   }
 
   @JsonIgnore

@@ -90,7 +90,7 @@ public class RankDaoImpl implements RankDao {
         break;
       }
     }
-    if (flag) {
+    if (flag && !rankList.isEmpty()) {
       rank.setEarliest(true);
     }
     mongoTemplate.save(rank);
@@ -123,11 +123,17 @@ public class RankDaoImpl implements RankDao {
         );
       } else {
         Contest contest = contestDao.findByName(submission.getContestName());
+        long startTime;
+        if (contest.getStartTime() == null){
+          startTime = contest.getCreateTime();
+        }else{
+          startTime = contest.getStartTime().getTime();
+        }
         rank = new Rank(
                 submission.getUserAccount(),
                 submission.getNickname(),
                 submission.getContestName(),
-                contest.getStartTime().getTime(),
+                startTime,
                 submission.getProblemOriginId()
         );
       }
