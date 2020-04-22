@@ -14,6 +14,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -359,6 +360,8 @@ public class Problem implements Serializable {
     problem.setSource((String) map.get("source"));
     problem.setVisible(true);
     problem.setAuthor((String) map.get("origin"));
+    ArrayList<String> arrayList = (ArrayList<String>) map.get("language");
+    problem.setLanguages(arrayList.toArray(new String[0]));
     return problem;
   }
 }

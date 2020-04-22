@@ -3,7 +3,9 @@ package com.vcode.entity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vcode.common.SubmissionResultCode;
+import org.bson.internal.Base64;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 /**
@@ -70,6 +72,6 @@ public class JudgeResult {
   }
 
   public void setInfo(String info) {
-    this.info = info;
+    this.info = new String(Base64.decode(info), StandardCharsets.UTF_8);
   }
 }

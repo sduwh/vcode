@@ -16,14 +16,14 @@ import java.util.Map;
  * @Description
  * @Date
  */
-public class JudgeTask {
+public class RemoteJudgeTask {
   private String origin;
   private String key;
   private String code;
   private String submitId;
   private String language;
 
-  public JudgeTask() {
+  public RemoteJudgeTask() {
     this.origin = "";
     this.key = "";
     this.code = "";
@@ -31,7 +31,7 @@ public class JudgeTask {
     this.language = "";
   }
 
-  public JudgeTask(Submission submission) {
+  public RemoteJudgeTask(Submission submission) {
     String problemOriginId = submission.getProblemOriginId();
     this.origin = problemOriginId.substring(0, problemOriginId.indexOf("-"));
     this.key = problemOriginId.substring(problemOriginId.indexOf("-") + 1);
