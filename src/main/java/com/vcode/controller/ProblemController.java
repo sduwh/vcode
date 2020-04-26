@@ -30,10 +30,12 @@ public class ProblemController {
   }
 
   /**
-   * @param page    页码
-   * @param size    一页的容量
-   * @param search  查询条件
-   * @param visible 题目可见
+   * @param page       页码
+   * @param size       一页的容量
+   * @param search     查询条件
+   * @param visible    题目可见
+   * @param originType 题目来源 1：本地出题，2：爬虫获取，其他：所有来源
+   * @param level      题目难度 0=>all, 1=>low, 2=>mid, 3=>high
    * @return com.vcode.entity.Response
    * @Description 获取problems列表
    * @Date 2020/2/11 15:33
@@ -42,8 +44,9 @@ public class ProblemController {
   public Response getProblemList(@RequestParam(value = "page") int page,
                                  @RequestParam(value = "size") int size,
                                  @RequestParam(value = "search") String search,
-                                 @RequestParam(value = "visible") boolean visible,
-                                 @RequestParam(value = "originType") int originType) {
+                                 @RequestParam(value = "visible", defaultValue = "true") boolean visible,
+                                 @RequestParam(value = "originType", defaultValue = "0") int originType,
+                                 @RequestParam(value = "level", defaultValue = "0") int level) {
     Response response = new Response();
     if (page < 1 || size < 1) {
       response.setCode(ResponseCode.ERROR);
@@ -53,10 +56,10 @@ public class ProblemController {
     }
     // 数据库中的分页从0开始
     page--;
-    List<Problem> problemList = problemDao.findProblems(page, size, search, visible, originType);
+    List<Problem> problemList = problemDao.findProblems(page, size, search, visible, originType, level);
     Map<String, Object> resMap = new HashMap<>(2);
     resMap.put("problemList", problemList);
-    resMap.put("total", problemDao.count(search, true, originType));
+    resMap.put("total", problemDao.count(search, true, originType, level));
     response.setData(resMap);
     return response;
   }

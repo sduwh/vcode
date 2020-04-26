@@ -93,14 +93,22 @@ public class ProblemDaoImpl implements ProblemDao {
   }
 
   @Override
-  public List<Problem> findProblems(int page, int size, String search, boolean visible, int originType) {
+  public List<Problem> findProblems(int page, int size, String search, boolean visible, int originType, int level) {
     Pageable pageableRequest = PageRequest.of(page, size);
     Query query = new Query();
     if (visible) {
       query.addCriteria(Criteria.where("visible").is(true));
     }
+    if (level != 0) {
+      query.addCriteria(Criteria.where("difficulty").is(level - 1));
+    }
     if (search.length() > 0) {
-      query.addCriteria(Criteria.where("title").regex(".*" + search + ".*"));
+      query.addCriteria(new Criteria()
+              .orOperator(
+                      Criteria.where("title").regex(".*" + search + ".*"),
+                      Criteria.where("origin_id").regex(".*" + search + ".*")
+              )
+      );
     }
     switch (originType) {
       case 1:
@@ -116,13 +124,21 @@ public class ProblemDaoImpl implements ProblemDao {
   }
 
   @Override
-  public Long count(String search, boolean visible, int originType) {
+  public Long count(String search, boolean visible, int originType, int level) {
     Query query = new Query();
     if (visible) {
       query.addCriteria(Criteria.where("visible").is(true));
     }
+    if (level != 0) {
+      query.addCriteria(Criteria.where("difficulty").is(level - 1));
+    }
     if (search.length() > 0) {
-      query.addCriteria(Criteria.where("title").regex(".*" + search + ".*"));
+      query.addCriteria(new Criteria()
+              .orOperator(
+                      Criteria.where("title").regex(".*" + search + ".*"),
+                      Criteria.where("origin_id").regex(".*" + search + ".*")
+              )
+      );
     }
     switch (originType) {
       case 1:

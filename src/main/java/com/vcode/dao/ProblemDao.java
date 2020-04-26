@@ -20,9 +20,10 @@ public interface ProblemDao {
    * @param search     查询条件
    * @param visible    题目是否可见
    * @param originType 题目来源 1：本地出题，2：爬虫获取，其他：所有来源
+   * @param level      题目难度 0=>all, 1=>low, 2=>mid, 3=>high
    * @return 题目数量
    */
-  Long count(String search, boolean visible, int originType);
+  Long count(String search, boolean visible, int originType, int level);
 
   /**
    * 保存含有新信息的problem
@@ -80,9 +81,10 @@ public interface ProblemDao {
    * @param search     查询条件
    * @param visible    题目是否可见
    * @param originType 题目来源 1：本地出题，2：爬虫获取，其他：所有来源
+   * @param level      题目难度 0=>all, 1=>low, 2=>mid, 3=>high
    * @return 题目列表
    */
-  List<Problem> findProblems(int page, int size, String search, boolean visible, int originType);
+  List<Problem> findProblems(int page, int size, String search, boolean visible, int originType, int level);
 
   /**
    * 查询多个problem Id

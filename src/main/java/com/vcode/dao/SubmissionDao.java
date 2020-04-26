@@ -147,4 +147,11 @@ public interface SubmissionDao {
    * @throws JsonProcessingException json处理数据出错
    */
   void sendToJudgeQueue(Submission submission) throws JsonProcessingException;
+
+  /**
+   * 返回判题等待时间超过一分钟的Submission
+   *
+   * @return 返回SubmissionList
+   */
+  List<Submission> findJudgingSubmissionList();
 }

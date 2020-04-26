@@ -68,7 +68,7 @@ public class AdminIndexController {
 
     Map<String, Object> problemForm = new HashMap<>(3);
     List<String> ojList = judgeServerDao.getOjSupport();
-    Long problemTotal = problemDao.count("", false, 0);
+    Long problemTotal = problemDao.count("", false, 0, 0);
     Long submissionTotal = submissionDao.count("");
     problemForm.put("ojList", ojList);
     problemForm.put("problemTotal", problemTotal);

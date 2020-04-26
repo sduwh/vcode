@@ -49,4 +49,15 @@ public class ExecutorConfig {
     executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
     return executor;
   }
+
+  @Bean
+  public Executor sendJudgingTaskExecutor() {
+    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    executor.setThreadNamePrefix("send_judging_task_executor");
+    executor.setMaxPoolSize(1);
+    executor.setCorePoolSize(1);
+    executor.setQueueCapacity(0);
+    executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+    return executor;
+  }
 }

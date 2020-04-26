@@ -47,11 +47,15 @@ public class Submission {
   private String problemOriginId;
 
   /**
-   * 代码耗时
+   * 代码耗时 MS
    */
   @Field("time")
   private String time;
 
+
+  /**
+   * 代码使用内存 KB
+   */
   @Field("memory")
   private String memory;
 
@@ -72,7 +76,16 @@ public class Submission {
   private String contestName;
 
   /**
-   * 0 => wrong; 1 => success; 2 => time_out; 3 => memory_out; 4 => unknown_error; 5 => padding; 6 => compile error
+   * 0 => wrong;
+   * 1 => success;
+   * 2 => time_out;
+   * 3 => memory_out;
+   * 4 => unknown_error;
+   * 5 => padding;
+   * 6 => compile error;
+   * 7 => runtime error;
+   * 8 => output limit;
+   * 9 => presentation error;
    */
   @Field("result")
   private int result;

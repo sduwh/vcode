@@ -17,6 +17,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.Calendar;
 import java.util.List;
 
 @Component
@@ -187,14 +188,30 @@ public class SubmissionDaoImpl implements SubmissionDao {
 
   @Override
   public void sendToJudgeQueue(Submission submission) throws JsonProcessingException {
-    if (submission.getProblemOriginId().startsWith(MongoCode.VCODE)){
+    if (submission.getProblemOriginId().startsWith(MongoCode.VCODE)) {
       JudgeTask judgeTask = new JudgeTask(submission);
       String task = judgeTask.toJsonString();
       redisTemplate.opsForList().leftPush(RedisCode.JUDGE_TASK_TOPIC, task);
-    }else{
+    } else {
       RemoteJudgeTask remoteJudgeTask = new RemoteJudgeTask(submission);
       String task = remoteJudgeTask.toJsonString();
       redisTemplate.opsForList().leftPush(RedisCode.JUDGE_REMOTE_TASK_TOPIC, task);
     }
+  }
+
+  /**
+   * 返回判题等待时间超过一分钟的Submission
+   *
+   * @return 返回SubmissionList
+   */
+  @Override
+  public List<Submission> findJudgingSubmissionList() {
+    // 获得一分钟之前的时间戳
+    Calendar calendar = Calendar.getInstance();
+    calendar.add(Calendar.MINUTE, -1);
+    long beforeTime = calendar.getTimeInMillis();
+    Query query =
+            new Query(Criteria.where("create_time").lt(beforeTime).and("result").is(SubmissionResultCode.PADDING));
+    return mongoTemplate.find(query, Submission.class);
   }
 }
