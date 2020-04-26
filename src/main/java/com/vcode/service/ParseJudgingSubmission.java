@@ -30,7 +30,7 @@ public class ParseJudgingSubmission {
   }
 
   @Async
-  @Scheduled(fixedRate = 1000)
+  @Scheduled(fixedRate = 10000)
   public void parseJudgingSubmission() {
     List<Submission> submissionList = submissionDao.findJudgingSubmissionList();
     for (Submission submission : submissionList) {
