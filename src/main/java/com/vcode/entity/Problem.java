@@ -3,6 +3,8 @@ package com.vcode.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.Mongo;
+import com.vcode.common.MongoCode;
 import com.vcode.common.ProblemDifficultCode;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -103,9 +105,12 @@ public class Problem implements Serializable {
   @Field("visible")
   private boolean visible;
 
-  @NotNull(message = "languages is required")
   @Field("languages")
   private String[] languages;
+
+  @NotNull(message = "choiceLanguages is required")
+  @Field("choice_languages")
+  private String[] choiceLanguages;
 
   @Field("hint")
   private String hint;
@@ -131,34 +136,26 @@ public class Problem implements Serializable {
   private String testCaseId;
 
   public Problem() {
-    this.createTime = System.currentTimeMillis();
-  }
-
-  public Problem(String origin, String originId, String title, String description, String input, String output,
-                 String[] sampleInput, String[] sampleOutput, String author, String timeLimit, String memoryLimit,
-                 boolean visible,
-                 String[] languages, String hint, int difficulty, long submissionNumber, long acceptedNumber,
-                 String source,
-                 String testCaseId) {
-    this.origin = origin;
-    this.originId = originId;
-    this.title = title;
-    this.description = description;
-    this.input = input;
-    this.output = output;
-    this.sampleInput = sampleInput;
-    this.sampleOutput = sampleOutput;
-    this.author = author;
-    this.timeLimit = timeLimit;
-    this.memoryLimit = memoryLimit;
-    this.visible = visible;
-    this.languages = languages;
-    this.hint = hint;
-    this.difficulty = difficulty;
-    this.submissionNumber = submissionNumber;
-    this.acceptedNumber = acceptedNumber;
-    this.source = source;
-    this.testCaseId = testCaseId;
+    this.origin = MongoCode.VCODE;
+    this.originId = MongoCode.VCODE + "1000";
+    this.title = "";
+    this.description = "";
+    this.input = "";
+    this.output = "";
+    this.sampleInput = new String[]{};
+    this.sampleOutput = new String[]{};
+    this.author = "admin";
+    this.timeLimit = "";
+    this.memoryLimit = "";
+    this.visible = true;
+    this.languages = new String[]{"C", "C++", "JAVA", "PYTHON3", "GO"};
+    this.choiceLanguages = new String[]{};
+    this.hint = "";
+    this.difficulty = 0;
+    this.submissionNumber = 0;
+    this.acceptedNumber = 0;
+    this.source = "";
+    this.testCaseId = "";
     this.createTime = System.currentTimeMillis();
   }
 
@@ -330,15 +327,32 @@ public class Problem implements Serializable {
     this.testCaseId = testCaseId;
   }
 
+
+  public String[] getChoiceLanguages() {
+    return choiceLanguages;
+  }
+
+  public void setChoiceLanguages(String[] choiceLanguages) {
+    this.choiceLanguages = choiceLanguages;
+  }
+
   @JsonIgnore
   public Update getUpdateData() {
     Update update = new Update();
-    update.set("title", this.getTitle()).set("Description", this.getDescription()).set("input", this.getInput())
-            .set("output", this.getOutput()).set("sample_input", this.getSampleInput())
-            .set("sample_output", this.getSampleOutput()).set("author", this.getOrigin())
-            .set("time_limit", this.getTimeLimit()).set("memory_limit", this.getMemoryLimit()).set("hint", this.hint)
-            .set("languages", this.languages).set("visible", this.visible).set("source", this.source)
-            .set("test_case_id", this.testCaseId);
+    update.set("title", this.getTitle())
+            .set("Description", this.getDescription())
+            .set("input", this.getInput())
+            .set("output", this.getOutput())
+            .set("sample_input", this.getSampleInput())
+            .set("sample_output", this.getSampleOutput())
+            .set("author", this.getOrigin())
+            .set("time_limit", this.getTimeLimit())
+            .set("memory_limit", this.getMemoryLimit())
+            .set("hint", this.hint)
+            .set("visible", this.visible)
+            .set("source", this.source)
+            .set("test_case_id", this.testCaseId)
+            .set("choice_languages", this.choiceLanguages);
     return update;
   }
 
@@ -362,6 +376,22 @@ public class Problem implements Serializable {
     problem.setAuthor((String) map.get("origin"));
     ArrayList<String> arrayList = (ArrayList<String>) map.get("language");
     problem.setLanguages(arrayList.toArray(new String[0]));
+    problem.setChoiceLanguages(problem.getLanguages());
     return problem;
+  }
+
+  public void updateByProblem(Problem problem) {
+    this.originId = problem.getOriginId();
+    this.title = problem.getTitle();
+    this.timeLimit = problem.getTimeLimit();
+    this.memoryLimit = problem.getMemoryLimit();
+    this.description = problem.getDescription();
+    this.input = problem.getInput();
+    this.output = problem.getOutput();
+    this.sampleInput = problem.getSampleInput();
+    this.sampleOutput = problem.getSampleOutput();
+    this.hint = problem.getHint();
+    this.source = problem.getSource();
+    this.languages = problem.getLanguages();
   }
 }

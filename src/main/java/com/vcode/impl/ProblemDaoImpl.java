@@ -18,6 +18,8 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.List;
 
+import static com.vcode.common.MongoCode.VCODE;
+
 /**
  * @author moyee
  */
@@ -37,10 +39,12 @@ public class ProblemDaoImpl implements ProblemDao {
   @Override
   public void saveProblem(Problem problem) {
     Problem p = this.findByOriginId(problem.getOriginId());
-    if (p != null) {
-      problem.setId(p.getId());
+    if (p == null) {
+      mongoTemplate.save(problem);
+    } else {
+      p.updateByProblem(problem);
+      mongoTemplate.save(p);
     }
-    mongoTemplate.save(problem);
   }
 
   @Override
@@ -52,11 +56,12 @@ public class ProblemDaoImpl implements ProblemDao {
   @Override
   public String updateProblem(Problem problem) throws IOException {
     // 只能编辑非爬虫获取的的题目
-    if (MongoCode.VCODE.equals(problem.getOrigin())) {
-      Problem p = findByOriginId(problem.getOriginId());
-      if (p == null) {
-        return "problem is not exit";
-      }
+
+    Problem p = findByOriginId(problem.getOriginId());
+    if (p == null) {
+      return "problem is not exit";
+    }
+    if (MongoCode.VCODE.equals(p.getOrigin())) {
       if (!p.getTestCaseId().equals(problem.getTestCaseId())) {
         // move new file
         TestCaseHandler.moveTestCaseFiles(testCaseConfig.getPath(), problem.getTestCaseId());
@@ -67,10 +72,10 @@ public class ProblemDaoImpl implements ProblemDao {
           return e.toString();
         }
       }
-      Query query = new Query(Criteria.where("id").is(p.getId()));
-      Update update = problem.getUpdateData();
-      mongoTemplate.updateFirst(query, update, Problem.class);
     }
+    Query query = new Query(Criteria.where("id").is(p.getId()));
+    Update update = problem.getUpdateData();
+    mongoTemplate.updateFirst(query, update, Problem.class);
     return null;
   }
 
@@ -112,10 +117,10 @@ public class ProblemDaoImpl implements ProblemDao {
     }
     switch (originType) {
       case 1:
-        query.addCriteria(Criteria.where("origin").is(MongoCode.VCODE));
+        query.addCriteria(Criteria.where("origin").is(VCODE));
         break;
       case 2:
-        query.addCriteria(Criteria.where("origin").ne(MongoCode.VCODE));
+        query.addCriteria(Criteria.where("origin").ne(VCODE));
         break;
       default:
     }
@@ -142,10 +147,10 @@ public class ProblemDaoImpl implements ProblemDao {
     }
     switch (originType) {
       case 1:
-        query.addCriteria(Criteria.where("origin").is(MongoCode.VCODE));
+        query.addCriteria(Criteria.where("origin").is(VCODE));
         break;
       case 2:
-        query.addCriteria(Criteria.where("origin").ne(MongoCode.VCODE));
+        query.addCriteria(Criteria.where("origin").ne(VCODE));
         break;
       default:
     }
