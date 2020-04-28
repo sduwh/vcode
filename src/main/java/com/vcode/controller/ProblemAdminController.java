@@ -1,9 +1,9 @@
 package com.vcode.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vcode.handler.TestCaseHandler;
 import com.vcode.impl.ProblemDaoImpl;
 import com.vcode.common.ResponseCode;
-import com.vcode.config.TestCaseConfig;
 import com.vcode.entity.Problem;
 import com.vcode.entity.Response;
 import com.vcode.shiro.ShiroCommon;
@@ -31,12 +31,12 @@ public class ProblemAdminController {
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
   private final ProblemDaoImpl problemDao;
-  private final TestCaseConfig testCaseConfig;
+  private final TestCaseHandler testCaseHandler;
 
   @Autowired
-  public ProblemAdminController(ProblemDaoImpl problemDao, TestCaseConfig testCaseConfig) {
+  public ProblemAdminController(ProblemDaoImpl problemDao, TestCaseHandler testCaseHandler) {
     this.problemDao = problemDao;
-    this.testCaseConfig = testCaseConfig;
+    this.testCaseHandler = testCaseHandler;
   }
 
   /**
@@ -50,40 +50,40 @@ public class ProblemAdminController {
           value = {ShiroCommon.ROLE_ADMIN, ShiroCommon.ROLE_TEACHER, ShiroCommon.ROLE_CAPTION},
           logical = Logical.OR)
   public Response createProblem(@RequestBody @Valid Problem problem) {
-    Response res = new Response();
+    Response response = new Response();
     // check is this problem exist
     if (problemDao.isExist(problem)) {
-      res.setCode(ResponseCode.FAIL);
-      res.setMessage("ID or Title is repeat");
-      logger.debug(res.getMessage());
-      return res;
+      response.setCode(ResponseCode.FAIL);
+      response.setMessage("ID or Title is repeat");
+      logger.debug(response.getMessage());
+      return response;
     }
-    // check testCaseId
-    String fileFullPath = "/tmp/" + problem.getTestCaseId() + ".zip";
-    String targetDir = problem.getTestCaseId();
-    if (!TestCaseHandler.isZipExist(fileFullPath)) {
-      res.setCode(ResponseCode.FAIL);
-      res.setMessage("Test Case is need to upload");
-      logger.debug(res.getMessage());
-      return res;
-    }
+    String testCaseId = problem.getTestCaseId();
+    boolean checkResult;
     try {
-      // process testCaseFile: mv the file to target dir
-      TestCaseHandler.moveTestCaseFiles(testCaseConfig.getPath(), targetDir);
-    } catch (IOException e) {
-      logger.error(e.toString());
-      res.setCode(ResponseCode.ERROR);
-      return res;
+      checkResult = testCaseHandler.caseCheckHandler(testCaseId, "");
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+      response.setCode(ResponseCode.ERROR);
+      response.setError(e.toString());
+      response.setMessage(String.format("check the case file fail: %s", e.getMessage()));
+      logger.error(response.getMessage());
+      return response;
     }
     Subject subject = SecurityUtils.getSubject();
     String token = (String) subject.getPrincipal();
     String account = JwtUtil.getAccount(token);
 
-    problemDao.saveProblem(problem);
-    logger.info(String.format("user: %s create problem: origin_id: %s, title: %s", account, problem.getOrigin(),
-            problem.getTitle()));
-    res.setData(problem);
-    return res;
+    if (checkResult) {
+      problemDao.saveProblem(problem);
+      logger.info(String.format("user: %s create problem: origin_id: %s, title: %s", account, problem.getOrigin(),
+              problem.getTitle()));
+      response.setData(problem);
+    } else {
+      response.setCode(ResponseCode.FAIL);
+      response.setMessage("Please retry upload case file");
+    }
+    return response;
   }
 
   /**

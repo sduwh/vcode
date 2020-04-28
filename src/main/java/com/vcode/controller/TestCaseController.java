@@ -1,17 +1,18 @@
 package com.vcode.controller;
 
-import com.vcode.handler.TestCaseHandler;
 import com.vcode.common.ResponseCode;
 import com.vcode.entity.Response;
+import com.vcode.handler.TestCaseHandler;
 import com.vcode.shiro.ShiroCommon;
 import com.vcode.util.JwtUtil;
-import com.vcode.util.StringUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.subject.Subject;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,9 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 
 /**
@@ -32,6 +30,13 @@ import java.util.HashMap;
 public class TestCaseController {
 
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+  private final TestCaseHandler testCaseHandler;
+
+  @Autowired
+  public TestCaseController(TestCaseHandler testCaseHandler) {
+    this.testCaseHandler = testCaseHandler;
+  }
 
   /**
    * @param file testcase.zip
@@ -56,33 +61,29 @@ public class TestCaseController {
       logger.debug(response.getMessage());
       return response;
     }
-    // get test_case_id
-    String testCaseId = StringUtil.generateRandomStr();
-    String zipFileFullPath = "/tmp/" + testCaseId + ".zip";
-    logger.info(String.format("testCaseId: %s, zipFileFullPath: %s", testCaseId, zipFileFullPath));
-    // write file data
+    // send case file to vcode judge
+    boolean uploadSuccess;
+    String testCaseId = new ObjectId().toHexString();
     try {
-      byte[] bytes = file.getBytes();
-      Path path = Paths.get(zipFileFullPath);
-      Files.write(path, bytes);
+      uploadSuccess = testCaseHandler.caseReadyHandler(file, testCaseId);
     } catch (IOException e) {
-      logger.warn("write test case data error");
+      e.printStackTrace();
       response.setCode(ResponseCode.ERROR);
       response.setError(e.toString());
-      logger.error(String.format("user: %s upload test case: %s fail, write file fail: %s", account, testCaseId,
-              e.toString()));
+      response.setMessage(String.format("up load file error: %s", e.getMessage()));
+      logger.error(response.getMessage());
       return response;
     }
-    String unzipResult = TestCaseHandler.processZipFile(zipFileFullPath, testCaseId, "/tmp");
-    if (unzipResult == null) {
+    if (uploadSuccess) {
       HashMap<String, Object> resData = new HashMap<>(1);
       resData.put("testCaseId", testCaseId);
+      response.setMessage("upload success");
       response.setData(resData);
-      logger.error(String.format("user: %s upload test case: %s success", account, testCaseId));
+      logger.info(String.format("user: %s upload case file: %s success", account, testCaseId));
     } else {
       response.setCode(ResponseCode.FAIL);
-      response.setMessage(unzipResult);
-      logger.error(String.format("user: %s upload test case: %s fail, error: %s", account, testCaseId, unzipResult));
+      response.setMessage("upload fail");
+      logger.info(String.format("user: %s upload case file: %s fail", account, testCaseId));
     }
     return response;
   }

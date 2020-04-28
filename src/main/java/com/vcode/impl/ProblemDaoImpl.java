@@ -2,7 +2,6 @@ package com.vcode.impl;
 
 import com.vcode.common.MongoCode;
 import com.vcode.handler.TestCaseHandler;
-import com.vcode.config.TestCaseConfig;
 import com.vcode.dao.ProblemDao;
 import com.vcode.entity.Problem;
 import org.bson.types.ObjectId;
@@ -27,13 +26,12 @@ import static com.vcode.common.MongoCode.VCODE;
 public class ProblemDaoImpl implements ProblemDao {
 
   private final MongoTemplate mongoTemplate;
-
-  private final TestCaseConfig testCaseConfig;
+  private final TestCaseHandler testCaseHandler;
 
   @Autowired
-  public ProblemDaoImpl(MongoTemplate mongoTemplate, TestCaseConfig testCaseConfig) {
+  public ProblemDaoImpl(MongoTemplate mongoTemplate, TestCaseHandler testCaseHandler) {
     this.mongoTemplate = mongoTemplate;
-    this.testCaseConfig = testCaseConfig;
+    this.testCaseHandler = testCaseHandler;
   }
 
   @Override
@@ -64,13 +62,7 @@ public class ProblemDaoImpl implements ProblemDao {
     if (MongoCode.VCODE.equals(p.getOrigin())) {
       if (!p.getTestCaseId().equals(problem.getTestCaseId())) {
         // move new file
-        TestCaseHandler.moveTestCaseFiles(testCaseConfig.getPath(), problem.getTestCaseId());
-        // remove old files
-        try {
-          TestCaseHandler.removeTestCaseFiles(testCaseConfig.getPath(), p.getTestCaseId());
-        } catch (IOException e) {
-          return e.toString();
-        }
+        testCaseHandler.caseCheckHandler(problem.getTestCaseId(), p.getTestCaseId());
       }
     }
     Query query = new Query(Criteria.where("id").is(p.getId()));

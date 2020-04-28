@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "judge.host",
+      "type": "java.lang.String",
+      "description": "vcode judge host."
+    },
+    {
+      "name": "judge.port",
+      "type": "java.lang.String",
+      "description": "vcode judge port."
+    }
+  ] }
