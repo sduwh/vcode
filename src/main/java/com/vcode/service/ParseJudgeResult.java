@@ -1,6 +1,7 @@
 package com.vcode.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.vcode.common.SubmissionResultCode;
 import com.vcode.impl.SubmissionDaoImpl;
 import com.vcode.common.RedisCode;
 import com.vcode.entity.JudgeResult;
@@ -45,7 +46,7 @@ public class ParseJudgeResult {
       try {
         JudgeResult result = new JudgeResult(judgeResult);
         Submission submission = submissionDao.findByIdHex(result.getSubmitId());
-        if (submission != null) {
+        if (submission != null && submission.getResult() != SubmissionResultCode.PADDING) {
           submission.setResult(result.getResult());
           submission.setTime(result.getTimeUsed());
           submission.setMemory(result.getMemoryUsed());

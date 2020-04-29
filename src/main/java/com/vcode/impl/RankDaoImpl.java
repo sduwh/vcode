@@ -1,6 +1,7 @@
 package com.vcode.impl;
 
 import com.vcode.common.RedisCode;
+import com.vcode.common.SubmissionResultCode;
 import com.vcode.dao.RankDao;
 import com.vcode.entity.Contest;
 import com.vcode.entity.Rank;
@@ -124,9 +125,9 @@ public class RankDaoImpl implements RankDao {
       } else {
         Contest contest = contestDao.findByName(submission.getContestName());
         long startTime;
-        if (contest.getStartTime() == null){
+        if (contest.getStartTime() == null) {
           startTime = contest.getCreateTime();
-        }else{
+        } else {
           startTime = contest.getStartTime().getTime();
         }
         rank = new Rank(
@@ -138,7 +139,7 @@ public class RankDaoImpl implements RankDao {
         );
       }
     }
-    if (submission.getResult() == 1) {
+    if (submission.getResult() == SubmissionResultCode.SUCCESS) {
       rank.setAcNum(rank.getAcNum() + 1);
       if (submission.getContestName() != null && !"".equals(submission.getContestName()) && rank.getAcNum() == 0) {
         rank.setUsedTime(rank.getUsedTime() + (System.currentTimeMillis() - rank.getStartTime()));

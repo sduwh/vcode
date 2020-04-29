@@ -69,7 +69,9 @@ public class SubmissionDaoImpl implements SubmissionDao {
       problemDao.incAcceptNum(submission.getProblemOriginId());
     }
     mongoTemplate.save(submission);
-    rankDao.updateRank(submission);
+    if (submission.getResult() != SubmissionResultCode.PADDING) {
+      rankDao.updateRank(submission);
+    }
   }
 
   @Override
@@ -127,7 +129,7 @@ public class SubmissionDaoImpl implements SubmissionDao {
   @Override
   public List<Submission> findContestSubmission(String contestName, int page, int size, String search) {
     Query query = new Query(Criteria.where("contest_name").is(contestName));
-    query.with(Sort.by(Sort.Direction.DESC,"create_time"));
+    query.with(Sort.by(Sort.Direction.DESC, "create_time"));
     Pageable pageableRequest = PageRequest.of(page, size);
     if (search.length() > 0) {
       query.addCriteria(Criteria.where("user_nickname").regex(".*" + search + ".*"));
