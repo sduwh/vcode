@@ -46,7 +46,7 @@ public class ParseJudgeResult {
       try {
         JudgeResult result = new JudgeResult(judgeResult);
         Submission submission = submissionDao.findByIdHex(result.getSubmitId());
-        if (submission != null && submission.getResult() != SubmissionResultCode.PADDING) {
+        if (submission != null &&  SubmissionResultCode.resultStrToInt(result.getResult()) != SubmissionResultCode.PADDING) {
           submission.setResult(result.getResult());
           submission.setTime(result.getTimeUsed());
           submission.setMemory(result.getMemoryUsed());
