@@ -97,7 +97,16 @@ public interface SubmissionDao {
    * @return 查询结果
    */
   List<Submission> findContestSubmission(String contestName, int page, int size, String search);
-
+  /**
+   * 查询group下的所有提交
+   *
+   * @param groupName group'name
+   * @param page        页码
+   * @param size        一页的大小
+   * @param search      查询条件
+   * @return 查询结果
+   */
+  List<Submission> findGroupSubmission(String groupName, int page, int size, String search);
   /**
    * 统计查询条件下的提交数量
    *
@@ -122,7 +131,14 @@ public interface SubmissionDao {
    * @return 统计结果
    */
   long countContestSubmission(String contestName, String search);
-
+  /**
+   * 获取一个Group对应的提交数量
+   *
+   * @param groupName Group'name
+   * @param search      查询条件
+   * @return 统计结果
+   */
+  long countGroupSubmission(String groupName,String search);
   /**
    * 给submission实例填充信息
    *

@@ -137,8 +137,29 @@ public class SubmissionDaoImpl implements SubmissionDao {
   }
 
   @Override
+  public List<Submission> findGroupSubmission(String groupName, int page, int size, String search) {
+    Query query = new Query(Criteria.where("group_name").is(groupName));
+    query.with(Sort.by(Sort.Direction.DESC,"create_time"));
+    Pageable pageableRequest = PageRequest.of(page, size);
+    if (search.length() > 0) {
+      query.addCriteria(Criteria.where("user_nickname").regex(".*" + search + ".*"));
+    }
+    query.with(pageableRequest);
+    return mongoTemplate.find(query, Submission.class);
+  }
+
+  @Override
   public long count(String search) {
     Query query = new Query(Criteria.where("contest_name").is(""));
+    if (search.length() > 0) {
+      query.addCriteria(Criteria.where("user_nickname").regex(".*" + search + ".*"));
+    }
+    return mongoTemplate.count(query, Submission.class);
+  }
+
+  @Override
+  public long countGroupSubmission(String groupName,String search){
+    Query query = new Query(Criteria.where("group_name").is(""));
     if (search.length() > 0) {
       query.addCriteria(Criteria.where("user_nickname").regex(".*" + search + ".*"));
     }
