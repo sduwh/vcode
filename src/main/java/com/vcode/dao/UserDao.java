@@ -91,4 +91,21 @@ public interface UserDao {
    */
   boolean isEmailExist(User user);
 
+  /**
+   * (注册时)暂时存储注册时应验证的邮箱信息
+   *
+   * @param email
+   * @param UUID
+   * @return
+   */
+  void storeEmailInRedis(String email,String UUID);
+
+  /**
+   * (注册时)根据UUID查询对应邮箱是否为同一人申请和确认
+   *
+   * @param email
+   * @param UUID
+   * @return
+   */
+  boolean checkEmailInRedis(String email,String UUID);
 }

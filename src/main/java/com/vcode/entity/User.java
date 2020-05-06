@@ -1,6 +1,7 @@
 package com.vcode.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.vcode.shiro.ShiroCommon;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -23,131 +24,131 @@ import java.util.Date;
 @Document("v_user")
 public class User implements Serializable {
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  public static final int PASSWORD_LENGTH = 6;
-  public static final int ACCOUNT_LENGTH = 8;
+    public static final int PASSWORD_LENGTH = 6;
+    public static final int ACCOUNT_LENGTH = 8;
 
-  @JsonIgnore
-  @Id
-  private ObjectId id;
+    @JsonIgnore
+    @Id
+    private ObjectId id;
 
-  @NotNull(message = "account is required")
-  @NotEmpty(message = "account can't be empty")
-  @NotBlank(message = "account can't be blank")
-  @Size(min = 8)
-  @Field("account")
-  private String account;
+    @NotNull(message = "account is required")
+    @NotEmpty(message = "account can't be empty")
+    @NotBlank(message = "account can't be blank")
+    @Size(min = 8)
+    @Field("account")
+    private String account;
 
-  @NotNull(message = "nickname is required")
-  @NotEmpty(message = "nickname can't be empty")
-  @NotBlank(message = "nickname can't be blank")
-  @Field("nickname")
-  private String nickname;
+    @NotNull(message = "nickname is required")
+    @NotEmpty(message = "nickname can't be empty")
+    @NotBlank(message = "nickname can't be blank")
+    @Field("nickname")
+    private String nickname;
 
-  @Field("email")
-  private String email;
+    @Field("email")
+    private String email;
 
-  @JsonIgnore
-  @Field("password")
-  private String password;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Field("password")
+    private String password;
 
-  @Field("createTime")
-  private Date createTime;
+    @Field("createTime")
+    private Date createTime;
 
-  @NotNull(message = "role is required")
-  @NotEmpty(message = "role can't be empty")
-  @NotBlank(message = "role can't be blank")
-  @Field("role")
-  private String role;
+    @NotNull(message = "role is required")
+    @NotEmpty(message = "role can't be empty")
+    @NotBlank(message = "role can't be blank")
+    @Field("role")
+    private String role;
 
-  @NotNull(message = "permission is required")
-  @NotEmpty(message = "permission can't be empty")
-  @NotBlank(message = "permission can't be blank")
-  @Field("permission")
-  private String permission;
+    @NotNull(message = "permission is required")
+    @NotEmpty(message = "permission can't be empty")
+    @NotBlank(message = "permission can't be blank")
+    @Field("permission")
+    private String permission;
 
-  public User() {
-    this.setCreateTime();
-    this.setEmail(null);
-    this.setNickname("");
-  }
+    public User() {
+        this.setCreateTime();
+        this.setEmail(null);
+        this.setNickname("");
+    }
 
-  public User(String account, String password) throws NoSuchAlgorithmException {
-    this.setCreateTime();
-    this.setEmail("");
-    this.setAccount(account);
-    this.setPassword(password);
-    this.setNickname(account);
-    this.setRole(ShiroCommon.ROLE_USER);
-    this.setPermission("");
-  }
+    public User(String account, String password) throws NoSuchAlgorithmException {
+        this.setCreateTime();
+        this.setEmail("");
+        this.setAccount(account);
+        this.setPassword(password);
+        this.setNickname(account);
+        this.setRole(ShiroCommon.ROLE_USER);
+        this.setPermission("");
+    }
 
-  public ObjectId getId() {
-    return this.id;
-  }
+    public ObjectId getId() {
+        return this.id;
+    }
 
-  public void setAccount(String account) {
-    this.account = account;
-  }
+    public void setAccount(String account) {
+        this.account = account;
+    }
 
-  public String getAccount() {
-    return this.account;
-  }
+    public String getAccount() {
+        return this.account;
+    }
 
-  public void setNickname(String newNickname) {
-    this.nickname = newNickname;
-  }
+    public void setNickname(String newNickname) {
+        this.nickname = newNickname;
+    }
 
-  public String getNickname() {
-    return nickname;
-  }
+    public String getNickname() {
+        return nickname;
+    }
 
-  public String getEmail() {
-    return email;
-  }
+    public String getEmail() {
+        return email;
+    }
 
-  public void setEmail(String newEmail) {
-    this.email = newEmail;
-  }
+    public void setEmail(String newEmail) {
+        this.email = newEmail;
+    }
 
-  public String getPassword() {
-    return password;
-  }
+    public String getPassword() {
+        return password;
+    }
 
-  public void setPassword(String newPassword) throws NoSuchAlgorithmException {
-    MessageDigest md = MessageDigest.getInstance("MD5");
-    md.update(newPassword.getBytes());
-    this.password = DatatypeConverter.printHexBinary(md.digest());
-  }
+    public void setPassword(String newPassword) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        md.update(newPassword.getBytes());
+        this.password = DatatypeConverter.printHexBinary(md.digest());
+    }
 
-  public Date getCreateTime() {
-    return createTime;
-  }
+    public Date getCreateTime() {
+        return createTime;
+    }
 
-  public void setCreateTime() {
-    this.createTime = new Date();
-  }
+    public void setCreateTime() {
+        this.createTime = new Date();
+    }
 
-  public String getRole() {
-    return role;
-  }
+    public String getRole() {
+        return role;
+    }
 
-  public void setRole(String role) {
-    this.role = role;
-  }
+    public void setRole(String role) {
+        this.role = role;
+    }
 
-  public String getPermission() {
-    return permission;
-  }
+    public String getPermission() {
+        return permission;
+    }
 
-  public void setPermission(String permission) {
-    this.permission = permission;
-  }
+    public void setPermission(String permission) {
+        this.permission = permission;
+    }
 
-  public boolean checkPassword(String inputPassword) throws NoSuchAlgorithmException {
-    MessageDigest md = MessageDigest.getInstance("MD5");
-    md.update(inputPassword.getBytes());
-    return !this.password.equals(DatatypeConverter.printHexBinary(md.digest()));
-  }
+    public boolean checkPassword(String inputPassword) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        md.update(inputPassword.getBytes());
+        return !this.password.equals(DatatypeConverter.printHexBinary(md.digest()));
+    }
 }
