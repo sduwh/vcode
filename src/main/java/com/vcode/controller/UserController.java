@@ -3,6 +3,7 @@ package com.vcode.controller;
 import com.vcode.common.ResponseCode;
 import com.vcode.entity.Response;
 import com.vcode.entity.User;
+import com.vcode.entity.UserSign;
 import com.vcode.impl.UserDaoImpl;
 import com.vcode.util.JwtUtil;
 import org.apache.shiro.SecurityUtils;
@@ -169,61 +170,38 @@ public class UserController {
 
     /**
      * @return 注册结果（包含token）
-     * @Param signInUser, rePassword, UUID
+     * @Param signInUser
+     * @Param rePassword
+     * @Param UUID
      * @Description 用户注册api
      * @Date 2020/1/31 01:40
      */
     @PostMapping("/sign-in")
-    public Response signIn(@RequestBody @Valid User signInUser,
-                           @RequestParam(value = "UUID") String UUID,
-                           @RequestParam(value = "rePassword") String rePassword) throws NoSuchAlgorithmException {
+    public Response signIn(@RequestBody @Valid UserSign signInUser,
+                           @RequestParam(value = "UUID") String UUID) throws NoSuchAlgorithmException {
     /*
       注册逻辑
       1. 检查输入参数的合法性
       2. 检查是否有用户已经使用改账户
       3. 注册账号，创建新的用户保存至数据库
     */
+    // TODO 创建了新的实体类接受不了参数，出一份这几个接口的文档 或者 配置一下swigger
+
         Response res = new Response();
 
-        if (signInUser.getAccount() == null || signInUser.getPassword() == null || signInUser.getEmail() == null || rePassword == null) {
-            res.setCode(ResponseCode.ERROR);
-            res.setMessage("Please input all params");
-            return res;
-        }
-        // 获取参数
-        String account = signInUser.getAccount();
-        //更改了User实体中，password不忽略反序列过程，仅忽略序列化过程
-        String password = signInUser.getPassword();
-        String email = signInUser.getEmail();
-        if (account.length() < User.ACCOUNT_LENGTH) {
-            res.setCode(ResponseCode.FAIL);
-            res.setMessage("account's length must be more than 8");
-            return res;
-        }
-
-        if (password.length() < User.PASSWORD_LENGTH) {
-            res.setCode(ResponseCode.FAIL);
-            res.setMessage("password's length must be more than 6");
-            return res;
-        }
-
-        if (!userDao.checkEmailInRedis(email, UUID)) {
+        if (!userDao.checkEmailInRedis(signInUser.getEmail(), UUID)) {
             res.setCode(ResponseCode.FAIL);
             res.setMessage("email has not been checked");
             return res;
         }
-        //User中的setPassword中的方法片段
-        MessageDigest md = MessageDigest.getInstance("MD5");
-        md.update(rePassword.getBytes());
-        String checkPassword = DatatypeConverter.printHexBinary(md.digest());
 
-        if (!password.equals(checkPassword)) {
+        if (!signInUser.getPassword().equals(signInUser.getRePassword())) {
             res.setCode(ResponseCode.FAIL);
             res.setMessage("两次密码不一致");
             return res;
         }
 
-        User user = userDao.findUserByUserAccount(account);
+        User user = userDao.findUserByUserAccount(signInUser.getAccount());
         if (user != null) {
             res.setCode(ResponseCode.FAIL);
             res.setMessage("该账号已存在");
@@ -231,14 +209,14 @@ public class UserController {
         }
 
         // 创建用户
-        user = new User(account, password);
-        user.setEmail(email);
-        user.setNickname(signInUser.getNickname());
+        user = new User(signInUser.getAccount(), signInUser.getPassword());
+        user.setEmail(signInUser.getEmail());
+        user.setNickname(signInUser.getAccount());
         userDao.saveUser(user);
 
         HashMap<String, String> resData = new HashMap<>(4);
         resData.put("token", JwtUtil.sign(user.getAccount(), user.getPassword()));
-        resData.put("refreshToken", JwtUtil.signRefreshToken(account, user.getPassword()));
+        resData.put("refreshToken", JwtUtil.signRefreshToken(signInUser.getAccount(), user.getPassword()));
         resData.put("nickname", user.getNickname());
         resData.put("account", user.getAccount());
         res.setData(resData);
