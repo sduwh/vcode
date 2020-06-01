@@ -6,6 +6,7 @@ import com.vcode.entity.User;
 import com.vcode.entity.UserSign;
 import com.vcode.impl.UserDaoImpl;
 import com.vcode.util.JwtUtil;
+import io.swagger.annotations.*;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.subject.Subject;
@@ -15,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.xml.bind.DatatypeConverter;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
@@ -176,6 +175,16 @@ public class UserController {
      * @Description 用户注册api
      * @Date 2020/1/31 01:40
      */
+    @ApiOperation(value = "用户注册", notes = "用户注册的api", tags = "UserController",httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "signInUser", value = "用户信息", paramType ="body",required = true, dataType = "UserSign"),
+            @ApiImplicitParam(name = "UUID", value = "用户特征UUID", paramType ="query",required = true, dataType = "String"),
+    })
+    @ApiResponses({
+            @ApiResponse(code=ResponseCode.SUCCESS,message="成功",response=Response.class),
+            @ApiResponse(code=ResponseCode.FAIL,message="失败",response=Response.class),
+            @ApiResponse(code=ResponseCode.ERROR,message="错误",response=Response.class)
+    })
     @PostMapping("/sign-in")
     public Response signIn(@RequestBody @Valid UserSign signInUser,
                            @RequestParam(value = "UUID") String UUID) throws NoSuchAlgorithmException {

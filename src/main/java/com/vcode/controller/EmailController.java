@@ -4,6 +4,7 @@ import com.vcode.common.ResponseCode;
 import com.vcode.dao.UserDao;
 import com.vcode.entity.Response;
 import com.vcode.util.KaisaUtil;
+import io.swagger.annotations.*;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +58,15 @@ public class EmailController {
      * @param email 用户邮件
      * @return
      */
+    @ApiOperation(value = "向用户发送邮件", notes = "向用户发送邮件,邮件内的url包含email和UUID,url中的email已被加密", tags = "EmailController",httpMethod = "GET")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "email", value = "用户email(未被加密)", paramType ="query",required = true, dataType = "String"),
+    })
+    @ApiResponses({
+            @ApiResponse(code=ResponseCode.SUCCESS,message="成功",response=Response.class),
+            @ApiResponse(code=ResponseCode.FAIL,message="失败",response=Response.class),
+            @ApiResponse(code=ResponseCode.ERROR,message="错误",response=Response.class)
+    })
     @GetMapping("/send")
     public Response sendEmail(@RequestParam(value = "email") String email) {
         Response response = new Response();
@@ -97,6 +107,15 @@ public class EmailController {
      * @param map，map中应该包含email和UUID
      * @return
      */
+    @ApiOperation(value = "接收前端存储邮件信息的请求", notes = "接收前端发来的email(被加密过的)和UUID，解密email，验证并存储到Redis缓存中", tags = "EmailController",httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "map", value = "map中需要包含email(被加密过的)和UUID信息", paramType ="body",required = true),
+    })
+    @ApiResponses({
+            @ApiResponse(code=ResponseCode.SUCCESS,message="成功",response=Response.class),
+            @ApiResponse(code=ResponseCode.FAIL,message="失败",response=Response.class),
+            @ApiResponse(code=ResponseCode.ERROR,message="错误",response=Response.class)
+    })
     @PostMapping("/receive")
     public Response receiveEmail(@RequestBody @Valid Map<String, String> map) {
         Response response = new Response();
@@ -130,6 +149,16 @@ public class EmailController {
      * @param email
      * @return
      */
+    @ApiOperation(value = "核对邮件是否被确认", notes = "比较发来的email和UUID在缓存中是否匹配", tags = "EmailController",httpMethod = "GET")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "email", value = "用户电子邮箱(未被加密)", paramType ="query",required = true, dataType = "String"),
+            @ApiImplicitParam(name = "UUID", value = "用户邮件中UUID", paramType ="query",required = true, dataType = "String"),
+    })
+    @ApiResponses({
+            @ApiResponse(code=ResponseCode.SUCCESS,message="成功",response=Response.class),
+            @ApiResponse(code=ResponseCode.FAIL,message="失败",response=Response.class),
+            @ApiResponse(code=ResponseCode.ERROR,message="错误",response=Response.class)
+    })
     @GetMapping("/check")
     public Response checkEmail(@RequestParam(value = "email") String email, @RequestParam(value = "UUID") String UUID) {
         Response response = new Response();
